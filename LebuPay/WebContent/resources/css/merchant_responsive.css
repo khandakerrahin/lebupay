@@ -1,0 +1,961 @@
+.lp-social-icon{
+	margin-top:10px;	
+}
+
+/*----------------------- Responsive start ----------------------*/
+@media screen and (max-width: 1600px){
+	.fullContainer{
+		width:100%;		
+	}
+	.fullContainer .rightColumn.form-group.eachFld.businessFld{
+		width: 40%;
+	}
+	.fullContainer .leftColumn.form-group.eachFld.typeFld{
+		width: 56%;
+	}
+	.fullContainer .othersBank .checkgroup .checkboxSec label{
+		margin-right: 20px;
+	}
+	.fullContainer .othersBank input#others{
+		width: 32%;
+	}
+	.fullContainer .transaction .profileBox{
+		padding: 10px 5px;
+		margin-right: 14px;
+	}
+	.transaction .profileBox label{
+		font-size:14px;
+		line-height: 20px;
+	}
+	.fullContainer .box-footer{
+		margin-top:15px;
+	}
+	.fullContainer .customerDetails .rightBoxdetails{
+		margin-left: 60px;
+	}
+	.formWrapper .fullContainer .marchantId{
+		width: 30% !important;
+	}
+	.fullContainer .col-md-4.col-lg-4.marchantId input{
+		width: 60%;
+	}
+	.checkgroup,
+	#site, #phnNbr,
+	.eachFld.typeFld input#email{
+		width:61%;
+	}
+}
+
+@media screen and (max-width: 1500px){
+	.fullContainer .col-md-5.col-lg-5.marchantCategory input{
+		width: 45%;
+	}
+	.fullContainer .col-md-4.col-lg-4.marchantId input{
+		width: 43%;
+	}
+}
+@media screen and (max-width: 1400px){
+	.fullContainer .col-md-5.col-lg-5.marchantCategory input{
+		width: 30%;
+	}
+	.fullContainer .col-md-4.col-lg-4.marchantId input{
+		width: 43%;
+	}
+	
+}
+@media screen and (max-width: 1200px){
+.formWrapper .container {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.formWrapper .col-md-4.col-lg-4.col-xs-12.marchantId {
+    width: 38%;
+    padding-right: 0;
+}
+
+.formWrapper input#business {
+    width: 50%;
+}
+
+.formWrapper .othersBank input#others {
+    width: 40%;
+}
+
+.formWrapper .transaction .profileBox {
+    margin-right: 2%;
+    width: 18%;
+}
+
+.formWrapper .col-md-5.col-lg-5.marchantCategory input {
+    width: 46%;}
+
+.formWrapper .transaction .profileBox label{
+	padding:0 15px 10px 15px;}
+
+.formWrapper .form-group.eachFld.typeFld .checkboxSec label {
+    margin-right: 9px;
+
+}
+
+.formWrapper .form-group.eachFld .checkboxSec input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.formWrapper .eachFld input#mob {
+    width: 75%;
+}
+
+.formWrapper .transaction label{
+	margin-bottom:12px;}
+
+.formWrapper .transaction .profileBox label{
+	min-height:95px;
+}
+
+	/* style dated 22-09-2017 */
+	.fullContainer{
+		width:100% !important;
+	}
+	.fullContainer .upperSection{
+		padding: 20px 0;
+	}
+	.fullContainer .cardSec{
+		padding-top: 0;
+	}
+	.fullContainer h1{
+		line-height: 40px;
+	}
+	.fullContainer ul li{
+		padding: 5px 0;
+		height: auto;
+		text-align: left;
+	}
+	.fullContainer ul li a{
+		display: inline-block;
+	}
+	.fullContainer ul.logoSec li{
+		width:80px;
+	}
+	.fullContainer .bankUse{
+		margin-right: 0 !important;
+	}
+	.fullContainer .bankUse span{
+		height: 63px;
+	}
+	.fullContainer .bankUse span:after{
+	border-width: 32px 0px 32px 20px;
+	}
+	.fullContainer .marchantCategory label,.marchantId label {
+		width: 100%;
+	    padding: 5px 10px 5px 10px;
+	    border-radius: 24px 24px 0 0px;
+	    text-align: center;
+	    height: auto;
+	}
+	.fullContainer .rightColumn.form-group.eachFld.businessFld label{
+		font-size: 16px;
+	}
+	.fullContainer .marchantCategory input,
+	.fullContainer .marchantId input{
+		width: 100% !important;
+		border-radius: 0 0 24px 24px !important;
+		border: 1px solid #ffd105 !important;
+		height: 33px !important;
+		padding: 5px 20px !important;
+	}
+	.fullContainer .leftColumn.form-group.eachFld.typeFld{
+		width: 100%;
+	}
+	.formWrapper .fullContainer .form-group.eachFld label{
+		font-size:16px;
+		width:28% !important;
+		margin-right: 0;
+	}
+	.formWrapper .fullContainer .form-group.eachFld input:not([type="checkbox"]),
+	.fullContainer .checkgroup,
+	.formWrapper .fullContainer input#business{
+		width: calc(100% - 28%) !important;
+	}
+	.formWrapper .fullContainer .form-group.eachFld .checkboxSec label{
+		width: 100% !important;
+		margin-right: 0 !important;
+		padding-right: 10px;
+		font-size: 13px !important;
+	}
+	.formWrapper .fullContainer .form-group.eachFld .checkboxSec input[type="checkbox"]{
+		margin-right:4px;
+	}
+	.othersBank .checkgroup .checkboxSec.otherCheckBox{
+		width:20%;
+		display: block;
+	}
+	.othersBank .checkgroup .checkboxSec.otherCheckBox + input#others{
+		width:calc(100% - 20%) !important;
+	}
+	.formWrapper .fullContainer .transaction .profileBox {
+	    margin-right: 15px;
+	    width: calc(33.33% - 10px);
+	    margin-bottom:15px;
+	}
+	.formWrapper .fullContainer .transaction .profileBox:nth-of-type(3n) {
+		margin-right:0;
+	}
+	.fullContainer .aggregatorProfile p{
+		font-size:16px;
+	}
+	.fullContainer .customerDetails .leftBoxdetails,
+	.fullContainer .customerDetails .rightBoxdetails{
+		width:100%;
+		margin:15px 0 15px;
+	}
+	.fullContainer .leftColumn.form-group.eachFld.typeFld, .fullContainer .rightColumn.form-group.eachFld.businessFld{
+		width: 100%;
+		float: left;
+		margin-left: 0;
+		margin-bottom: 15px;
+	}
+	.fullContainer .form-group.eachFld{
+		margin-bottom: 15px;
+	}
+	.fullContainer .rightColumn.form-group.eachFld.businessFld{
+		margin-bottom: 0;
+	}
+	
+}
+
+
+@media screen and (max-width: 1110px){
+.formWrapper .col-md-4.col-lg-4.col-xs-12.marchantId {
+    width: 35%;
+    padding-right: 0;
+}
+
+.formWrapper .col-md-5.col-lg-5.col-xs-12.marchantCategory {
+    width: 45%;
+}
+
+.formWrapper .col-md-4.col-lg-4.marchantId input {
+    width: 63%;
+	
+}
+
+.form-group.eachFld.businessFld label {
+    margin-right: 10px;
+}
+
+.formWrapper input#business {
+    width: 41%;
+}
+
+.formWrapper input#fax, input#ip {
+    width: 83%;
+}
+}
+
+@media screen and (max-width: 1082px){
+	
+.formWrapper .form-group.eachFld label {
+    width: 18%;
+}	
+
+.formWrapper .form-group.eachFld input{
+	width:82%;}
+
+.checkgroup {
+    width: 74%;
+}
+
+.formWrapper .form-group.eachFld.businessFld label,.formWrapper .othersBank .checkgroup .checkboxSec label{
+	width:auto;}
+
+.formWrapper .form-group.eachFld.typeFld input[type="tel"],.formWrapper .form-group.eachFld.typeFld #site,.formWrapper .form-group.eachFld.typeFld input#email {
+    width: 75%;
+}
+
+.formWrapper .othersBank input#others {
+    width: 38%;
+}
+
+.formWrapper .othersBank .checkgroup {
+    width: 81%;
+}
+
+.formWrapper .eachFld input#mob {
+    width: 71%;
+}
+
+
+.customerDetails .leftBoxdetails {
+    width: 48%;}
+}
+
+@media screen and (max-width: 1026px){
+	
+
+.formWrapper .col-md-2.col-lg-2.bankUse {
+    margin-right: 14px;
+    width: 20%;
+}
+.formWrapper .col-md-2.col-lg-2.bankUse span{
+	font-size:14px;}
+
+.formWrapper .col-md-4.col-lg-4.col-xs-12.marchantId {
+    width: 33%;
+    padding-right: 0;
+}
+
+.formWrapper .col-md-4.col-lg-4.marchantId input {
+    width: 54%;
+}
+	}
+	
+	
+@media screen and (max-width: 1014px){
+.formWrapper .marchantCategory label, .formWrapper .marchantId label{
+	font-size:14px;}	
+
+.formWrapper .form-group.eachFld.typeFld .checkboxSec label {
+    margin-right: 7px;
+}
+
+.formWrapper .othersBank input#others {
+    width: 36%;
+}
+
+.formWrapper .upperSection .col-md-8.col-lg-8 {
+    width: 70%;
+    float: left;
+}
+
+.formWrapper .upperSection .col-md-4.col-lg-4 {
+    width: 30%;
+    float: right;
+}
+
+.formWrapper .upperSection h1 {
+    font-size: 31px;
+}
+
+
+.cardSec {
+    padding: 22px 0 0 0;
+}
+	
+}
+
+@media screen and (max-width: 995px){
+.leftColumn.form-group.eachFld.typeFld {
+    width: 100%;
+	float:none;}	
+
+.checkgroup {
+    width: 81%;
+}
+
+.rightColumn.form-group.eachFld.businessFld{
+	width:100%;}
+
+.form-group.eachFld{
+	margin-bottom:25px;
+	float:left;
+	width:100%;}
+
+.leftColumn.form-group.eachFld.typeFld,.rightColumn.form-group.eachFld.businessFld {
+    width: 100%;
+    float: left;
+	margin-left:0;
+	margin-bottom:25px;
+}
+
+.rightColumn.form-group.eachFld.businessFld{
+	margin-bottom:0;}
+
+.rightColumn.form-group.eachFld.businessFld label{
+	font-size:18px;}
+
+.formWrapper input#business {
+    width: 81%;
+}
+
+.formWrapper .form-group.eachFld.typeFld input[type="tel"], .formWrapper .form-group.eachFld.typeFld #site, .formWrapper .form-group.eachFld.typeFld input#email {
+    width: 81.5%;
+}
+
+.formWrapper input#fax, input#ip {
+    width: 82%;
+}
+.formWrapper .othersBank input#others {
+    width: 30%;
+}
+
+.formWrapper .othersBank .checkgroup {
+    width: 81%;
+}
+
+.formWrapper .eachFld input#mob {
+    width: 81%;
+}
+
+.formWrapper .form-group.eachFld.typeFld .checkboxSec label {
+    margin-right: 34px;
+}
+
+.fullContainer .bankUse span{
+	height:auto;
+}
+.marchantCategory label, .marchantId label{
+	padding: 5px 10px 5px 10px;	
+}
+	
+}
+
+@media screen and (max-width: 991px){
+	.fullContainer .bankUse span:after{
+		display:none;
+	}
+	.fullContainer .bankUse span{
+		margin-bottom:15px;
+	}
+	.formWrapper .fullContainer .col-md-5.col-lg-5.col-xs-12.marchantCategory,
+	.fullContainer .col-md-4.col-lg-4.col-sm-6.col-xs-12.marchantId{
+		width:50% !important;
+		padding-right:15px;
+	}
+	.lessPadSm{
+		padding:0;
+	}
+	.fullContainer .othersBank .checkgroup .checkboxSec.otherCheckBox{
+		width: 30%;
+		margin-top:15px;
+	}
+	.othersBank .checkgroup .checkboxSec.otherCheckBox + input#others{
+		width: calc(100% - 30%) !important;
+	}
+	.formWrapper .fullContainer .form-group.eachFld:not(.checkboxSec) label{
+		line-height: 20px;
+		word-wrap: break-word;
+	}
+	.formWrapper .form-group.eachFld.businessFld label, .formWrapper .othersBank .checkgroup .checkboxSec label{
+		margin-right:0 !important;
+	}
+	.fullContainer .othersBank .checkgroup .checkboxSec input[type="checkbox"]{
+		margin-top:4px;	
+	}
+	.othersBank .checkgroup .checkboxSec.otherCheckBox label{
+		margin-top:10px;
+	}
+	.formWrapper .fullContainer .transaction .profileBox {
+	    width: calc(50% - 10px);
+	}
+	.formWrapper .fullContainer .transaction .profileBox:nth-of-type(3n){
+		margin-right:15px;
+	}
+	.formWrapper .fullContainer .transaction .profileBox:nth-of-type(2n){
+		margin-right:0;
+	}
+	.fullContainer .leftBoxdetails, .fullContainer .rightBoxdetals{
+		width:100%;
+		padding-bottom: 0;
+	}
+	.fullContainer .customerDetails .leftBoxdetails, .fullContainer .customerDetails .rightBoxdetails{
+		
+	}
+	.fullContainer .customerDetails .leftBoxdetails .column{
+		line-height:18px;
+	}
+	.fullContainer .rowSec{
+		display: flex;
+	}
+}
+
+@media screen and (max-width: 960px){
+
+.formWrapper .form-group.eachFld label {
+    width: 18%;
+}
+
+.formWrapper .form-group.eachFld input {
+    width: 100%;
+}
+
+.formWrapper .form-group.eachFld.typeFld input[type="tel"], .formWrapper .form-group.eachFld.typeFld #site, .formWrapper .form-group.eachFld.typeFld input#email,.formWrapper input#fax, input#ip,.formWrapper .eachFld input#mob,.formWrapper input#business{
+	width:100%;}
+
+.formWrapper .form-group.eachFld label {
+    width: auto;
+}
+
+.checkgroup {
+    width: 89%;
+}
+
+.form-group.eachFld,.leftColumn.form-group.eachFld.typeFld{
+    margin-bottom: 14px;
+}
+
+.formWrapper .col-md-12.col-lg-12.form-group.eachFld.othersBank {
+    margin-top: 15px;
+}
+
+.formWrapper .othersBank input#others {
+    width: 25%;
+    display: inline-block;
+}
+
+.formWrapper .col-md-5.col-lg-5.marchantCategory input {
+    width: 48%;
+}
+
+.formWrapper .col-md-4.col-lg-4.col-xs-12.marchantId {
+    width: 30%;
+    padding-right: 0;
+}
+
+}
+
+@media screen and (max-width: 932px){
+.formWrapper .col-md-5.col-lg-5.col-xs-12.marchantCategory {
+    width: 45%;
+}
+
+.formWrapper .col-md-5.col-lg-5.marchantCategory input {
+    width: 44%;
+}
+}
+
+@media screen and (max-width: 876px){
+.formWrapper .col-md-2.col-lg-2.bankUse {
+    margin-right: 14px;
+    width: 100%;
+    display: block;
+    clear: both;
+    float: left;
+	margin-bottom:25px;
+	
+}
+
+.formWrapper .col-md-2.col-lg-2.bankUse span {
+    font-size: 14px;
+    text-align: center;
+    width: 100%;
+    font-size: 20px;
+    padding-bottom: 0;
+    line-height: 24px;
+    font-weight: 600;
+	background:none;
+	padding-top:0;
+}
+
+.bankUse span:after{
+	display:none;}
+
+.formWrapper .col-md-5.col-lg-5.col-xs-12.marchantCategory,.formWrapper .col-md-4.col-lg-4.col-xs-12.marchantId{
+    width: 50%;
+}
+
+.row.middleSec {
+    padding: 25px 20px;
+    box-sizing: border-box;
+    background: rgb(247, 247, 247);
+    border-radius: 24px;
+}
+.formWrapper .col-md-4.col-lg-4.marchantId input {
+    width: 70%;
+}
+.formWrapper .col-md-5.col-lg-5.marchantCategory input {
+    width: 46%;
+}
+
+.profileHdng h2 {
+    padding: 46px 0 15px 0;}
+
+.customerDetails .rightBoxdetails{
+	margin-left:12%;}
+	
+	}
+
+@media screen and (max-width: 845px){
+	
+.formWrapper .othersBank .checkgroup {
+    width: 100%;
+    margin-top: 4px;
+}
+
+.formWrapper .othersBank input#others {
+    width: 31%;
+}
+.profileHdng h2 {
+    padding: 33px 0 14px 0;
+    font-size: 23px;
+    margin: 0;
+}
+
+.formWrapper .col-md-5.col-lg-5.col-xs-12.marchantCategory, .formWrapper .col-md-4.col-lg-4.col-xs-12.marchantId {
+    width: 50%;
+}
+
+.formWrapper .col-md-5.col-lg-5.marchantCategory input {
+    width: 39%;
+}
+
+.formWrapper .col-md-4.col-lg-4.marchantId input {
+    width: 66%;
+}
+
+.marchantCategory label, .marchantId label {
+    padding: 10px 5px 10px 10px;}
+
+.formWrapper .upperSection h1 {
+    font-size: 28px;
+}
+.cardSec ul li {
+    width: 16%;
+    vertical-align: middle;
+    text-align: center;
+}
+.cardSec ul li:first-child{
+	width:45%;}
+.cardSec img {
+    max-width: 100%;
+	height:auto;
+}
+}
+
+
+@media screen and (max-width: 768px){
+.othersBank .checkgroup .checkboxSec label{
+	margin-right:32px;}
+
+.formWrapper .transaction label {
+    margin-bottom: 0;
+    line-height: 21px;
+    padding-top: 17px;
+}
+
+.formWrapper .transaction .profileBox {
+    margin-right: 2%;
+    width: 48%;
+    margin-top: 2%;
+}
+
+.formWrapper .form-group.eachFld.typeFld .checkboxSec label {
+    margin-right: 12px;
+}
+
+.formWrapper .form-group.eachFld.businessFld label, .formWrapper .othersBank .checkgroup .checkboxSec label {
+    width: auto;
+    margin-right: 16px;
+}
+
+
+.customerDetails .leftBoxdetails {
+    width: 55%;
+}
+.customerDetails .rightBoxdetails {
+    width: 38%;
+	margin-left: 7%;}
+	
+.customerDetails .leftBoxdetails .column {
+    float: left;
+    width: 25%;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    padding: 5px;
+    font-size: 14px;
+    min-height: 42px;
+    line-height: 30px;
+}
+
+}
+
+@media screen and (max-width: 735px){
+	
+.formWrapper .col-md-5.col-lg-5.col-xs-12.marchantCategory, .formWrapper .col-md-4.col-lg-4.col-xs-12.marchantId {
+    width: 100%;
+    display: block;
+    float: left;
+    margin: 0 0 15px 0;
+}
+
+.formWrapper .col-md-2.col-lg-2.bankUse span{
+	text-align:left;
+	font-size: 23px;}
+
+.formWrapper .col-md-2.col-lg-2.bankUse{
+	margin-bottom:20px;}
+
+.formWrapper .col-md-5.col-lg-5.marchantCategory input {
+    width: 53%;
+}
+
+.formWrapper .col-md-4.col-lg-4.marchantId input {
+    width: 71%;
+}
+
+.formWrapper .upperSection .col-md-4.col-lg-4 {
+    width: 100%;
+    float: left;
+}
+.upperSection  ul.logoSec{
+	text-align:left;}
+
+.upperSection ul.logoSec li {
+    width: 15%;
+    margin: 0 25px 0 0;
+}
+
+.upperSection {
+    padding: 78px 0 31px 0;
+}
+.formWrapper .upperSection .col-md-8.col-lg-8 {
+    width: 100%;
+    float: left;
+}
+
+.customerDetails .leftBoxdetails {
+    width: 60%;
+}
+
+.customerDetails .rightBoxdetails {
+    width: 35%;
+    margin-left: 3%;}
+
+.customerDetails .rightBoxdetails h2 {
+    font-size: 14px;}
+.customerDetails .rightBoxdetails h2 span {
+    font-size: 13px;}
+
+.customerDetails .leftBoxdetails .column {
+    font-size: 13px;
+}
+
+.agrDetails {
+    min-height: 33px;
+}
+
+}
+
+@media screen and (max-width: 640px){
+.formWrapper .othersBank input#others {
+    width: 27%;
+}
+
+.formWrapper .form-group.eachFld.businessFld label, .formWrapper .othersBank .checkgroup .checkboxSec label,.formWrapper .form-group.eachFld.typeFld .checkboxSec label {
+	margin:0 5px 5px;
+}
+
+.customerDetails .leftBoxdetails {
+    width: 100%;
+}
+
+.customerDetails .rightBoxdetails {
+    width: 100%;
+    margin-left: 0%;
+}
+
+.agrDetails {
+    min-height: 83px;
+}
+.column span {
+    font-weight: 600;
+}
+
+.formWrapper {
+    background-size: 16%;
+}
+
+}
+
+@media screen and (max-width: 580px){
+
+.leftBoxdetails, .rightBoxdetals{
+	width:100%;
+	margin:0;
+	padding:0;}
+	}
+@media screen and (max-width: 554px){
+.formWrapper .othersBank input#others {
+    width: 23%;
+}
+
+	
+	}
+
+@media screen and (max-width: 528px){
+
+.formWrapper .othersBank .checkgroup,.checkgroup {
+    width: 100%;
+    margin-top: 0;
+}
+
+.formWrapper .othersBank input#others {
+    width: 100%;
+}
+
+.upperSection {
+    padding: 78px 0 31px 0;
+}
+
+.formWrapper .upperSection h1 {
+    font-size: 27px;
+    line-height: 32px;
+}
+
+.upperSection ul.logoSec li {
+    width: 26%;
+    margin: 0 25px 0 0;
+}
+
+.cardSec ul li:first-child {
+    width: 69%;
+}
+
+.cardSec ul li {
+    width: 31%;}
+	
+}
+
+@media screen and (max-width: 483px){
+.row.middleSec {
+    padding: 25px 10px;}
+
+.formWrapper .col-md-5.col-lg-5.col-xs-12.marchantCategory, .formWrapper .col-md-4.col-lg-4.col-xs-12.marchantId{
+	padding:0;}
+
+.aggregatorProfile p {
+    font-size: 15px;}
+}
+
+
+@media screen and (max-width: 480px){
+.formWrapper .form-group.eachFld.typeFld label,.formWrapper .form-group.eachFld.businessFld label,.formWrapper .form-group.eachFld label {
+    line-height: 30px;
+    margin-bottom: 6px;
+    font-size: 17px;
+	margin-left:0;
+}
+
+.formWrapper .form-group.eachFld.businessFld label, .formWrapper .othersBank .checkgroup .checkboxSec label, .formWrapper .form-group.eachFld.typeFld .checkboxSec label {
+    margin: 0 5px 5px;
+    line-height: 23px;
+    font-size: 15px;
+}
+
+.othersBank .checkgroup .checkboxSec input[type="checkbox"]{
+	margin-top:5px;}
+
+.formWrapper .othersBank input#others {
+    width: 100%;
+    margin-top: 7px;
+}
+
+.formWrapper {
+    background-size: 20%;
+}
+	}
+
+@media screen and (max-width: 425px){
+	.marchantCategory label, .marchantId label{
+		background:none;
+		border:0;
+		border-radius:none;}
+		
+
+.formWrapper .marchantCategory label, .formWrapper .marchantId label {
+    font-size: 14px;
+    padding: 0;
+    line-height: 29px;
+    display: block;
+    width: 100%;
+    height: auto;
+}
+.formWrapper .col-md-5.col-lg-5.marchantCategory input {
+    width: 93%;
+    box-sizing: border-box;
+    border-radius: 24px;
+    margin: 0 auto;
+    float: none;
+}
+.formWrapper .col-md-2.col-lg-2.bankUse,.formWrapper .col-md-2.col-lg-2.bankUse span{
+	padding:0;}
+
+.row.middleSec {
+    padding: 25px 20px;
+}
+
+.formWrapper .col-md-2.col-lg-2.bankUse {
+    margin-bottom: 13px;
+}
+
+.formWrapper .marchantCategory label, .formWrapper .marchantId label {
+    font-size: 16px;
+    padding: 0;
+    line-height: 37px;
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.formWrapper .col-md-5.col-lg-5.marchantCategory input {
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 24px;
+    margin: 0 auto;
+    float: none;
+    border-left: 1px solid #ffd105;
+}
+.formWrapper .col-md-4.col-lg-4.marchantId input {
+    width: 100%;
+    border-radius: 26px;
+	border-left: 1px solid #ffd105;
+}
+.formWrapper .upperSection h1 {
+    font-size: 25px;
+	padding:0;}
+
+.upperSection {
+    padding: 38px 0 31px 0;
+}
+
+.upperSection ul.logoSec li {
+    width: 41%;}
+
+.customerDetails .leftBoxdetails .column.theader {
+    line-height: 15px;
+    vertical-align: middle;
+    display: inline-block;
+}
+.customerDetails .leftBoxdetails .column{
+	min-height:53px;}
+.customerDetails .leftBoxdetails .column span{
+	line-height: 17px;
+    display: inline-block;}
+
+.customerDetails .leftBoxdetails{
+	margin-top:10px;}
+
+.checkgroup .checkboxSec {
+    min-width: 170px;
+}
+}
+
+@media screen and (max-width: 380px){
+.formWrapper .transaction .profileBox label {
+    min-height: 78px;
+    font-size: 13px;
+}
+.formWrapper .transaction .profileBox {
+    margin-right: 0;
+    width: 48%;
+    margin-top: 2%;
+    margin: 2% 1%;
+}
+
+.formWrapper {
+    background: #fff url(../images/bg-image.jpg) no-repeat left bottom;
+    background-size: 15%;
+}
+	
+}

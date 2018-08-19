@@ -1,0 +1,39 @@
+{"accounting": [
+                      { "Name"    :    "Avirup Pal",
+                        "Email"   :    "avirup.pal@gmail.com",
+                        "Role"    :    "Merchant Sales",
+                        "Created" :    "24 Mar 2017"
+                      },
+
+                      { "Name"    :    "Avirup Pal",
+                        "Email"   :    "avirup.pal@gmail.com",
+                        "Role"    :    "Merchant Sales",
+                        "Created" :    "24 Mar 2017"
+                      },
+
+                      { "Name"    :    "Soumik Jana",
+                        "Email"   :    "soumik_diatm@yahoo.co.in",
+                        "Role"    :    "Merchant Admin",
+                        "Created" :    "24 Mar 2017"
+                      },
+
+                      { "Name"    :    "Soumik Jana",
+                        "Email"   :    "soumik_diatm@yahoo.co.in",
+                        "Role"    :    "Merchant Admin",
+                        "Created" :    "24 Mar 2017"
+                      },
+
+                      { "Name"    :    "Suvankar Sen",
+                        "Email"   :    "Merchant Designer",
+                        "Role"    :    "Merchant Admin",
+                        "Created" :    "24 Mar 2017"
+                      },
+
+                      { "Name"    :    "Suvankar Sen",
+                        "Email"   :    "Merchant Designer",
+                        "Role"    :    "Merchant Admin",
+                        "Created" :    "24 Mar 2017"
+                      }
+                  ]
+
+    }

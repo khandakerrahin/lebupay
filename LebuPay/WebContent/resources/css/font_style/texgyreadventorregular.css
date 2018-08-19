@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'texgyreadventorregular';
+    src: url('fonts/texgyreadventorregular.eot');
+    src: url('fonts/texgyreadventorregular.eot') format('embedded-opentype'),
+         url('fonts/texgyreadventorregular.woff2') format('woff2'),
+         url('fonts/texgyreadventorregular.woff') format('woff'),
+         url('fonts/texgyreadventorregular.ttf') format('truetype'),
+         url('fonts/texgyreadventorregular.svg#texgyreadventorregular') format('svg');
+}

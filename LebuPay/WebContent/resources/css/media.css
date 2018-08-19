@@ -1,0 +1,10 @@
+@media screen and (min-width: 1200px) { 
+	.container { width:1170px;}
+}
+
+
+@media screen and (max-width: 640px) { 
+	.copyright_info { text-align:center;}
+	.social ul {float:none!important;}
+	.social { margin:25px 20px; text-align:center;}
+}

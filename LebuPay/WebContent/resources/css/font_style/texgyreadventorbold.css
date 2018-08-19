@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'texgyreadventorbold';
+    src: url('fonts/texgyreadventorbold.eot');
+    src: url('fonts/texgyreadventorbold.eot') format('embedded-opentype'),
+         url('fonts/texgyreadventorbold.woff2') format('woff2'),
+         url('fonts/texgyreadventorbold.woff') format('woff'),
+         url('fonts/texgyreadventorbold.ttf') format('truetype'),
+         url('fonts/texgyreadventorbold.svg#texgyreadventorbold') format('svg');
+}

@@ -1,0 +1,27 @@
+.flag {
+	float: left;
+	padding: 0 !important;
+	margin: 0 5px 0 0;
+	width: 39px;
+	height: 25px;
+	background: url(../images/flagssprite_small.png) no-repeat;
+}
+.flag.visaSm {
+	background-position: 0 0
+}
+.flag.mc {
+	background-position: 0 -25px
+}
+.flag.msc {
+	background-position: 0 -50px
+}
+.flag.diner {
+	background-position: 0 -75px
+}
+.flag.amex {
+	background-position: 0 -100px
+}
+/*.flag.al {
+	background-position: 0 -125px
+}*/
+
