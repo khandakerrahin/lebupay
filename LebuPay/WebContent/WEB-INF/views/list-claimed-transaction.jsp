@@ -65,14 +65,14 @@
 									<th>NAME</th>
 									<th>EMAIL ID</th>
 									<th>MOBILE</th>
-									<th>EBL ID</th>
+									<th>BANK</th> <!-- edited by Shaker on 16-sep-2018  -->
 									<!-- <th>EBL USERNAME</th> -->
 									<th>BALANCE AMOUNT</th>
-									<th>LOYALTY POINT</th>
 									<th>TXN AMOUNT</th>
 									<th>PAYABLE AMOUNT</th>
 									<th>TXN ID</th>
 									<th>TXN DATE</th>
+									<th>Action</th>
 									<!-- <th>STATUS</th> -->
 									<!-- <th class="datatableLinkButton">ACTION</th> -->
 								</tr>
@@ -86,15 +86,20 @@
 										<td>${transactionModel.merchantModel.lastName }</td>
 										<td>${transactionModel.merchantModel.emailId}</td>
 										<td>${transactionModel.merchantModel.mobileNo}</td>
-										<td>${transactionModel.merchantModel.eblId}</td>
+										<td>${transactionModel.bank}</td>  <%-- edited by Shaker on 16-sep-2018  --%>
 										<%-- <td>${transactionModel.merchantModel.eblUserName}</td> --%>
 										<td><fmt:formatNumber type = "number" maxFractionDigits = "2" value = "${transactionModel.balance}" /></td>
-										<td>${transactionModel.loyaltyPoint }</td>
 										<td>${transactionModel.grossAmount}</td>
 										<td>${transactionModel.amount }</td>
 										<td>${transactionModel.txnId }</td>
 										<td>${transactionModel.createdDate }</td>
-										<%-- <td>${transactionModel.status }</td> --%>
+										<td>
+											<div class="checkbox checkbox-primary">
+						                    	<input type="checkbox" data-name="claimed" id="txn${transactionModel.transactionId}">  
+												<label for="txn${transactionModel.transactionId}">Disburse</label>
+											</div>  
+						                </td>
+										<%-- <td>${transactionModel.transactionStatus }</td> --%>
 										<!-- <td><a href="" class="edit" data-url="edit-merchant"
 											data-target="merchantId"><i class="fa fa-pencil-square-o"></i></a>
 											<a href="" data-url="delete-sub-merchant"
@@ -102,6 +107,10 @@
 												class="fa fa-trash-o"></i></a></td> -->
 									</tr>
 								</c:forEach>
+								<div class="col-md-2 col-sm-4 col-xs-12">
+									<input type="button" class="claim btn btn-success myExcelDownload txnBtn" id="hideClaim" style="display: none;" value="Claim">
+							</div>
+							
 							</tbody>
 						</table>
 
@@ -147,7 +156,8 @@
         //var columnsVSTable = {"mobileNumber":"mobile_no"};
         var columnsVSTable = {"transactionId": "TRANSACTION_ID","grossAmount":"tm.GROSS_AMOUNT","merchantModel.emailId":"m.EMAIL_ID","merchantModel.mobileNo":"m.MOBILE_NO","merchantModel.eblId":"m.EBL_ID"};
         var columns = [
-		 { "data": "transactionId", "defaultContent": "", "visible": false },
+		 // edited by Shaker on 16-sep-2018
+         { "data": "transactionId", "defaultContent": "", "visible": false },
 		 { "data": "merchantModel.firstName", "defaultContent": "", "visible": false },
 		 { "data": "merchantModel.lastName", "defaultContent": "" },
 		 { "data": "merchantModel.emailId", "defaultContent": "" },
@@ -175,7 +185,7 @@
         	$(row).children(':eq(7)').html(dateParts[0] + ', ' + dateParts[1]); */
        }
         
-        drawDataTable($("#merchant"), urlConfigObj, columns, columnsVSTable, true, null, null, ${totalSize }, "downloadListClaimedMerchantExcel", changeActiveDeactive, 'rtp', $(".mySearch"), $(".myExcelDownload"), $(".mySelectOpt"));
+        drawDataTable($("#merchant"), urlConfigObj, columns, columnsVSTable, true, null, null, ${totalSize}, "downloadListClaimedMerchantExcel", changeActiveDeactive, 'rtp', $(".mySearch"), $(".myExcelDownload"), $(".mySelectOpt"));
         //drawDataTable($("#submerchant"), urlConfigObj, columns, columnsVSTable, true);
 	});
 	</script>

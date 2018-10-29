@@ -4,6 +4,12 @@
  */
 package com.lebupay.serviceImpl;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,10 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.lebupay.common.Encryption;
 import com.lebupay.common.MessageUtil;
 import com.lebupay.common.SendMail;
+import com.lebupay.common.SpiderEmailSender;
 import com.lebupay.dao.AdminDAO;
 import com.lebupay.dao.MerchantDao;
 import com.lebupay.dao.TicketDAO;
 import com.lebupay.dao.TransactionDAO;
+import com.lebupay.daoImpl.BaseDao;
 import com.lebupay.exception.MailSendException;
 import com.lebupay.model.AdminModel;
 import com.lebupay.model.CardTypeModel;
@@ -32,6 +40,8 @@ import com.lebupay.model.TicketModel;
 import com.lebupay.service.AdminService;
 import com.lebupay.validation.AdminValidation;
 
+import oracle.jdbc.OraclePreparedStatement;
+
 /**
  * This is AdminServiceImpl Class implements AdminService interface is used to perform operation on Admin Module.
  * @author Java Team
@@ -39,7 +49,7 @@ import com.lebupay.validation.AdminValidation;
  */
 @Transactional
 @Service
-public class AdminServiceImpl implements AdminService {
+public class AdminServiceImpl extends BaseDao implements AdminService {
 	
 	private static Logger logger = Logger.getLogger(AdminService.class);
 	
@@ -57,6 +67,9 @@ public class AdminServiceImpl implements AdminService {
 	
 	@Autowired
 	private SendMail sendMail;
+	
+	@Autowired
+	private SpiderEmailSender spiderEmailSender;
 	
 	@Autowired
 	private MerchantDao merchantDao;
@@ -115,9 +128,75 @@ public class AdminServiceImpl implements AdminService {
 						+ path + "/";
 				
 				// Send Email
+				String action="passwordResetAdmin";
+				String jsonReqName = "";
+				String jsonReqPath = "";
+				String templateID = "";
+				
+				Connection connection = oracleConnection.Connect();
+				OraclePreparedStatement  pst = null;
+				
+				try {
+						String sql = "select c.templateID," // 1
+								+ "t.req_file_name," // 2
+								+ "t.req_file_location " // 3
+								+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
+								+ "where c.action=:ACTION";
+						
+						System.out.println("template congfig fetching ==>> "+sql);
+						
+						pst = (OraclePreparedStatement) connection.prepareStatement(sql);
+						pst.setStringAtName("ACTION", action); // mobileNo
+						ResultSet rs =  pst.executeQuery();
+						if(rs.next()){
+							jsonReqName = rs.getString("req_file_name");
+							jsonReqPath = rs.getString("req_file_location");
+							templateID = rs.getString("templateID");
+						}
+				} finally {
+			          try{
+			           
+			           if(pst != null)
+			            if(!pst.isClosed())
+			            	pst.close();
+			           
+			          }catch(Exception e){
+			                 e.printStackTrace();
+			          }
+			
+			          try{
+			
+			           if(connection != null)
+			            if(!connection.isClosed())
+			             connection.close();
+			
+			          }catch(Exception e){
+			        	  e.printStackTrace();
+			          }      
+		       }
+				
+				String header = "Password reset link";
+				String resetLink = basePath+"admin/mail-forgot-password?adminId="+adminModel.getAdminId();
+				String emailMessageBody = "<p>Hi there!</p><p>We got a request to reset your password for your Payment Gateway account </p><p><a href="+resetLink+">Click here</a> to change your password. </p> <p>Payment GateWay Team </p>";
 				String subject = messageUtil.getBundle("forgotPassword.email.subject");
-				String messageBody = "<p>Hi there!</p><p>We got a request to reset your password for your Payment Gateway account </p><p><a href="+basePath+"admin/mail-forgot-password?adminId="+adminModel.getAdminId()+">Click here</a> <span class=\"aBn\" data-term=\"goog_2097303597\" tabindex=\"0\"></span> to change your password. </p> <p>Payment GateWay Team </p>";
-				sendMail.send(adminModel.getEmailId(), messageBody, subject);
+				
+				
+				String jsonReqString = getFileString(jsonReqName,jsonReqPath);
+				jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+				
+				jsonReqString= jsonReqString.replace("replace_header_here", header);
+				jsonReqString= jsonReqString.replace("replace_resetLink_here", resetLink);
+				jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
+				jsonReqString= jsonReqString.replace("replace_subject_here",subject);
+				jsonReqString= jsonReqString.replace("replace_to_here", adminModel.getEmailId());
+				jsonReqString= jsonReqString.replace("replace_cc_here", "");
+				jsonReqString= jsonReqString.replace("replace_bcc_here", "");
+				jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
+				
+				spiderEmailSender.sendEmail(jsonReqString,true);
+				
+				
+				//sendMail.send(adminModel.getEmailId(), messageBody, subject);
 				result = 1;
 			}
 		} catch (MailSendException e) {
@@ -593,5 +672,12 @@ public class AdminServiceImpl implements AdminService {
 		}
 		
 		return result;
+	}
+	
+	public String getFileString(String filename,String path) throws IOException {
+		File fl = new File(path+"/"+filename);
+		
+		String targetFileStr = new String(Files.readAllBytes(Paths.get(fl.getAbsolutePath())));
+		return targetFileStr;
 	}
 }

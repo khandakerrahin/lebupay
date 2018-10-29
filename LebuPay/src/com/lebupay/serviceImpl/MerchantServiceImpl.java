@@ -4,10 +4,15 @@
  */
 package com.lebupay.serviceImpl;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -24,21 +29,27 @@ import com.lebupay.common.Encryption;
 import com.lebupay.common.HTTPConnection;
 import com.lebupay.common.MessageUtil;
 import com.lebupay.common.SendMail;
+import com.lebupay.common.SpiderEmailSender;
 import com.lebupay.common.SendSMS;
 import com.lebupay.common.Util;
 import com.lebupay.dao.MerchantDao;
 import com.lebupay.dao.TicketDAO;
 import com.lebupay.dao.TransactionDAO;
+import com.lebupay.daoImpl.BaseDao;
 import com.lebupay.model.CardTypePercentageModel;
 import com.lebupay.model.CompanyModel;
 import com.lebupay.model.DataTableModel;
 import com.lebupay.model.EmailInvoicingModel;
 import com.lebupay.model.MerchantModel;
 import com.lebupay.model.PaymentModel;
+import com.lebupay.model.Status;
 import com.lebupay.model.TicketModel;
 import com.lebupay.model.TransactionModel;
+import com.lebupay.model.TypeModel;
 import com.lebupay.service.MerchantService;
 import com.lebupay.validation.MerchantValidation;
+
+import oracle.jdbc.OraclePreparedStatement;
 
 /**
  * This is MerchantServiceImpl Class implements MerchantService interface is used to perform operation on Merchant Module.
@@ -47,7 +58,7 @@ import com.lebupay.validation.MerchantValidation;
  */
 @Transactional
 @Service
-public class MerchantServiceImpl implements MerchantService {
+public class MerchantServiceImpl extends BaseDao implements MerchantService {
 
 	private static Logger logger = Logger.getLogger(MerchantServiceImpl.class);
 	
@@ -65,6 +76,9 @@ public class MerchantServiceImpl implements MerchantService {
 	
 	@Autowired
 	private SendMail sendMail;
+	
+	@Autowired
+	private SpiderEmailSender spiderEmailSender;
 	
 	@Autowired
 	private Encryption encryption;
@@ -117,9 +131,74 @@ public class MerchantServiceImpl implements MerchantService {
 		
 		try{
 			// Send Email
+			
+			String action="sendOTP";
+			String jsonReqName = "";
+			String jsonReqPath = "";
+			String templateID = "";
+			
+			Connection connection = oracleConnection.Connect();
+			OraclePreparedStatement  pst = null;
+			
+			try {
+					String sql = "select c.templateID," // 1
+							+ "t.req_file_name," // 2
+							+ "t.req_file_location " // 3
+							+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
+							+ "where c.action=:ACTION";
+					
+					System.out.println("template congfig fetching ==>> "+sql);
+					
+					pst = (OraclePreparedStatement) connection.prepareStatement(sql);
+					pst.setStringAtName("ACTION", action); // mobileNo
+					ResultSet rs =  pst.executeQuery();
+					if(rs.next()){
+						jsonReqName = rs.getString("req_file_name");
+						jsonReqPath = rs.getString("req_file_location");
+						templateID = rs.getString("templateID");
+					}
+			} finally {
+		          try{
+		           
+		           if(pst != null)
+		            if(!pst.isClosed())
+		            	pst.close();
+		           
+		          }catch(Exception e){
+		                 e.printStackTrace();
+		          }
+		
+		          try{
+		
+		           if(connection != null)
+		            if(!connection.isClosed())
+		             connection.close();
+		
+		          }catch(Exception e){
+		        	  e.printStackTrace();
+		          }      
+	       }
+			
+			String header = "OTP";
+			String emailMessageBody = "<p>Hi there!</p><p>Your new OTP is "+phoneCode+". </p> <p>Payment GateWay Team </p>";
 			String subject = messageUtil.getBundle("new.otp.email.subject");
-			String messageBody = "<p>Hi there!</p><p>Your new OTP is "+phoneCode+". </p> <p>Payment GateWay Team </p>";
-			sendMail.send(merchantModel.getEmailId(), messageBody, subject);
+			
+			
+			String jsonReqString = getFileString(jsonReqName,jsonReqPath);
+			jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+			
+			jsonReqString= jsonReqString.replace("replace_header_here", header);
+			jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
+			jsonReqString= jsonReqString.replace("replace_otp_here",""+phoneCode);
+			jsonReqString= jsonReqString.replace("replace_subject_here",subject);
+			jsonReqString= jsonReqString.replace("replace_to_here", merchantModel.getEmailId());
+			jsonReqString= jsonReqString.replace("replace_cc_here", "");
+			jsonReqString= jsonReqString.replace("replace_bcc_here", "");
+			jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
+			
+			spiderEmailSender.sendEmail(jsonReqString,true);
+			
+			//sendMail.send(merchantModel.getEmailId(), messageBody, subject);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -176,9 +255,74 @@ public class MerchantServiceImpl implements MerchantService {
 			try{
 				
 				// Send Email
+				String action="phoneVerification";
+				String jsonReqName = "";
+				String jsonReqPath = "";
+				String templateID = "";
+				
+				Connection connection = oracleConnection.Connect();
+				OraclePreparedStatement  pst = null;
+				
+				try {
+						String sql = "select c.templateID," // 1
+								+ "t.req_file_name," // 2
+								+ "t.req_file_location " // 3
+								+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
+								+ "where c.action=:ACTION";
+						
+						System.out.println("template congfig fetching ==>> "+sql);
+						
+						pst = (OraclePreparedStatement) connection.prepareStatement(sql);
+						pst.setStringAtName("ACTION", action); // mobileNo
+						ResultSet rs =  pst.executeQuery();
+						if(rs.next()){
+							jsonReqName = rs.getString("req_file_name");
+							jsonReqPath = rs.getString("req_file_location");
+							templateID = rs.getString("templateID");
+						}
+				} finally {
+			          try{
+			           
+			           if(pst != null)
+			            if(!pst.isClosed())
+			            	pst.close();
+			           
+			          }catch(Exception e){
+			                 e.printStackTrace();
+			          }
+			
+			          try{
+			
+			           if(connection != null)
+			            if(!connection.isClosed())
+			             connection.close();
+			
+			          }catch(Exception e){
+			        	  e.printStackTrace();
+			          }      
+		       }
+				
+				String header = "Payment Gateway account request";
+				String emailMessageBody = "<p>Hi there!</p><p>We got a request to create a new Payment Gateway account with your mobile number *****"+phoneNumber+" and email ID <a href=#>"+userEmail+"</a>. </p> <p>Payment GateWay Team </p>";
 				String subject = messageUtil.getBundle("signup.email.subject");
-				String messageBody = "<p>Hi there!</p><p>We got a request to create a new Payment Gateway account with your mobile number *****"+phoneNumber+" and email ID <a href=\"mailto:"+userEmail+"\" target=\"_blank\">"+userEmail+"</a>. </p> <p>Payment GateWay Team </p>";
-				sendMail.send(userEmail, messageBody, subject);
+				
+				
+				String jsonReqString = getFileString(jsonReqName,jsonReqPath);
+				jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+				
+				jsonReqString= jsonReqString.replace("replace_header_here", header);
+				jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
+				jsonReqString= jsonReqString.replace("replace_phoneNumber_here",""+phoneNumber);
+				jsonReqString= jsonReqString.replace("replace_email_here",""+userEmail);
+				jsonReqString= jsonReqString.replace("replace_subject_here",subject);
+				jsonReqString= jsonReqString.replace("replace_to_here", userEmail);
+				jsonReqString= jsonReqString.replace("replace_cc_here", "");
+				jsonReqString= jsonReqString.replace("replace_bcc_here", "");
+				jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
+				
+				spiderEmailSender.sendEmail(jsonReqString,true);
+
+				//sendMail.send(userEmail, messageBody, subject);
 				
 			} catch (Exception e) {
 				
@@ -259,11 +403,79 @@ public class MerchantServiceImpl implements MerchantService {
 				try{
 					
 					// Send Email
+					String action="passwordResetMerchant";
+					String jsonReqName = "";
+					String jsonReqPath = "";
+					String templateID = "";
+					
+					Connection connection = oracleConnection.Connect();
+					OraclePreparedStatement  pst = null;
+					
+					try {
+							String sql = "select c.templateID," // 1
+									+ "t.req_file_name," // 2
+									+ "t.req_file_location " // 3
+									+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
+									+ "where c.action=:ACTION";
+							
+							System.out.println("template congfig fetching ==>> "+sql);
+							
+							pst = (OraclePreparedStatement) connection.prepareStatement(sql);
+							pst.setStringAtName("ACTION", action); // mobileNo
+							ResultSet rs =  pst.executeQuery();
+							if(rs.next()){
+								jsonReqName = rs.getString("req_file_name");
+								jsonReqPath = rs.getString("req_file_location");
+								templateID = rs.getString("templateID");
+							}
+					} finally {
+				          try{
+				           
+				           if(pst != null)
+				            if(!pst.isClosed())
+				            	pst.close();
+				           
+				          }catch(Exception e){
+				                 e.printStackTrace();
+				          }
+				
+				          try{
+				
+				           if(connection != null)
+				            if(!connection.isClosed())
+				             connection.close();
+				
+				          }catch(Exception e){
+				        	  e.printStackTrace();
+				          }      
+			       }
+					
+					String header = "Password reset link";
 					String key = messageUtil.getBundle("secret.key");
 					String id = encryption.encode(key, String.valueOf(userId));
 					String subject = messageUtil.getBundle("forgotPassword.email.subject");
-					String messageBody = "<p>Hi there!</p><p>We got a request to reset your password for your Payment Gateway account </p><p><a href="+basePath+"merchant/mail-forgot-password?userId="+id+">Click here</a> <span class=\"aBn\" data-term=\"goog_2097303597\" tabindex=\"0\"></span> to change your password. </p> <p>Payment GateWay Team </p>";
-					sendMail.send(merchantModel.getEmailId(), messageBody, subject);
+					
+					String resetLink = basePath+"merchant/mail-forgot-password?userId="+id;
+					String emailMessageBody = "<p>Hi there!</p><p>We got a request to reset your password for your Payment Gateway account </p><p><a href="+resetLink+">Click here</a> to change your password. </p> <p>Payment GateWay Team </p>";
+					
+					
+					String jsonReqString = getFileString(jsonReqName,jsonReqPath);
+					jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+					
+					jsonReqString= jsonReqString.replace("replace_header_here", header);
+					jsonReqString= jsonReqString.replace("replace_resetLink_here", resetLink);
+					jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
+					jsonReqString= jsonReqString.replace("replace_subject_here",subject);
+					jsonReqString= jsonReqString.replace("replace_to_here", merchantModel.getEmailId());
+					jsonReqString= jsonReqString.replace("replace_cc_here", "");
+					jsonReqString= jsonReqString.replace("replace_bcc_here", "");
+					jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
+					
+					spiderEmailSender.sendEmail(jsonReqString,true);
+					
+					
+					
+					//sendMail.send(merchantModel.getEmailId(), messageBody, subject);
 					result = 1;
 					
 				} catch(Exception e){
@@ -417,9 +629,72 @@ public class MerchantServiceImpl implements MerchantService {
 			
 			try{
 				// Send Email
+				String action="sendOTP";
+				String jsonReqName = "";
+				String jsonReqPath = "";
+				String templateID = "";
+				
+				Connection connection = oracleConnection.Connect();
+				OraclePreparedStatement  pst = null;
+				
+				try {
+						String sql = "select c.templateID," // 1
+								+ "t.req_file_name," // 2
+								+ "t.req_file_location " // 3
+								+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
+								+ "where c.action=:ACTION";
+						
+						System.out.println("template congfig fetching ==>> "+sql);
+						
+						pst = (OraclePreparedStatement) connection.prepareStatement(sql);
+						pst.setStringAtName("ACTION", action); // mobileNo
+						ResultSet rs =  pst.executeQuery();
+						if(rs.next()){
+							jsonReqName = rs.getString("req_file_name");
+							jsonReqPath = rs.getString("req_file_location");
+							templateID = rs.getString("templateID");
+						}
+				} finally {
+			          try{
+			           
+			           if(pst != null)
+			            if(!pst.isClosed())
+			            	pst.close();
+			           
+			          }catch(Exception e){
+			                 e.printStackTrace();
+			          }
+			
+			          try{
+			
+			           if(connection != null)
+			            if(!connection.isClosed())
+			             connection.close();
+			
+			          }catch(Exception e){
+			        	  e.printStackTrace();
+			          }      
+		       }
+				
+				String header = "OTP";
+				String emailMessageBody = "<p>Hi there!</p><p>Your new OTP is "+phoneCode+". </p> <p>Payment GateWay Team </p>";
 				String subject = messageUtil.getBundle("new.otp.email.subject");
-				String messageBody = "<p>Hi there!</p><p>Your new OTP is "+phoneCode+". </p> <p>Payment GateWay Team </p>";
-				sendMail.send(merchantModel.getEmailId(), messageBody, subject);
+				
+				String jsonReqString = getFileString(jsonReqName,jsonReqPath);
+				jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+				
+				jsonReqString= jsonReqString.replace("replace_header_here", header);
+				jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
+				jsonReqString= jsonReqString.replace("replace_otp_here",""+phoneCode);
+				jsonReqString= jsonReqString.replace("replace_subject_here",subject);
+				jsonReqString= jsonReqString.replace("replace_to_here", merchantModel.getEmailId());
+				jsonReqString= jsonReqString.replace("replace_cc_here", "");
+				jsonReqString= jsonReqString.replace("replace_bcc_here", "");
+				jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
+				
+				spiderEmailSender.sendEmail(jsonReqString,true);
+				
+				//sendMail.send(merchantModel.getEmailId(), messageBody, subject);
 				
 			} catch (Exception e) {
 				
@@ -634,12 +909,83 @@ public class MerchantServiceImpl implements MerchantService {
 		int result = 0;	
 		try{
 			// Send Email
-			String messageBody = "<p>Dear "+emailInvoicingModel.getFirstName()+" "+emailInvoicingModel.getLastName()+"</p>"
+			String action="emailInvoicing";
+			String jsonReqName = "";
+			String jsonReqPath = "";
+			String templateID = "";
+			
+			Connection connection = oracleConnection.Connect();
+			OraclePreparedStatement  pst = null;
+			
+			try {
+					String sql = "select c.templateID," // 1
+							+ "t.req_file_name," // 2
+							+ "t.req_file_location " // 3
+							+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
+							+ "where c.action=:ACTION";
+					
+					System.out.println("template congfig fetching ==>> "+sql);
+					
+					pst = (OraclePreparedStatement) connection.prepareStatement(sql);
+					pst.setStringAtName("ACTION", action); // mobileNo
+					ResultSet rs =  pst.executeQuery();
+					if(rs.next()){
+						jsonReqName = rs.getString("req_file_name");
+						jsonReqPath = rs.getString("req_file_location");
+						templateID = rs.getString("templateID");
+					}
+			} finally {
+		          try{
+		           
+		           if(pst != null)
+		            if(!pst.isClosed())
+		            	pst.close();
+		           
+		          }catch(Exception e){
+		                 e.printStackTrace();
+		          }
+		
+		          try{
+		
+		           if(connection != null)
+		            if(!connection.isClosed())
+		             connection.close();
+		
+		          }catch(Exception e){
+		        	  e.printStackTrace();
+		          }      
+	       }
+			
+			String header = "Invoice";
+			String emailMessageBody = "<p>Dear "+emailInvoicingModel.getFirstName()+" "+emailInvoicingModel.getLastName()+"</p>"
 					+ "<p>Your Invoice No is "+emailInvoicingModel.getInvoiceNo()+" for the type "+emailInvoicingModel.getType()+"</p>"
 					+ " <p>Your Billing Amount is "+emailInvoicingModel.getBDT()+" "+emailInvoicingModel.getAmount()+"</p>"
 					+ " <p>"+emailInvoicingModel.getDescription()+"</p>"
 					+ " <p>Payment GateWay Team </p>";
-			sendMail.send(emailInvoicingModel.getEmailId(), messageBody, emailInvoicingModel.getSubject());
+			String subject = emailInvoicingModel.getSubject();
+			
+			
+			String jsonReqString = getFileString(jsonReqName,jsonReqPath);
+			jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+			
+			jsonReqString= jsonReqString.replace("replace_header_here", header);
+			jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
+			jsonReqString= jsonReqString.replace("replace_firstName_here",""+emailInvoicingModel.getFirstName());
+			jsonReqString= jsonReqString.replace("replace_lastName_here",""+emailInvoicingModel.getLastName());
+			jsonReqString= jsonReqString.replace("replace_invoiceNo_here", emailInvoicingModel.getInvoiceNo());
+			jsonReqString= jsonReqString.replace("replace_type_here", emailInvoicingModel.getType());
+			jsonReqString= jsonReqString.replace("replace_BDT_here", emailInvoicingModel.getBDT());
+			jsonReqString= jsonReqString.replace("replace_amount_here", emailInvoicingModel.getAmount());
+			jsonReqString= jsonReqString.replace("replace_description_here", emailInvoicingModel.getDescription());
+			jsonReqString= jsonReqString.replace("replace_subject_here",subject);
+			jsonReqString= jsonReqString.replace("replace_to_here", emailInvoicingModel.getEmailId());
+			jsonReqString= jsonReqString.replace("replace_cc_here", "");
+			jsonReqString= jsonReqString.replace("replace_bcc_here", "");
+			jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
+			
+			spiderEmailSender.sendEmail(jsonReqString,true);
+			
+			//sendMail.send(emailInvoicingModel.getEmailId(), messageBody, emailInvoicingModel.getSubject());
 			result = 1;
 		
 		} catch (Exception e) {
@@ -723,16 +1069,80 @@ public class MerchantServiceImpl implements MerchantService {
 					IE.printStackTrace();
 				}
 				
-				
 				if(emailInvoicingModel.getPluggers().contains("email")) {
 					
 					try{
 						// Send Email
-						String messageBody = "<p>Dear "+emailInvoicingModel.getFirstName()+" "+emailInvoicingModel.getLastName()+"</p>"
+						String action="payViaLink";
+						String jsonReqName = "";
+						String jsonReqPath = "";
+						String templateID = "";
+						
+						Connection connection = oracleConnection.Connect();
+						OraclePreparedStatement  pst = null;
+						
+						try {
+								String sql = "select c.templateID," // 1
+										+ "t.req_file_name," // 2
+										+ "t.req_file_location " // 3
+										+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
+										+ "where c.action=:ACTION";
+								
+								System.out.println("template congfig fetching ==>> "+sql);
+								
+								pst = (OraclePreparedStatement) connection.prepareStatement(sql);
+								pst.setStringAtName("ACTION", action); // mobileNo
+								ResultSet rs =  pst.executeQuery();
+								if(rs.next()){
+									jsonReqName = rs.getString("req_file_name");
+									jsonReqPath = rs.getString("req_file_location");
+									templateID = rs.getString("templateID");
+								}
+						} finally {
+					          try{
+					           
+					           if(pst != null)
+					            if(!pst.isClosed())
+					            	pst.close();
+					           
+					          }catch(Exception e){
+					                 e.printStackTrace();
+					          }
+					
+					          try{
+					
+					           if(connection != null)
+					            if(!connection.isClosed())
+					             connection.close();
+					
+					          }catch(Exception e){
+					        	  e.printStackTrace();
+					          }      
+				       }
+						
+						String header = "Payment Link";
+						String emailMessageBody = "<p>Dear "+emailInvoicingModel.getFirstName()+" "+emailInvoicingModel.getLastName()+",</p>"
 								+ "<p>Your Payment Link is: "+paymentLink+"</p>"
 								+ " <p>"+emailInvoicingModel.getDescription()+"</p>"
 								+ " <p>Payment GateWay Team </p>";
-						sendMail.send(emailInvoicingModel.getEmailId(), messageBody, emailInvoicingModel.getSubject());
+						
+						String jsonReqString = getFileString(jsonReqName,jsonReqPath);
+						jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+						
+						jsonReqString= jsonReqString.replace("replace_header_here", header);
+						jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
+						jsonReqString= jsonReqString.replace("replace_firstName_here", emailInvoicingModel.getFirstName());
+						jsonReqString= jsonReqString.replace("replace_lastName_here", emailInvoicingModel.getLastName());
+						jsonReqString= jsonReqString.replace("replace_paymentLink_here", paymentLink);
+						jsonReqString= jsonReqString.replace("replace_description_here", emailInvoicingModel.getDescription());
+						jsonReqString= jsonReqString.replace("replace_subject_here", emailInvoicingModel.getSubject());
+						jsonReqString= jsonReqString.replace("replace_to_here", emailInvoicingModel.getEmailId());
+						jsonReqString= jsonReqString.replace("replace_cc_here", "");
+						jsonReqString= jsonReqString.replace("replace_bcc_here", "");
+						jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
+						
+						spiderEmailSender.sendEmail(jsonReqString,true);
+						
 						result = 1;
 						
 						returnMap.put("result", result);
@@ -829,6 +1239,13 @@ public class MerchantServiceImpl implements MerchantService {
 	   }
 		
 		return cardTypePercentageModels;
+	}
+	
+	public String getFileString(String filename,String path) throws IOException {
+		File fl = new File(path+"/"+filename);
+		
+		String targetFileStr = new String(Files.readAllBytes(Paths.get(fl.getAbsolutePath())));
+		return targetFileStr;
 	}
 	
 }

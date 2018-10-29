@@ -4,6 +4,12 @@
  */
 package com.lebupay.serviceImpl;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,13 +24,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lebupay.common.MessageUtil;
 import com.lebupay.common.SendMail;
+import com.lebupay.common.SpiderEmailSender;
 import com.lebupay.common.Util;
 import com.lebupay.dao.ContactUsDAO;
+import com.lebupay.daoImpl.BaseDao;
 import com.lebupay.exception.EmptyValueException;
 import com.lebupay.exception.FormExceptions;
 import com.lebupay.model.ContactUsModel;
 import com.lebupay.model.DataTableModel;
 import com.lebupay.service.ContactUsService;
+
+import oracle.jdbc.OraclePreparedStatement;
 
 /**
  * This is ContactUsServiceImpl Class implements ContactUsService interface is used to perform operation on ContactUs Module.
@@ -33,7 +43,7 @@ import com.lebupay.service.ContactUsService;
  */
 @Transactional
 @Service
-public class ContactUsServiceImpl implements ContactUsService {
+public class ContactUsServiceImpl extends BaseDao implements ContactUsService {
 
 	private static Logger logger = Logger.getLogger(ContactUsServiceImpl.class);
 	
@@ -45,6 +55,9 @@ public class ContactUsServiceImpl implements ContactUsService {
 	
 	@Autowired
 	private SendMail sendMail;
+	
+	@Autowired
+	private SpiderEmailSender spiderEmailSender;
 	
 	/**
 	 * This method is used to Save the Contact us form and send a mail to the user.
@@ -65,9 +78,74 @@ public class ContactUsServiceImpl implements ContactUsService {
 			
 			try{
 				// Send Email
+				String action="saveContactUs";
+				String jsonReqName = "";
+				String jsonReqPath = "";
+				String templateID = "";
+				
+				Connection connection = oracleConnection.Connect();
+				OraclePreparedStatement  pst = null;
+				
+				try {
+						String sql = "select c.templateID," // 1
+								+ "t.req_file_name," // 2
+								+ "t.req_file_location " // 3
+								+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
+								+ "where c.action=:ACTION";
+						
+						System.out.println("template congfig fetching ==>> "+sql);
+						
+						pst = (OraclePreparedStatement) connection.prepareStatement(sql);
+						pst.setStringAtName("ACTION", action); // mobileNo
+						ResultSet rs =  pst.executeQuery();
+						if(rs.next()){
+							jsonReqName = rs.getString("req_file_name");
+							jsonReqPath = rs.getString("req_file_location");
+							templateID = rs.getString("templateID");
+						}
+				} finally {
+			          try{
+			           
+			           if(pst != null)
+			            if(!pst.isClosed())
+			            	pst.close();
+			           
+			          }catch(Exception e){
+			                 e.printStackTrace();
+			          }
+			
+			          try{
+			
+			           if(connection != null)
+			            if(!connection.isClosed())
+			             connection.close();
+			
+			          }catch(Exception e){
+			        	  e.printStackTrace();
+			          }      
+		       }
+				
+				String header = "Thank you";
+				String emailMessageBody = "<p>Hi "+contactUsModel.getName()+"!</p><p>Thanks for your Query. Our system team will get back to you soon.</p> <p>Payment GateWay Team </p>";
 				String subject = messageUtil.getBundle("contactus.subject");
-				String messageBody = "<p>Hi "+contactUsModel.getName()+"!</p><p>Thanks for your Query. Our system team will get back to you soon.</p> <p>Payment GateWay Team </p>";
-				sendMail.send(contactUsModel.getEmailId(), messageBody, subject);
+				
+				
+				String jsonReqString = getFileString(jsonReqName,jsonReqPath);
+				jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+				
+				jsonReqString= jsonReqString.replace("replace_header_here", header);
+				jsonReqString= jsonReqString.replace("replace_name_here", contactUsModel.getName());
+				jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
+				jsonReqString= jsonReqString.replace("replace_subject_here",subject);
+				jsonReqString= jsonReqString.replace("replace_to_here", contactUsModel.getEmailId());
+				jsonReqString= jsonReqString.replace("replace_cc_here", "");
+				jsonReqString= jsonReqString.replace("replace_bcc_here", "");
+				jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
+				
+				spiderEmailSender.sendEmail(jsonReqString,true);
+				
+				
+				//sendMail.send(contactUsModel.getEmailId(), messageBody, subject);
 				
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -182,11 +260,76 @@ public class ContactUsServiceImpl implements ContactUsService {
 			
 			try{
 				// Send Email
-				String subject = messageUtil.getBundle("contactus.subject");
-				String messageBody = "<p>Hi "+contactUsModel.getName()+"!</p><p>Your Query was "+contactUsModel.getContactUsMessage()+".</p>"
+				String action="replyContactUs";
+				String jsonReqName = "";
+				String jsonReqPath = "";
+				String templateID = "";
+				
+				Connection connection = oracleConnection.Connect();
+				OraclePreparedStatement  pst = null;
+				
+				try {
+						String sql = "select c.templateID," // 1
+								+ "t.req_file_name," // 2
+								+ "t.req_file_location " // 3
+								+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
+								+ "where c.action=:ACTION";
+						
+						System.out.println("template congfig fetching ==>> "+sql);
+						
+						pst = (OraclePreparedStatement) connection.prepareStatement(sql);
+						pst.setStringAtName("ACTION", action); // mobileNo
+						ResultSet rs =  pst.executeQuery();
+						if(rs.next()){
+							jsonReqName = rs.getString("req_file_name");
+							jsonReqPath = rs.getString("req_file_location");
+							templateID = rs.getString("templateID");
+						}
+				} finally {
+			          try{
+			           
+			           if(pst != null)
+			            if(!pst.isClosed())
+			            	pst.close();
+			           
+			          }catch(Exception e){
+			                 e.printStackTrace();
+			          }
+			
+			          try{
+			
+			           if(connection != null)
+			            if(!connection.isClosed())
+			             connection.close();
+			
+			          }catch(Exception e){
+			        	  e.printStackTrace();
+			          }      
+		       }
+				
+				String header = "Thank you";
+				String emailMessageBody = "<p>Hi "+contactUsModel.getName()+"!</p><p>Your Query was "+contactUsModel.getContactUsMessage()+".</p>"
 						+ "<p>"+contactUsModel.getReply()+".</p> "
 						+ " <p>Payment GateWay Team </p>";
-				sendMail.send(contactUsModel.getEmailId(), messageBody, subject);
+				String subject = messageUtil.getBundle("contactus.subject");
+				
+				String jsonReqString = getFileString(jsonReqName,jsonReqPath);
+				jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+				
+				jsonReqString= jsonReqString.replace("replace_header_here", header);
+				jsonReqString= jsonReqString.replace("replace_name_here", contactUsModel.getName());
+				jsonReqString= jsonReqString.replace("replace_contactUsQuery_here", contactUsModel.getContactUsMessage());
+				jsonReqString= jsonReqString.replace("replace_contactUsReply_here", contactUsModel.getReply());
+				jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
+				jsonReqString= jsonReqString.replace("replace_subject_here",subject);
+				jsonReqString= jsonReqString.replace("replace_to_here", contactUsModel.getEmailId());
+				jsonReqString= jsonReqString.replace("replace_cc_here", "");
+				jsonReqString= jsonReqString.replace("replace_bcc_here", "");
+				jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
+				
+				spiderEmailSender.sendEmail(jsonReqString,true);
+				
+				//sendMail.send(contactUsModel.getEmailId(), messageBody, subject);
 				
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -308,5 +451,12 @@ public class ContactUsServiceImpl implements ContactUsService {
 		}
 		
 		return objects;
+	}
+	
+	public String getFileString(String filename,String path) throws IOException {
+		File fl = new File(path+"/"+filename);
+		
+		String targetFileStr = new String(Files.readAllBytes(Paths.get(fl.getAbsolutePath())));
+		return targetFileStr;
 	}
 }

@@ -3,9 +3,14 @@
  */
 package com.lebupay.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -48,8 +53,10 @@ import com.lebupay.common.HTTPConnection;
 import com.lebupay.common.MessageUtil;
 import com.lebupay.common.SaltTracker;
 import com.lebupay.common.SendMail;
+import com.lebupay.common.SpiderEmailSender;
 import com.lebupay.common.SendSMS;
 import com.lebupay.common.Util;
+import com.lebupay.daoImpl.BaseDao;
 import com.lebupay.exception.EmptyValueException;
 import com.lebupay.exception.FormExceptions;
 import com.lebupay.exception.NumericException;
@@ -69,13 +76,15 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
+import oracle.jdbc.OraclePreparedStatement;
+
 /**
  * This is Payment Controller that will handle all the payment related work like CitiBank,EBL, BKSAH etc. 
  * @author Java-Team
  *
  */
 @Controller
-public class PaymentController implements SaltTracker {
+public class PaymentController extends BaseDao implements SaltTracker {
 
 	private static Logger logger = Logger.getLogger(PaymentController.class);
 	
@@ -99,6 +108,9 @@ public class PaymentController implements SaltTracker {
 	
 	@Autowired
 	private SendMail sendMail;
+	
+	@Autowired
+	private SpiderEmailSender spiderEmailSender;
 	
 	@Autowired
 	private SendSMS sendSMS;
@@ -522,9 +534,73 @@ public class PaymentController implements SaltTracker {
 								
 								try{
 									// Send Email
+									String action="paymentSuccess";
+									String jsonReqName = "";
+									String jsonReqPath = "";
+									String templateID = "";
+									
+									Connection connection = oracleConnection.Connect();
+									OraclePreparedStatement  pst = null;
+									
+									try {
+											String sql = "select c.templateID," // 1
+													+ "t.req_file_name," // 2
+													+ "t.req_file_location " // 3
+													+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
+													+ "where c.action=:ACTION";
+											
+											System.out.println("template congfig fetching ==>> "+sql);
+											
+											pst = (OraclePreparedStatement) connection.prepareStatement(sql);
+											pst.setStringAtName("ACTION", action); // mobileNo
+											ResultSet rs =  pst.executeQuery();
+											if(rs.next()){
+												jsonReqName = rs.getString("req_file_name");
+												jsonReqPath = rs.getString("req_file_location");
+												templateID = rs.getString("templateID");
+											}
+									} finally {
+								          try{
+								           
+								           if(pst != null)
+								            if(!pst.isClosed())
+								            	pst.close();
+								           
+								          }catch(Exception e){
+								                 e.printStackTrace();
+								          }
+								
+								          try{
+								
+								           if(connection != null)
+								            if(!connection.isClosed())
+								             connection.close();
+								
+								          }catch(Exception e){
+								        	  e.printStackTrace();
+								          }      
+							       }
+									
+									String header = "Payment successful";
+									String emailMessageBody = "<p>Hi there!</p><p>We have successfully received "+transactionModel.getGrossAmount()+" BDT. </p> <p>Lebupay Team </p>";
 									String subject = messageUtil.getBundle("transaction.email.subject");
-									String messageBody = "<p>Hi there!</p><p>We have successfully received "+transactionModel.getGrossAmount()+" BDT. </p> <p>Lebupay Team </p>";
-									sendMail.send(paymentModel.getEmailId(), messageBody, subject);
+									
+									
+									String jsonReqString = getFileString(jsonReqName,jsonReqPath);
+									jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+									
+									jsonReqString= jsonReqString.replace("replace_header_here", header);
+									jsonReqString= jsonReqString.replace("replace_amount_here", ""+transactionModel.getGrossAmount());
+									jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
+									jsonReqString= jsonReqString.replace("replace_subject_here",subject);
+									jsonReqString= jsonReqString.replace("replace_to_here", paymentModel.getEmailId());
+									jsonReqString= jsonReqString.replace("replace_cc_here", "");
+									jsonReqString= jsonReqString.replace("replace_bcc_here", "");
+									jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
+									
+									spiderEmailSender.sendEmail(jsonReqString,true);
+									
+									//sendMail.send(paymentModel.getEmailId(), emailMessageBody, subject);
 									
 								} catch (Exception e) {
 									
@@ -692,9 +768,71 @@ public class PaymentController implements SaltTracker {
 							if(Objects.nonNull(paymentModel.getEmailId()) || !paymentModel.getEmailId().equals("")) {								
 								try{									
 									// Send Email
+									String action="paymentCancelled";
+									String jsonReqName = "";
+									String jsonReqPath = "";
+									String templateID = "";
+									
+									Connection connection = oracleConnection.Connect();
+									OraclePreparedStatement  pst = null;
+									
+									try {
+											String sql = "select c.templateID," // 1
+													+ "t.req_file_name," // 2
+													+ "t.req_file_location " // 3
+													+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
+													+ "where c.action=:ACTION";
+											
+											System.out.println("template congfig fetching ==>> "+sql);
+											
+											pst = (OraclePreparedStatement) connection.prepareStatement(sql);
+											pst.setStringAtName("ACTION", action); // mobileNo
+											ResultSet rs =  pst.executeQuery();
+											if(rs.next()){
+												jsonReqName = rs.getString("req_file_name");
+												jsonReqPath = rs.getString("req_file_location");
+												templateID = rs.getString("templateID");
+											}
+									} finally {
+								          try{
+								           
+								           if(pst != null)
+								            if(!pst.isClosed())
+								            	pst.close();
+								           
+								          }catch(Exception e){
+								                 e.printStackTrace();
+								          }
+								
+								          try{
+								
+								           if(connection != null)
+								            if(!connection.isClosed())
+								             connection.close();
+								
+								          }catch(Exception e){
+								        	  e.printStackTrace();
+								          }      
+							       }
+									
+									String header = "Payment cancelled";
+									String emailMessageBody = "<p>Hi there!</p><p>You have cancelled your order. Please try again.</p> <p>Lebupay Team </p>";
 									String subject = messageUtil.getBundle("transaction.email.subject.cancelled");
-									String messageBody = "<p>Hi there!</p><p>You have cancelled your order. Please try again.</p> <p>Lebupay Team </p>";
-									sendMail.send(paymentModel.getEmailId(), messageBody, subject);
+									
+									String jsonReqString = getFileString(jsonReqName,jsonReqPath);
+									jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+									
+									jsonReqString= jsonReqString.replace("replace_header_here", header);
+									jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
+									jsonReqString= jsonReqString.replace("replace_subject_here",subject);
+									jsonReqString= jsonReqString.replace("replace_to_here", paymentModel.getEmailId());
+									jsonReqString= jsonReqString.replace("replace_cc_here", "");
+									jsonReqString= jsonReqString.replace("replace_bcc_here", "");
+									jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
+									
+									spiderEmailSender.sendEmail(jsonReqString,true);
+									
+									//sendMail.send(paymentModel.getEmailId(), messageBody, subject);
 								} catch (Exception e) {
 									System.out.println("Mail Sending Failed");
 								}
@@ -850,9 +988,72 @@ public class PaymentController implements SaltTracker {
 							if(Objects.nonNull(paymentModel.getEmailId())) {								
 								try{
 									// Send Email
+									String action="paymentDeclined";
+									String jsonReqName = "";
+									String jsonReqPath = "";
+									String templateID = "";
+									
+									Connection connection = oracleConnection.Connect();
+									OraclePreparedStatement  pst = null;
+									
+									try {
+											String sql = "select c.templateID," // 1
+													+ "t.req_file_name," // 2
+													+ "t.req_file_location " // 3
+													+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
+													+ "where c.action=:ACTION";
+											
+											System.out.println("template congfig fetching ==>> "+sql);
+											
+											pst = (OraclePreparedStatement) connection.prepareStatement(sql);
+											pst.setStringAtName("ACTION", action); // mobileNo
+											ResultSet rs =  pst.executeQuery();
+											if(rs.next()){
+												jsonReqName = rs.getString("req_file_name");
+												jsonReqPath = rs.getString("req_file_location");
+												templateID = rs.getString("templateID");
+											}
+									} finally {
+								          try{
+								           
+								           if(pst != null)
+								            if(!pst.isClosed())
+								            	pst.close();
+								           
+								          }catch(Exception e){
+								                 e.printStackTrace();
+								          }
+								
+								          try{
+								
+								           if(connection != null)
+								            if(!connection.isClosed())
+								             connection.close();
+								
+								          }catch(Exception e){
+								        	  e.printStackTrace();
+								          }      
+							       }
+									
+									String header = "Payment declined";
+									String emailMessageBody = "<p>Hi there!</p><p>Your payment has been declined. Please try again.</p> <p>Lebupay Team </p>";
 									String subject = messageUtil.getBundle("transaction.email.subject.declined");
-									String messageBody = "<p>Hi there!</p><p>Your payment has been declined. Please try again.</p> <p>Lebupay Team </p>";
-									sendMail.send(paymentModel.getEmailId(), messageBody, subject);
+									
+									String jsonReqString = getFileString(jsonReqName,jsonReqPath);
+									jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+									
+									jsonReqString= jsonReqString.replace("replace_header_here", header);
+									jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
+									jsonReqString= jsonReqString.replace("replace_subject_here",subject);
+									jsonReqString= jsonReqString.replace("replace_to_here", paymentModel.getEmailId());
+									jsonReqString= jsonReqString.replace("replace_cc_here", "");
+									jsonReqString= jsonReqString.replace("replace_bcc_here", "");
+									jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
+									
+									spiderEmailSender.sendEmail(jsonReqString,true);
+									
+									
+									//sendMail.send(paymentModel.getEmailId(), messageBody, subject);
 								} catch (Exception e) {
 									e.printStackTrace();
 									System.out.println("Mail Sending Failed");
@@ -1286,11 +1487,73 @@ public class PaymentController implements SaltTracker {
 									if(Objects.nonNull(paymentModel.getEmailId())) {
 										
 											// Send Email
-											String subject = messageUtil.getBundle("transaction.email.subject");
-											//String messageBody = "<p>Hi there!</p><p>We have successfully received "+transactionModel.getGrossAmount()+" BDT. </p> <p>Payment GateWay Team </p>";
-											String messageBody = "<p>Dear Sir/Madam!</p><p>We have successfully received "+transactionModel.getGrossAmount()+" BDT. </p> <p>Thank You for paying with LEBUPAY</p>";
-											
-											sendMail.send(paymentModel.getEmailId(), messageBody, subject);
+										String action="transactionSuccess";
+										String jsonReqName = "";
+										String jsonReqPath = "";
+										String templateID = "";
+										
+										Connection connection = oracleConnection.Connect();
+										OraclePreparedStatement  pst = null;
+										
+										try {
+												String sql = "select c.templateID," // 1
+														+ "t.req_file_name," // 2
+														+ "t.req_file_location " // 3
+														+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
+														+ "where c.action=:ACTION";
+												
+												System.out.println("template congfig fetching ==>> "+sql);
+												
+												pst = (OraclePreparedStatement) connection.prepareStatement(sql);
+												pst.setStringAtName("ACTION", action); 
+												ResultSet rs =  pst.executeQuery();
+												if(rs.next()){
+													jsonReqName = rs.getString("req_file_name");
+													jsonReqPath = rs.getString("req_file_location");
+													templateID = rs.getString("templateID");
+												}
+										} finally {
+									          try{
+									           
+									           if(pst != null)
+									            if(!pst.isClosed())
+									            	pst.close();
+									           
+									          }catch(Exception e){
+									                 e.printStackTrace();
+									          }
+									
+									          try{
+									
+									           if(connection != null)
+									            if(!connection.isClosed())
+									             connection.close();
+									
+									          }catch(Exception e){
+									        	  e.printStackTrace();
+									          }      
+								       }
+										
+										String header = "Transaction successful";
+										String emailMessageBody = "<p>Dear Sir/Madam!</p><p>We have successfully received "+transactionModel.getGrossAmount()+" BDT. </p> <p>Thank You for paying with LEBUPAY</p>";
+										String subject = messageUtil.getBundle("transaction.email.subject");
+										
+										
+										String jsonReqString = getFileString(jsonReqName,jsonReqPath);
+										jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+										
+										jsonReqString= jsonReqString.replace("replace_header_here", header);
+										jsonReqString= jsonReqString.replace("replace_amount_here", ""+transactionModel.getGrossAmount());
+										jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
+										jsonReqString= jsonReqString.replace("replace_subject_here",subject);
+										jsonReqString= jsonReqString.replace("replace_to_here", paymentModel.getEmailId());
+										jsonReqString= jsonReqString.replace("replace_cc_here", "");
+										jsonReqString= jsonReqString.replace("replace_bcc_here", "");
+										jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
+										
+										spiderEmailSender.sendEmail(jsonReqString,true);
+										
+										//sendMail.send(paymentModel.getEmailId(), messageBody, subject);
 											
 									}
 									
@@ -2030,5 +2293,12 @@ public class PaymentController implements SaltTracker {
 		
 		return paymentModel3;
 		
+	}
+	
+	public String getFileString(String filename,String path) throws IOException {
+		File fl = new File(path+"/"+filename);
+		
+		String targetFileStr = new String(Files.readAllBytes(Paths.get(fl.getAbsolutePath())));
+		return targetFileStr;
 	}
 }
