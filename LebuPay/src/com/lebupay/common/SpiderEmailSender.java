@@ -9,13 +9,19 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.ResultSet;
 
 import org.apache.http.client.ClientProtocolException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.lebupay.daoImpl.BaseDao;
+
+import oracle.jdbc.OraclePreparedStatement;
+
 @Component
-public class SpiderEmailSender {
+public class SpiderEmailSender extends BaseDao {
 	
 	@Async
 	public void sendEmail(String emailRequest, Boolean template) {
@@ -108,5 +114,56 @@ public class SpiderEmailSender {
 			if (conn != null)
 				conn.disconnect();
 		}
+	}
+	
+	public String[] fetchTempConfig(String action) throws Exception {
+		String [] retval;
+		String jsonReqName = "";
+		String jsonReqPath = "";
+		String templateID = "";
+		
+		Connection connection = oracleConnection.Connect();
+		OraclePreparedStatement  pst = null;
+		
+		try {
+				String sql = "select c.templateID," // 1
+						+ "t.req_file_name," // 2
+						+ "t.req_file_location " // 3
+						+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
+						+ "where c.action=:ACTION";
+				
+				System.out.println("template congfig fetching ==>> "+sql);
+				
+				pst = (OraclePreparedStatement) connection.prepareStatement(sql);
+				pst.setStringAtName("ACTION", action); // mobileNo
+				ResultSet rs =  pst.executeQuery();
+				if(rs.next()){
+					jsonReqName = rs.getString("req_file_name");
+					jsonReqPath = rs.getString("req_file_location");
+					templateID = rs.getString("templateID");
+				}
+		} finally {
+	          try{
+	           
+	           if(pst != null)
+	            if(!pst.isClosed())
+	            	pst.close();
+	           
+	          }catch(Exception e){
+	                 e.printStackTrace();
+	          }
+	
+	          try{
+	
+	           if(connection != null)
+	            if(!connection.isClosed())
+	             connection.close();
+	
+	          }catch(Exception e){
+	        	  e.printStackTrace();
+	          }      
+		}
+		retval = new String[] {jsonReqName,jsonReqPath,templateID};
+		return retval;
 	}
 }

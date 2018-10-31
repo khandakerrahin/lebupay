@@ -1585,9 +1585,11 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ "m.EBL_PASSWORD," // 20
 					+ "m.EBL_ID, " // 21
 					+ "GROSS_AMOUNT, " //22
-					+ "m.CITYBANK_MERCHANT_ID" // 23
+					+ "m.CITYBANK_MERCHANT_ID," // 23
+					+ "om.CUTOMER_DETAILS " // 24
+					
 					// TODO user name , password and ebl id
-					+ " from TRANSACTION_MASTER tm, MERCHANT_MASTER m where tm.MERCHANT_ID = m.MERCHANT_ID and tm.TRANSACTION_ID =:TRANSACTION_ID order by tm.CREATED_DATE desc";
+					+ " from TRANSACTION_MASTER tm, ORDER_MASTER om, MERCHANT_MASTER m where tm.MERCHANT_ID = m.MERCHANT_ID and tm.ORDER_ID = om.ORDER_ID and tm.TRANSACTION_ID =:TRANSACTION_ID order by tm.CREATED_DATE desc";
 			
 				System.out.println("Fetch Transaction By ID ==>> "+sql);
 				
@@ -1629,6 +1631,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					merchantModel.setEblId(rs.getString(21));
 					transactionModel.setGrossAmount(rs.getDouble(22));
 					merchantModel.setCityMerchantId(rs.getString(23));
+					transactionModel.setCustomerDetails(rs.getString(24));
 					transactionModel.setMerchantModel(merchantModel);
 					
 				}

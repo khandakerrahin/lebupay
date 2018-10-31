@@ -39,6 +39,9 @@ public class TransactionModel extends CommonModel {
 	private String card_brand;
 	private String sourceOfFunds_type;
 	private String customer_firstName;
+	private String customer_lastName;
+	private String customer_email;
+	private String customer_details;
 	private String device_browser;
 	private String device_ipAddress;
 	private String acsEci_value;
@@ -47,7 +50,6 @@ public class TransactionModel extends CommonModel {
 	private String transaction_source;
 	private String result;
 	private String creationTime;
-	private String customer_lastName;
 	private String totalRefundedAmount;
 	private String acquirer_batch;
 	private String description;
@@ -113,7 +115,7 @@ public class TransactionModel extends CommonModel {
 	public void setTxnId(String txnId) {
 		this.txnId = txnId;
 	}
-
+	
 	public String getResponseMessage() {
 		return responseMessage;
 	}
@@ -362,15 +364,7 @@ public class TransactionModel extends CommonModel {
 	public void setSourceOfFunds_type(String sourceOfFunds_type) {
 		this.sourceOfFunds_type = sourceOfFunds_type;
 	}
-
-	public String getCustomer_firstName() {
-		return customer_firstName;
-	}
-
-	public void setCustomer_firstName(String customer_firstName) {
-		this.customer_firstName = customer_firstName;
-	}
-
+	
 	public String getDevice_browser() {
 		return device_browser;
 	}
@@ -435,6 +429,14 @@ public class TransactionModel extends CommonModel {
 		this.creationTime = creationTime;
 	}
 
+	public String getCustomer_firstName() {
+		return customer_firstName;
+	}
+
+	public void setCustomer_firstName(String customer_firstName) {
+		this.customer_firstName = customer_firstName;
+	}
+
 	public String getCustomer_lastName() {
 		return customer_lastName;
 	}
@@ -443,6 +445,22 @@ public class TransactionModel extends CommonModel {
 		this.customer_lastName = customer_lastName;
 	}
 
+	public String getCustomer_email() {
+		return customer_email;
+	}
+
+	public void setCustomer_email(String customer_email) {
+		this.customer_email= customer_email;
+	}
+	
+	public String getCustomerDetails() {
+		 return customer_details;
+	}
+	
+	public void setCustomerDetails(String customer_details) {
+		this.customer_details= customer_details;
+	}
+	
 	public String getTotalRefundedAmount() {
 		return totalRefundedAmount;
 	}

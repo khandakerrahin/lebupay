@@ -133,51 +133,12 @@ public class MerchantServiceImpl extends BaseDao implements MerchantService {
 			// Send Email
 			
 			String action="sendOTP";
-			String jsonReqName = "";
-			String jsonReqPath = "";
-			String templateID = "";
+
+			String [] retval = spiderEmailSender.fetchTempConfig(action);
 			
-			Connection connection = oracleConnection.Connect();
-			OraclePreparedStatement  pst = null;
-			
-			try {
-					String sql = "select c.templateID," // 1
-							+ "t.req_file_name," // 2
-							+ "t.req_file_location " // 3
-							+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
-							+ "where c.action=:ACTION";
-					
-					System.out.println("template congfig fetching ==>> "+sql);
-					
-					pst = (OraclePreparedStatement) connection.prepareStatement(sql);
-					pst.setStringAtName("ACTION", action); // mobileNo
-					ResultSet rs =  pst.executeQuery();
-					if(rs.next()){
-						jsonReqName = rs.getString("req_file_name");
-						jsonReqPath = rs.getString("req_file_location");
-						templateID = rs.getString("templateID");
-					}
-			} finally {
-		          try{
-		           
-		           if(pst != null)
-		            if(!pst.isClosed())
-		            	pst.close();
-		           
-		          }catch(Exception e){
-		                 e.printStackTrace();
-		          }
-		
-		          try{
-		
-		           if(connection != null)
-		            if(!connection.isClosed())
-		             connection.close();
-		
-		          }catch(Exception e){
-		        	  e.printStackTrace();
-		          }      
-	       }
+			String jsonReqName = retval[0];
+			String jsonReqPath = retval[1];
+			String templateID = retval[2];
 			
 			String header = "OTP";
 			String emailMessageBody = "<p>Hi there!</p><p>Your new OTP is "+phoneCode+". </p> <p>Payment GateWay Team </p>";
@@ -256,51 +217,12 @@ public class MerchantServiceImpl extends BaseDao implements MerchantService {
 				
 				// Send Email
 				String action="phoneVerification";
-				String jsonReqName = "";
-				String jsonReqPath = "";
-				String templateID = "";
+
+				String [] retval = spiderEmailSender.fetchTempConfig(action);
 				
-				Connection connection = oracleConnection.Connect();
-				OraclePreparedStatement  pst = null;
-				
-				try {
-						String sql = "select c.templateID," // 1
-								+ "t.req_file_name," // 2
-								+ "t.req_file_location " // 3
-								+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
-								+ "where c.action=:ACTION";
-						
-						System.out.println("template congfig fetching ==>> "+sql);
-						
-						pst = (OraclePreparedStatement) connection.prepareStatement(sql);
-						pst.setStringAtName("ACTION", action); // mobileNo
-						ResultSet rs =  pst.executeQuery();
-						if(rs.next()){
-							jsonReqName = rs.getString("req_file_name");
-							jsonReqPath = rs.getString("req_file_location");
-							templateID = rs.getString("templateID");
-						}
-				} finally {
-			          try{
-			           
-			           if(pst != null)
-			            if(!pst.isClosed())
-			            	pst.close();
-			           
-			          }catch(Exception e){
-			                 e.printStackTrace();
-			          }
-			
-			          try{
-			
-			           if(connection != null)
-			            if(!connection.isClosed())
-			             connection.close();
-			
-			          }catch(Exception e){
-			        	  e.printStackTrace();
-			          }      
-		       }
+				String jsonReqName = retval[0];
+				String jsonReqPath = retval[1];
+				String templateID = retval[2];
 				
 				String header = "Payment Gateway account request";
 				String emailMessageBody = "<p>Hi there!</p><p>We got a request to create a new Payment Gateway account with your mobile number *****"+phoneNumber+" and email ID <a href=#>"+userEmail+"</a>. </p> <p>Payment GateWay Team </p>";
@@ -404,51 +326,12 @@ public class MerchantServiceImpl extends BaseDao implements MerchantService {
 					
 					// Send Email
 					String action="passwordResetMerchant";
-					String jsonReqName = "";
-					String jsonReqPath = "";
-					String templateID = "";
 					
-					Connection connection = oracleConnection.Connect();
-					OraclePreparedStatement  pst = null;
+					String [] retval = spiderEmailSender.fetchTempConfig(action);
 					
-					try {
-							String sql = "select c.templateID," // 1
-									+ "t.req_file_name," // 2
-									+ "t.req_file_location " // 3
-									+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
-									+ "where c.action=:ACTION";
-							
-							System.out.println("template congfig fetching ==>> "+sql);
-							
-							pst = (OraclePreparedStatement) connection.prepareStatement(sql);
-							pst.setStringAtName("ACTION", action); // mobileNo
-							ResultSet rs =  pst.executeQuery();
-							if(rs.next()){
-								jsonReqName = rs.getString("req_file_name");
-								jsonReqPath = rs.getString("req_file_location");
-								templateID = rs.getString("templateID");
-							}
-					} finally {
-				          try{
-				           
-				           if(pst != null)
-				            if(!pst.isClosed())
-				            	pst.close();
-				           
-				          }catch(Exception e){
-				                 e.printStackTrace();
-				          }
-				
-				          try{
-				
-				           if(connection != null)
-				            if(!connection.isClosed())
-				             connection.close();
-				
-				          }catch(Exception e){
-				        	  e.printStackTrace();
-				          }      
-			       }
+					String jsonReqName = retval[0];
+					String jsonReqPath = retval[1];
+					String templateID = retval[2];
 					
 					String header = "Password reset link";
 					String key = messageUtil.getBundle("secret.key");
@@ -630,51 +513,12 @@ public class MerchantServiceImpl extends BaseDao implements MerchantService {
 			try{
 				// Send Email
 				String action="sendOTP";
-				String jsonReqName = "";
-				String jsonReqPath = "";
-				String templateID = "";
+
+				String [] retval = spiderEmailSender.fetchTempConfig(action);
 				
-				Connection connection = oracleConnection.Connect();
-				OraclePreparedStatement  pst = null;
-				
-				try {
-						String sql = "select c.templateID," // 1
-								+ "t.req_file_name," // 2
-								+ "t.req_file_location " // 3
-								+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
-								+ "where c.action=:ACTION";
-						
-						System.out.println("template congfig fetching ==>> "+sql);
-						
-						pst = (OraclePreparedStatement) connection.prepareStatement(sql);
-						pst.setStringAtName("ACTION", action); // mobileNo
-						ResultSet rs =  pst.executeQuery();
-						if(rs.next()){
-							jsonReqName = rs.getString("req_file_name");
-							jsonReqPath = rs.getString("req_file_location");
-							templateID = rs.getString("templateID");
-						}
-				} finally {
-			          try{
-			           
-			           if(pst != null)
-			            if(!pst.isClosed())
-			            	pst.close();
-			           
-			          }catch(Exception e){
-			                 e.printStackTrace();
-			          }
-			
-			          try{
-			
-			           if(connection != null)
-			            if(!connection.isClosed())
-			             connection.close();
-			
-			          }catch(Exception e){
-			        	  e.printStackTrace();
-			          }      
-		       }
+				String jsonReqName = retval[0];
+				String jsonReqPath = retval[1];
+				String templateID = retval[2];
 				
 				String header = "OTP";
 				String emailMessageBody = "<p>Hi there!</p><p>Your new OTP is "+phoneCode+". </p> <p>Payment GateWay Team </p>";
@@ -910,51 +754,12 @@ public class MerchantServiceImpl extends BaseDao implements MerchantService {
 		try{
 			// Send Email
 			String action="emailInvoicing";
-			String jsonReqName = "";
-			String jsonReqPath = "";
-			String templateID = "";
+
+			String [] retval = spiderEmailSender.fetchTempConfig(action);
 			
-			Connection connection = oracleConnection.Connect();
-			OraclePreparedStatement  pst = null;
-			
-			try {
-					String sql = "select c.templateID," // 1
-							+ "t.req_file_name," // 2
-							+ "t.req_file_location " // 3
-							+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
-							+ "where c.action=:ACTION";
-					
-					System.out.println("template congfig fetching ==>> "+sql);
-					
-					pst = (OraclePreparedStatement) connection.prepareStatement(sql);
-					pst.setStringAtName("ACTION", action); // mobileNo
-					ResultSet rs =  pst.executeQuery();
-					if(rs.next()){
-						jsonReqName = rs.getString("req_file_name");
-						jsonReqPath = rs.getString("req_file_location");
-						templateID = rs.getString("templateID");
-					}
-			} finally {
-		          try{
-		           
-		           if(pst != null)
-		            if(!pst.isClosed())
-		            	pst.close();
-		           
-		          }catch(Exception e){
-		                 e.printStackTrace();
-		          }
-		
-		          try{
-		
-		           if(connection != null)
-		            if(!connection.isClosed())
-		             connection.close();
-		
-		          }catch(Exception e){
-		        	  e.printStackTrace();
-		          }      
-	       }
+			String jsonReqName = retval[0];
+			String jsonReqPath = retval[1];
+			String templateID = retval[2];
 			
 			String header = "Invoice";
 			String emailMessageBody = "<p>Dear "+emailInvoicingModel.getFirstName()+" "+emailInvoicingModel.getLastName()+"</p>"
@@ -1040,6 +845,11 @@ public class MerchantServiceImpl extends BaseDao implements MerchantService {
 			
 			TransactionModel transactionModel = new TransactionModel();
 			
+			transactionModel.setCustomer_firstName(emailInvoicingModel.getFirstName());
+			transactionModel.setCustomer_lastName(emailInvoicingModel.getLastName());
+			transactionModel.setCustomer_email(emailInvoicingModel.getEmailId());
+			transactionModel.setMerchantModel(merchantModel);
+			transactionModel.setMerchantModel(merchantModel);
 			transactionModel.setMerchantModel(merchantModel);
 			transactionModel.setAmount(Double.parseDouble(emailInvoicingModel.getAmount()));
 			transactionModel.setOrder_id(String.valueOf(result1));
@@ -1074,51 +884,12 @@ public class MerchantServiceImpl extends BaseDao implements MerchantService {
 					try{
 						// Send Email
 						String action="payViaLink";
-						String jsonReqName = "";
-						String jsonReqPath = "";
-						String templateID = "";
+
+						String [] retval = spiderEmailSender.fetchTempConfig(action);
 						
-						Connection connection = oracleConnection.Connect();
-						OraclePreparedStatement  pst = null;
-						
-						try {
-								String sql = "select c.templateID," // 1
-										+ "t.req_file_name," // 2
-										+ "t.req_file_location " // 3
-										+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
-										+ "where c.action=:ACTION";
-								
-								System.out.println("template congfig fetching ==>> "+sql);
-								
-								pst = (OraclePreparedStatement) connection.prepareStatement(sql);
-								pst.setStringAtName("ACTION", action); // mobileNo
-								ResultSet rs =  pst.executeQuery();
-								if(rs.next()){
-									jsonReqName = rs.getString("req_file_name");
-									jsonReqPath = rs.getString("req_file_location");
-									templateID = rs.getString("templateID");
-								}
-						} finally {
-					          try{
-					           
-					           if(pst != null)
-					            if(!pst.isClosed())
-					            	pst.close();
-					           
-					          }catch(Exception e){
-					                 e.printStackTrace();
-					          }
-					
-					          try{
-					
-					           if(connection != null)
-					            if(!connection.isClosed())
-					             connection.close();
-					
-					          }catch(Exception e){
-					        	  e.printStackTrace();
-					          }      
-				       }
+						String jsonReqName = retval[0];
+						String jsonReqPath = retval[1];
+						String templateID = retval[2];
 						
 						String header = "Payment Link";
 						String emailMessageBody = "<p>Dear "+emailInvoicingModel.getFirstName()+" "+emailInvoicingModel.getLastName()+",</p>"

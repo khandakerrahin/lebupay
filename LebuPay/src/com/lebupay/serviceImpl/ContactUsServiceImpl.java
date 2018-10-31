@@ -79,51 +79,12 @@ public class ContactUsServiceImpl extends BaseDao implements ContactUsService {
 			try{
 				// Send Email
 				String action="saveContactUs";
-				String jsonReqName = "";
-				String jsonReqPath = "";
-				String templateID = "";
+
+				String [] retval = spiderEmailSender.fetchTempConfig(action);
 				
-				Connection connection = oracleConnection.Connect();
-				OraclePreparedStatement  pst = null;
-				
-				try {
-						String sql = "select c.templateID," // 1
-								+ "t.req_file_name," // 2
-								+ "t.req_file_location " // 3
-								+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
-								+ "where c.action=:ACTION";
-						
-						System.out.println("template congfig fetching ==>> "+sql);
-						
-						pst = (OraclePreparedStatement) connection.prepareStatement(sql);
-						pst.setStringAtName("ACTION", action); // mobileNo
-						ResultSet rs =  pst.executeQuery();
-						if(rs.next()){
-							jsonReqName = rs.getString("req_file_name");
-							jsonReqPath = rs.getString("req_file_location");
-							templateID = rs.getString("templateID");
-						}
-				} finally {
-			          try{
-			           
-			           if(pst != null)
-			            if(!pst.isClosed())
-			            	pst.close();
-			           
-			          }catch(Exception e){
-			                 e.printStackTrace();
-			          }
-			
-			          try{
-			
-			           if(connection != null)
-			            if(!connection.isClosed())
-			             connection.close();
-			
-			          }catch(Exception e){
-			        	  e.printStackTrace();
-			          }      
-		       }
+				String jsonReqName = retval[0];
+				String jsonReqPath = retval[1];
+				String templateID = retval[2];
 				
 				String header = "Thank you";
 				String emailMessageBody = "<p>Hi "+contactUsModel.getName()+"!</p><p>Thanks for your Query. Our system team will get back to you soon.</p> <p>Payment GateWay Team </p>";
@@ -261,51 +222,12 @@ public class ContactUsServiceImpl extends BaseDao implements ContactUsService {
 			try{
 				// Send Email
 				String action="replyContactUs";
-				String jsonReqName = "";
-				String jsonReqPath = "";
-				String templateID = "";
+
+				String [] retval = spiderEmailSender.fetchTempConfig(action);
 				
-				Connection connection = oracleConnection.Connect();
-				OraclePreparedStatement  pst = null;
-				
-				try {
-						String sql = "select c.templateID," // 1
-								+ "t.req_file_name," // 2
-								+ "t.req_file_location " // 3
-								+ "from template_configuration c left outer join template_table t on c.templateID = t.ID "
-								+ "where c.action=:ACTION";
-						
-						System.out.println("template congfig fetching ==>> "+sql);
-						
-						pst = (OraclePreparedStatement) connection.prepareStatement(sql);
-						pst.setStringAtName("ACTION", action); // mobileNo
-						ResultSet rs =  pst.executeQuery();
-						if(rs.next()){
-							jsonReqName = rs.getString("req_file_name");
-							jsonReqPath = rs.getString("req_file_location");
-							templateID = rs.getString("templateID");
-						}
-				} finally {
-			          try{
-			           
-			           if(pst != null)
-			            if(!pst.isClosed())
-			            	pst.close();
-			           
-			          }catch(Exception e){
-			                 e.printStackTrace();
-			          }
-			
-			          try{
-			
-			           if(connection != null)
-			            if(!connection.isClosed())
-			             connection.close();
-			
-			          }catch(Exception e){
-			        	  e.printStackTrace();
-			          }      
-		       }
+				String jsonReqName = retval[0];
+				String jsonReqPath = retval[1];
+				String templateID = retval[2];
 				
 				String header = "Thank you";
 				String emailMessageBody = "<p>Hi "+contactUsModel.getName()+"!</p><p>Your Query was "+contactUsModel.getContactUsMessage()+".</p>"
