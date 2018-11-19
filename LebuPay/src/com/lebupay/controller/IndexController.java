@@ -421,6 +421,10 @@ public class IndexController implements SaltTracker {
 			model.addAttribute("eBLUserName", transactionModel.getMerchantModel().getEblUserName());
 			model.addAttribute("eBLUserPassword", transactionModel.getMerchantModel().getEblPassword());
 			model.addAttribute("eBLUserId", transactionModel.getMerchantModel().getEblId());
+			//WASIF 20181115			
+			model.addAttribute("sEBLUserName", transactionModel.getMerchantModel().getSeblUserName());
+			model.addAttribute("sEBLUserPassword", transactionModel.getMerchantModel().getSeblPassword());
+			model.addAttribute("sEBLUserId", transactionModel.getMerchantModel().getSeblId());
 			
 			TransactionModel transactionModel1 = transactionService.fetchTransactionByTXNId(transactionModel.getTxnId());
 			

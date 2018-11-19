@@ -35,6 +35,10 @@ public class MerchantModel extends CommonModel {
 	private String eblUserName;
 	private String eblId;
 	private String cityMerchantId;
+	//WASIF 20181114
+	private String seblPassword;
+	private String seblUserName;
+	private String seblId;
 
 	public Long getMerchantId() {
 		return merchantId;
@@ -260,6 +264,30 @@ public class MerchantModel extends CommonModel {
 		this.eblId = eblId;
 	}
 
+	public String getSeblPassword() {
+		return seblPassword;
+	}
+
+	public void setSeblPassword(String seblPassword) {
+		this.seblPassword = seblPassword;
+	}
+
+	public String getSeblUserName() {
+		return seblUserName;
+	}
+
+	public void setSeblUserName(String seblUserName) {
+		this.seblUserName = seblUserName;
+	}
+
+	public String getSeblId() {
+		return seblId;
+	}
+
+	public void setSeblId(String seblId) {
+		this.seblId = seblId;
+	}
+
 	public String getCityMerchantId() {
 		return cityMerchantId;
 	}
@@ -286,7 +314,28 @@ public class MerchantModel extends CommonModel {
 				+ transactionModels + ", companyModel=" + companyModel
 				+ ", checkoutModel=" + checkoutModel + ", eblPassword="
 				+ eblPassword + ", eblUserName=" + eblUserName + ", eblId="
-				+ eblId + ", cityMerchantId=" + cityMerchantId + "]";
+				+ eblId + ",seblPassword="+seblPassword+ ", seblUserName="+ seblUserName+ ", seblId="+seblId+ ",cityMerchantId=" + cityMerchantId + "]";
 	}
+	/*public String toString() {
+	return "MerchantModel [merchantId=" + merchantId + ", typeModel="
+			+ typeModel + ", firstName=" + firstName + ", lastName="
+			+ lastName + ", emailId=" + emailId + ", userName=" + userName
+			+ ", mobileNo=" + mobileNo + ", password=" + password
+			+ ", confirmPassword=" + confirmPassword
+			+ ", confirmNewPassword=" + confirmNewPassword + ", uniqueKey="
+			+ uniqueKey + ", accessKey=" + accessKey + ", secretKey="
+			+ secretKey + ", phoneCode=" + phoneCode + ", phoneVerified="
+			+ phoneVerified + ", captcha=" + captcha
+			+ ", transactionAmount=" + transactionAmount
+			+ ", loyaltyPoint=" + loyaltyPoint + ", logoName=" + logoName
+			+ ", logo=" + logo + ", ticketModels=" + ticketModels
+			+ ", quickPayModels=" + quickPayModels + ", transactionModels="
+			+ transactionModels + ", companyModel=" + companyModel
+			+ ", checkoutModel=" + checkoutModel + ", eblPassword="
+			+ eblPassword + ", eblUserName=" + eblUserName + ", eblId="
+			+ eblId + ", cityMerchantId=" + cityMerchantId + "]";
+}*/
+	
+	
 
 }

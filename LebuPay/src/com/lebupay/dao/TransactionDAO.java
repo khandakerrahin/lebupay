@@ -286,4 +286,13 @@ public interface TransactionDAO {
 	 * @throws Exception
 	 */
 	public int insertEblTransactionAfterPayment(TransactionModel transactionModel) throws Exception ;
+	
+	/**
+	 * This method is used to insert in SEBL_TRANSACTION_MASTER table after successful transaction.
+	 * 0 in status means Transaction Done Successfully. 
+	 * @param transactionModel
+	 * @return int
+	 * @throws Exception
+	 */
+	public int insertSEblTransactionAfterPayment(TransactionModel transactionModel) throws Exception ;
 }

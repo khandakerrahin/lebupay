@@ -162,7 +162,7 @@ $(document).ready(function(){
                   <div class="row">
                     <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="orderSummery">
-                    	<h3>Order Summery</h3>
+                    	<h3>Order Summary</h3>
                         <div class="contSec">
                         	<p><span>Merchant:</span><strong>${merchantName }</strong></p>
                             <p><span>Transaction ID:</span><strong>${transactionId }</strong></p>
@@ -185,14 +185,24 @@ $(document).ready(function(){
 	                           		</c:if>
                         		</c:if>
                            </c:if> 
-                            <li  id="secB"><a href="#sectionB">bKash</a></li>
+                           
+                           <c:if test="${not empty sEBLUserName}">
+                        		<c:if test="${not empty sEBLUserPassword}">
+	                        		<c:if test="${not empty sEBLUserId}">
+	                            		<li class="active" id="secD"><a href="#sectionD">Card SEBL</a></li>
+	                           		</c:if>
+                        		</c:if>
+                           </c:if>
+                           
+                            
                             <c:if test="${not empty citybankMerchantId}">
 						    	 <li><a href="#sectionC">Card</a></li>
 							</c:if>
+							<li  id="secB"><a href="#sectionB">bKash</a></li>
                             
    						 </ul>
                          
-   						 <div class="tab-content">
+   						 <div class="tab-content">  						 
    						 <c:if test="${not empty eBLUserName}">
                         		<c:if test="${not empty eBLUserPassword}">
 	                        		<c:if test="${not empty eBLUserId}">
@@ -208,16 +218,27 @@ $(document).ready(function(){
 			                            </div>
                             		</c:if>
                         		</c:if>
-                           </c:if> 
-        					<div id="sectionB" class="tab-pane fade">
-                               <div class="eachBox bkashl">
-	                                <h4>bKash</h4>
-	                                <ul>
-	                                	<li class="card_logos"><a href="bkash?transactionId=${transactionId1 }"><img src="resources/images/bkash.png" alt="bkash"></a></li>
-	                                </ul>
-                                </div>
-                            </div>
-                          <c:if test="${not empty citybankMerchantId}">
+                           </c:if>                       
+                            
+                           <c:if test="${not empty sEBLUserName}">
+                        		<c:if test="${not empty sEBLUserPassword}">
+	                        		<c:if test="${not empty sEBLUserId}">
+			      						<div id="sectionD" class="tab-pane fade">
+			                             	<div class="eachBox">
+				                                <h4>Debit/Credit SEBL Card</h4>
+				                                <ul>
+				                                	<li class="card_logos"><a href="sebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/visa.png" alt="visa card"></a></li>
+				                                    <li class="card_logos"><a href="sebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/mastercard.png" alt="master card"></a></li>
+				                                    <li class="card_logos diner"><a href="sebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/diners_club.png" alt="diners club"></a></li>
+				                                </ul>
+			                                </div>
+			                            </div>
+                            		</c:if>
+                        		</c:if>
+                           </c:if>
+                           
+                           
+                            <c:if test="${not empty citybankMerchantId}">
     						 <div id="sectionC"  class="tab-pane fade">
 	                               <div class="eachBox">
 		                                <h4>Debit/Credit Card</h4>
@@ -229,6 +250,15 @@ $(document).ready(function(){
 	                             	</div>
 	                          </div>
    						 </c:if>
+        					<div id="sectionB" class="tab-pane fade">
+                               <div class="eachBox bkashl">
+	                                <h4>bKash</h4>
+	                                <ul>
+	                                	<li class="card_logos"><a href="bkash?transactionId=${transactionId1 }"><img src="resources/images/bkash.png" alt="bkash"></a></li>
+	                                </ul>
+                                </div>
+                            </div>
+                         
 				 	</div>
                 </div>
             </div>
@@ -290,9 +320,11 @@ var eBLUserId = '${eBLUserId}';
 if(eBLUserName == "" || eBLUserPassword == "" || eBLUserId==""){
 	$("#sectionA").removeClass("in active");
 	$("#sectionB").addClass("in active");
+	$("#sectionD").addClass("in active");
 	
 	$("#secA").removeClass("active");
 	$("#secB").addClass("active");
+	$("#secD").addClass("active");
 	
 }
 </script>

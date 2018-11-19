@@ -839,7 +839,11 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 						+ "m.EBL_PASSWORD," // 19
 						+ "m.EBL_ID , "  // 20
 						+ "tm.GROSS_AMOUNT, " // 21
-						+ "tm.BANK" // 22
+						+ "tm.BANK ," // 22
+		
+						+ "m.SEBL_USER_NAME," // 23
+						+ "m.SEBL_PASSWORD," // 24
+						+ "m.SEBL_ID  "  // 25
 						+ " from TRANSACTION_MASTER tm, MERCHANT_MASTER m where tm.MERCHANT_ID = m.MERCHANT_ID and tm.STATUS =:STATUS order by tm.CREATED_DATE desc";
 				
 				System.out.println("Fetch All Transactions ==>> "+sql);
@@ -883,6 +887,10 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					transactionModel.setGrossAmount(rs.getDouble(21));
 					transactionModel.setMerchantModel(merchantModel);
 					transactionModel.setBank(rs.getString(22));
+
+					merchantModel.setSeblUserName(rs.getString(23));
+					merchantModel.setSeblPassword(rs.getString(24));
+					merchantModel.setSeblId(rs.getString(25));
 					
 					transactionModels.add(transactionModel);
 				}
@@ -1586,7 +1594,11 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ "m.EBL_ID, " // 21
 					+ "GROSS_AMOUNT, " //22
 					+ "m.CITYBANK_MERCHANT_ID," // 23
-					+ "om.CUTOMER_DETAILS " // 24
+					+ "om.CUTOMER_DETAILS, " // 24
+					//WASIF 20181114
+					+ "m.SEBL_USER_NAME," // 25
+					+ "m.SEBL_PASSWORD," // 26
+					+ "m.SEBL_ID " // 27
 					
 					// TODO user name , password and ebl id
 					+ " from TRANSACTION_MASTER tm, ORDER_MASTER om, MERCHANT_MASTER m where tm.MERCHANT_ID = m.MERCHANT_ID and tm.ORDER_ID = om.ORDER_ID and tm.TRANSACTION_ID =:TRANSACTION_ID order by tm.CREATED_DATE desc";
@@ -1599,8 +1611,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 				while(rs.next()){
 					
 					MerchantModel merchantModel = new MerchantModel();
-					
-					transactionModel.setTransactionId(rs.getLong(1));
+						transactionModel.setTransactionId(rs.getLong(1));
 					transactionModel.setAmount(rs.getDouble(2));
 					transactionModel.setBalance(rs.getDouble(3));
 					transactionModel.setTxnId(rs.getString(4));
@@ -1632,6 +1643,10 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					transactionModel.setGrossAmount(rs.getDouble(22));
 					merchantModel.setCityMerchantId(rs.getString(23));
 					transactionModel.setCustomerDetails(rs.getString(24));
+                    //WASIF 20181114
+					merchantModel.setSeblUserName(rs.getString(25));
+					merchantModel.setSeblPassword(rs.getString(26));
+					merchantModel.setSeblId(rs.getString(27));				
 					transactionModel.setMerchantModel(merchantModel);
 					
 				}
@@ -1815,7 +1830,12 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ "m.EBL_USER_NAME," // 23
 					+ "m.EBL_PASSWORD," // 24
 					+ "m.EBL_ID, " // 25
-					+ "tm.GROSS_AMOUNT "//26
+					+ "tm.GROSS_AMOUNT ,"//26
+					//WASIF 20181114
+					+ "m.SEBL_USER_NAME," // 27
+					+ "m.SEBL_PASSWORD," // 28
+					+ "m.SEBL_ID " // 29
+					//WASIF 20181114
 					+ " from TRANSACTION_MASTER tm, MERCHANT_MASTER m, ORDER_MASTER om "
 					+ "where tm.MERCHANT_ID = m.MERCHANT_ID and tm.TXN_ID =:TXN_ID and tm.ORDER_ID = om.ORDER_ID order by tm.CREATED_DATE desc";
 			
@@ -1867,6 +1887,11 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					merchantModel.setEblPassword(rs.getString(24));
 					merchantModel.setEblId(rs.getString(25));
 					transactionModel.setGrossAmount(rs.getDouble(26));
+					//WASIF 20181114
+					merchantModel.setSeblUserName(rs.getString(27));
+					merchantModel.setSeblPassword(rs.getString(28));
+					merchantModel.setSeblId(rs.getString(29));
+					//WASIF 20181114
 					transactionModel.setMerchantModel(merchantModel);
 					
 					transactionModel.setPaymentModel(paymentModel);
@@ -1945,7 +1970,11 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					
 					+ "m.EBL_USER_NAME," // 23
 					+ "m.EBL_PASSWORD," // 24
-					+ "m.EBL_ID" // 25
+					+ "m.EBL_ID," // 25
+					
+					+ "m.SEBL_USER_NAME," // 26
+					+ "m.SEBL_PASSWORD," // 27
+					+ "m.SEBL_ID" // 28
 					
 					+ " from TRANSACTION_MASTER tm, MERCHANT_MASTER m, ORDER_MASTER om "
 					+ "where tm.MERCHANT_ID = m.MERCHANT_ID and tm.ORDER_ID =:ORDER_ID and tm.ORDER_ID = om.ORDER_ID order by tm.CREATED_DATE desc";
@@ -1998,6 +2027,9 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					merchantModel.setEblUserName(rs.getString(23));
 					merchantModel.setEblPassword(rs.getString(24));
 					merchantModel.setEblId(rs.getString(25));
+					merchantModel.setSeblUserName(rs.getString(26));
+					merchantModel.setSeblPassword(rs.getString(27));
+					merchantModel.setSeblId(rs.getString(28));
 					transactionModel.setMerchantModel(merchantModel);
 					
 					transactionModel.setPaymentModel(paymentModel);
@@ -3196,6 +3228,160 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 		
 		if (logger.isInfoEnabled()) {
 			logger.info("insertEblTransactionAfterPayment -- END");
+		}
+		
+		return result;
+	}
+	
+	
+
+	/**
+	 * This method is used to save in SEBL_Transaction_Master Table after successful transaction.
+	 * 0 in status means Transaction Done Successfully. 
+	 * @param transactionModel
+	 * @return int
+	 * @throws Exception
+	 */
+	public int insertSEblTransactionAfterPayment(TransactionModel transactionModel) throws Exception {
+		
+		if (logger.isInfoEnabled()) {
+			logger.info("insertEblTransactionAfterPayment -- Start");
+		}
+		int result = 0;
+		Connection connection = oracleConnection.Connect();
+		OraclePreparedStatement pst = null;
+		try {
+			String sql = "insert into SEBL_TRANSACTION_MASTER (SEBL_TRANSACTION_ID,AMOUNT,BALANCE,RESPONSE_MESSAGE,"
+					+ "AUTHORIZATION_RESPONSE_DATE,FUNDING_METHOD,ACQUIRER_MESSAGE,FINANCIAL_NETWORK_CODE,TRANSACTION_IDENTIFIER,"
+					+ "NAME_ON_CARD, CARD_EXPIRY_YEAR,AUTHORIZATION_RESPONSE_TIME,SECURE_ID,ACQUIRER_CODE,AUTHORIZATION_RESPONSE_STAN,"
+					+ "MERCHANT_EBL_ID,TOTAL_AUTHORIZED_AMOUNT,PROVIDED_CARD_NUMBER,CARD_SECURITY_CODE,AUTHENTICATION_TOKEN,"
+					+ "TRANSACTION_RECEIPT,RESPONSE_GATEWAY_CODE,ORDER_STATUS,ACQUIRER_DATE,VERSION,COMMERCIAL_CARD_INDICATOR,CARD_BRAND,"
+					+ "SOURCE_OF_FUNDS_TYPE,CUSTOMER_FIRSTNAME,DEVICE_BROWSER,DEVICE_IPADDRESS,ACSECI_VALUE,ACQUIRER_ID,SETTLEMENT_DATE,"
+					+ "TRANSACTION_SOURCE,RESULT,CREATION_TIME,CUSTOMER_LASTNAME,TOTAL_REFUNDED_AMOUNT,ACQUIRER_BATCH,DESCRIPTION,"
+					+ "TRANSACTION_TYPE,FINANCIAL_NETWORK_DATE,RESPONSE_CODE,TRANSACTION_FREQUENCY,TRANSACTION_TERMINAL,AUTHORIZATION_CODE,"
+					+ "AUTHENTICATION_STATUS,PROCESSING_CODE,EXPIRY_MONTH,SECURE_XID,ENROLLMENT_STATUS,CARD_SECURITY_CODE_ERROR,"
+					+ "TIME_ZONE,GATEWAY_ENTRY_POINT,STATUS,CREATED_DATE,CREATED_BY,"
+					+ "TRANSACTION_MASTER_ID) values("
+					+ "SEBL_TRANSACTION_MASTER_SEQ.nextval,"
+					+ ":AMOUNT,:BALANCE,:RESPONSE_MESSAGE, :AUTHORIZATION_RESPONSE_DATE, :FUNDING_METHOD,"
+					+ ":ACQUIRER_MESSAGE, :FINANCIAL_NETWORK_CODE, :TRANSACTION_IDENTIFIER, :NAME_ON_CARD, :CARD_EXPIRY_YEAR,"
+					+ ":AUTHORIZATION_RESPONSE_TIME, :SECURE_ID, :ACQUIRER_CODE, :AUTHORIZATION_RESPONSE_STAN, :MERCHANT_EBL_ID,"
+					+ ":TOTAL_AUTHORIZED_AMOUNT, :PROVIDED_CARD_NUMBER, :CARD_SECURITY_CODE, :AUTHENTICATION_TOKEN, :TRANSACTION_RECEIPT,"
+					+ ":RESPONSE_GATEWAY_CODE,:ORDER_STATUS,:ACQUIRER_DATE,:VERSION,:COMMERCIAL_CARD_INDICATOR,:CARD_BRAND,:SOURCE_OF_FUNDS_TYPE,"
+					+ ":CUSTOMER_FIRSTNAME,:DEVICE_BROWSER,:DEVICE_IPADDRESS,:ACSECI_VALUE,:ACQUIRER_ID,:SETTLEMENT_DATE,:TRANSACTION_SOURCE,"
+					+ ":RESULT,:CREATION_TIME,:CUSTOMER_LASTNAME,:TOTAL_REFUNDED_AMOUNT,:ACQUIRER_BATCH,:DESCRIPTION,:TRANSACTION_TYPE,"
+					+ ":FINANCIAL_NETWORK_DATE,:RESPONSE_CODE,:TRANSACTION_FREQUENCY,:TRANSACTION_TERMINAL,:AUTHORIZATION_CODE,"
+					+ ":AUTHENTICATION_STATUS,:PROCESSING_CODE,:EXPIRY_MONTH,:SECURE_XID,:ENROLLMENT_STATUS,:CARD_SECURITY_CODE_ERROR,"
+					+ ":TIME_ZONE,:GATEWAY_ENTRY_POINT,:STATUS,systimestamp(0),:CREATED_BY,:TRANSACTION_MASTER_ID)";
+					
+			String pk[] = {"SEBL_TRANSACTION_ID"};
+			pst = (OraclePreparedStatement) connection.prepareStatement(sql, pk);
+			pst.setDoubleAtName("AMOUNT", transactionModel.getAmount()); 
+			pst.setDoubleAtName("BALANCE", transactionModel.getBalance()); 
+			pst.setStringAtName("RESPONSE_MESSAGE", transactionModel.getResponseMessage()); 
+			pst.setStringAtName("AUTHORIZATION_RESPONSE_DATE", transactionModel.getAuthorizationResponse_date()); 
+			pst.setStringAtName("FUNDING_METHOD", transactionModel.getFundingMethod());
+			pst.setStringAtName("ACQUIRER_MESSAGE", transactionModel.getAcquirerMessage()); 
+			pst.setStringAtName("FINANCIAL_NETWORK_CODE", transactionModel.getFinancialNetworkCode()); 
+			pst.setStringAtName("TRANSACTION_IDENTIFIER", transactionModel.getTransactionIdentifier());
+			pst.setStringAtName("NAME_ON_CARD", transactionModel.getNameOnCard());
+			pst.setStringAtName("CARD_EXPIRY_YEAR", transactionModel.getCard_expiry_year());
+			pst.setStringAtName("AUTHORIZATION_RESPONSE_TIME", transactionModel.getAuthorizationResponse_time());
+			pst.setStringAtName("SECURE_ID", transactionModel.getSecureId());
+			pst.setStringAtName("ACQUIRER_CODE", transactionModel.getAcquirerCode());
+			pst.setStringAtName("AUTHORIZATION_RESPONSE_STAN", transactionModel.getAuthorizationResponse_stan());
+			pst.setStringAtName("MERCHANT_EBL_ID", transactionModel.getMerchantId());
+			pst.setStringAtName("TOTAL_AUTHORIZED_AMOUNT", transactionModel.getTotalAuthorizedAmount());
+			pst.setStringAtName("PROVIDED_CARD_NUMBER", transactionModel.getProvided_card_number());
+			pst.setStringAtName("CARD_SECURITY_CODE", transactionModel.getCardSecurityCode_gatewayCode());
+			pst.setStringAtName("AUTHENTICATION_TOKEN", transactionModel.getAuthenticationToken());
+			pst.setStringAtName("TRANSACTION_RECEIPT", transactionModel.getTransaction_receipt());
+			pst.setStringAtName("RESPONSE_GATEWAY_CODE", transactionModel.getResponse_gatewayCode());
+			pst.setStringAtName("ORDER_STATUS", transactionModel.getOrder_status());
+			pst.setStringAtName("ACQUIRER_DATE", transactionModel.getAcquirerCode());
+			pst.setStringAtName("VERSION", transactionModel.getVersion());
+			pst.setStringAtName("COMMERCIAL_CARD_INDICATOR", transactionModel.getCommercialCardIndicator());
+			pst.setStringAtName("CARD_BRAND", transactionModel.getCard_brand());
+			pst.setStringAtName("SOURCE_OF_FUNDS_TYPE", transactionModel.getSourceOfFunds_type());
+			pst.setStringAtName("CUSTOMER_FIRSTNAME", transactionModel.getCustomer_firstName());
+			pst.setStringAtName("DEVICE_BROWSER", transactionModel.getDevice_browser());
+			pst.setStringAtName("DEVICE_IPADDRESS", transactionModel.getDevice_ipAddress());
+			pst.setStringAtName("ACSECI_VALUE", transactionModel.getAcsEci_value());
+			pst.setStringAtName("ACQUIRER_ID", transactionModel.getAcquirer_id());
+			pst.setStringAtName("SETTLEMENT_DATE", transactionModel.getSettlementDate());
+			pst.setStringAtName("TRANSACTION_SOURCE", transactionModel.getTransaction_source());
+			pst.setStringAtName("RESULT", transactionModel.getResult());
+			pst.setStringAtName("CREATION_TIME", transactionModel.getCreationTime());
+			pst.setStringAtName("CUSTOMER_LASTNAME", transactionModel.getCustomer_lastName());
+			pst.setStringAtName("TOTAL_REFUNDED_AMOUNT", transactionModel.getTotalRefundedAmount());
+			pst.setStringAtName("ACQUIRER_BATCH", transactionModel.getAcquirer_batch());
+			pst.setStringAtName("DESCRIPTION", transactionModel.getDescription());
+			pst.setStringAtName("TRANSACTION_TYPE", transactionModel.getTransaction_type());
+			pst.setStringAtName("FINANCIAL_NETWORK_DATE", transactionModel.getFinancialNetworkDate());
+			pst.setStringAtName("RESPONSE_CODE", transactionModel.getResponseCode());
+			pst.setStringAtName("TRANSACTION_FREQUENCY", transactionModel.getTransaction_frequency());
+			pst.setStringAtName("TRANSACTION_TERMINAL", transactionModel.getTransaction_terminal());
+			pst.setStringAtName("AUTHORIZATION_CODE", transactionModel.getAuthorizationCode());
+			pst.setStringAtName("AUTHENTICATION_STATUS", transactionModel.getAuthenticationStatus());
+			pst.setStringAtName("PROCESSING_CODE", transactionModel.getProcessingCode());
+			pst.setStringAtName("EXPIRY_MONTH", transactionModel.getExpiry_month());
+			pst.setStringAtName("SECURE_XID", transactionModel.getSecure_xid());
+			pst.setStringAtName("ENROLLMENT_STATUS", transactionModel.getEnrollmentStatus());
+			pst.setStringAtName("CARD_SECURITY_CODE_ERROR", transactionModel.getCardSecurityCodeError());
+			pst.setStringAtName("TIME_ZONE", transactionModel.getTimeZone());
+			pst.setStringAtName("GATEWAY_ENTRY_POINT", transactionModel.getGatewayEntryPoint());
+			
+			
+			
+			pst.setIntAtName("STATUS", 0); // STATUS
+			pst.setLongAtName("CREATED_BY", transactionModel.getMerchantModel().getMerchantId()); 
+			pst.setLongAtName("TRANSACTION_MASTER_ID", transactionModel.getTransactionId()); 
+			
+			System.out.println("Insert SEBL Transaction By Merchant==>> "+sql);
+			
+			boolean result1 = pst.execute();
+			if (!result1) {
+
+				ResultSet rs = pst.getGeneratedKeys();
+				rs.next();
+				result = rs.getInt(1);
+				System.out.println("SEBL Transaction GENERATED KEY => " + result);
+			}
+			connection.commit();
+			
+		} finally {
+			
+				try{
+			           
+		           if(pst != null)
+		            if(!pst.isClosed())
+		            	pst.close();
+			           
+			     } catch(Exception e){
+			           e.printStackTrace();
+			      }
+
+				try { // Closing Connection Object
+					if (connection != null) {
+
+						if (!connection.isClosed())
+							connection.close();
+
+						if (logger.isDebugEnabled()) {
+							logger.debug("Connection Closed for insertTransaction");
+						}
+					}
+				} catch (Exception e) {
+
+					if (logger.isDebugEnabled()) {
+						logger.debug("Connection not closed for insertTransaction"+ e.getMessage());
+					}
+
+				}
+		}
+		
+		if (logger.isInfoEnabled()) {
+			logger.info("insertSEblTransactionAfterPayment -- END");
 		}
 		
 		return result;

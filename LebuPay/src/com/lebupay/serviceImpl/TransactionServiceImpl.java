@@ -439,6 +439,29 @@ public Object[][] exportAllTransactionsForExcelByMerchantId(DataTableModel dataT
 		
 		return result;
 	}
+	
+	/**
+	 * When the payment is complete then the total account balance of the merchant along with his/her loyalty points are being updated in this method.
+	 * @param transactionModel
+	 * @return int
+	 * @throws Exception
+	 */
+	public synchronized int updateSEblTransactionAfterPayment(TransactionModel transactionModel) throws Exception {
+		
+		if (logger.isInfoEnabled()) {
+			logger.info("updateSEblTransactionAfterPayment -- START");
+		}
+		
+		
+		int result = transactionDao.insertSEblTransactionAfterPayment(transactionModel);
+				
+		if (logger.isInfoEnabled()) {
+			logger.info("updateSEblTransactionAfterPayment -- END");
+		}
+		
+		return result;
+	}
+	
 	/**
 	 * This method is used for fetching the Transactions w.r.t Transaction ID.
 	 * @param transactionId

@@ -1087,17 +1087,17 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		try {
 
 			TransactionModel transactionModel = transactionService.fetchTransactionByTXNId(orderId);
-			if (Objects.nonNull(transactionModel)) {
-				if (transactionModel.getTransactionStatus() != 0) {
-					int result = transactionService.updateTransaction(
-							transactionModel.getMerchantModel().getMerchantId(), 5,
-							transactionModel.getTransactionId());
-					System.out.println("Result ==>> " + result);
-					if (Objects.nonNull(transactionModel.getPaymentModel().getFailureURL()))
-						if (!transactionModel.getPaymentModel().getFailureURL().equals("None"))
-							response.sendRedirect(transactionModel.getPaymentModel().getFailureURL());
+				if (Objects.nonNull(transactionModel)) {
+					if (transactionModel.getTransactionStatus() != 0) {
+						int result = transactionService.updateTransaction(
+								transactionModel.getMerchantModel().getMerchantId(), 5,
+								transactionModel.getTransactionId());
+						System.out.println("Result ==>> " + result);
+						if (Objects.nonNull(transactionModel.getPaymentModel().getFailureURL()))
+							if (!transactionModel.getPaymentModel().getFailureURL().equals("None"))
+								response.sendRedirect(transactionModel.getPaymentModel().getFailureURL());
+					}
 				}
-			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1110,6 +1110,11 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		return "payment-failure";
 	}
 
+	//TODO EBl STARTS HERE
+	
+	//TODO EBl STARTS HERE
+	
+	
 	/**
 	 * This method is used to open payment page for EBL gateway.
 	 * 
@@ -1555,7 +1560,838 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 		return "payment-success";
 	}
+	
+	//TODO not sure if EBl ENDS HERE
 
+	//TODO SEBL STARTS HERE 
+	//TODO 
+	
+	
+	
+	
+	//TODO SEBL STARTS HERE 
+		//TODO 
+	
+	
+	
+	//TODO SEBL STARTS HERE 
+		//TODO 
+	
+	/**********************************************************************************************/
+
+	
+	/**
+	 * This method is used to open payment page for SEBL gateway.
+	 * 
+	 * @param request
+	 * @param model
+	 * @param transactionId
+	 * @param response
+	 * @param redirectAttributes
+	 * @return String
+	 */
+	@RequestMapping(value = "/sebl", method = RequestMethod.GET)
+	public String sebl(HttpServletRequest request, Model model, @RequestParam String transactionId,
+			HttpServletResponse response, final RedirectAttributes redirectAttributes) {
+
+		if (logger.isInfoEnabled()) {
+			logger.info("sebl -open payment page- START");
+		}
+
+		String path = request.getContextPath();
+		String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path
+				+ "/";
+		Map<String, String> argsMap = new HashMap<String, String>();
+		Long transactionId1 = 0L;
+		TransactionModel transactionModel2 = null;
+
+		try {
+
+			System.out.println("SESSIONKEY Before Decode== >> " + transactionId);
+			String key = messageUtil.getBundle("secret.key");
+			transactionId1 = Long.parseLong(encryption.decode(key, transactionId));
+			System.out.println("TransactionId After Decode== >> " + transactionId1);
+
+			transactionModel2 = transactionService.fetchTransactionById(transactionId1);
+
+		} catch (Exception e) {
+
+			model.addAttribute("transactionidInvalid", messageUtil.getBundle("transactionid.invalid"));
+			return "redirect:/link-pay?SESSIONKEY=" + transactionId;
+		}
+
+		if (Objects.isNull(transactionModel2)) {
+			model.addAttribute("transactionidInvalid", messageUtil.getBundle("transactionid.invalid"));
+			return "redirect:/link-pay?SESSIONKEY=" + transactionId;
+
+		} else {
+
+			if (transactionModel2.getTransactionStatus() == 0 || transactionModel2.getTransactionStatus() == 1
+					|| transactionModel2.getTransactionStatus() == 2) { // Already Paid
+
+				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("already.paid"));
+				return "redirect:/failure?orderId=" + transactionModel2.getTxnId();
+
+			} else if (transactionModel2.getTransactionStatus() == 3) { // Failed
+
+				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
+				return "redirect:/failure?orderId=" + transactionModel2.getTxnId();
+
+			}
+		}
+
+		transactionModelSaltTracker.setTxnId(transactionModel2.getTxnId());
+		argsMap.put("apiOperation", "CREATE_CHECKOUT_SESSION");
+		argsMap.put("order.id", transactionModel2.getTxnId());
+		argsMap.put("order.currency", "BDT");
+		argsMap.put("order.amount", String.valueOf(transactionModel2.getAmount()));
+		argsMap.put("order.description", "Order%20from%20LebuPay");
+		argsMap.put("interaction.displayControl.billingAddress", "HIDE");
+		argsMap.put("interaction.merchant.name", "Lebupay");
+		argsMap.put("interaction.displayControl.orderSummary", "HIDE");
+		argsMap.put("interaction.returnUrl", basePath + "retriveOrderSEBL");
+		argsMap.put("interaction.cancelUrl", basePath + "failureSEBL?orderId=" + transactionModel2.getTxnId());
+
+		argsMap.put("merchant", transactionModel2.getMerchantModel().getSeblId());
+		argsMap.put("apiPassword", transactionModel2.getMerchantModel().getSeblPassword());
+		argsMap.put("apiUsername", transactionModel2.getMerchantModel().getSeblUserName());
+
+		String requestURL = messageUtil.getBundle("sebl.first.url");
+		System.out.println("requestURL ==>> " + requestURL);
+		//TODO remove after debug
+		logger.info("requestURL ==>> " + requestURL);
+
+		try {
+
+			HTTPConnection.sendPostRequest(requestURL, argsMap);
+			String[] resp = HTTPConnection.readMultipleLinesRespone();
+
+			String[] respArr = resp[0].split("&");
+
+			HashMap<String, String> respMap = new HashMap<String, String>();
+			for (String line : respArr) {
+
+				String[] respPart = line.split("=");
+				respMap.put(respPart[0], respPart[1]);
+			}
+
+			if (respMap.containsKey("result")) {
+				if (respMap.get("result").equals("SUCCESS")) {
+
+					System.out.println("SUCCESS");
+					String secondAPI = messageUtil.getBundle("sebl.second.url") + respMap.get("session.id");
+					System.out.println("secondAPI ==>> " + secondAPI);
+					logger.info("secondAPI ==>> " + secondAPI);
+					response.sendRedirect(secondAPI);
+				} else {
+
+					System.out.println("Failure");
+					redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
+					return "redirect:/failureSEBL?orderId=" + transactionModel2.getTxnId();
+				}
+			} else {
+
+				System.out.println("No Response");
+				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
+				return "redirect:/failureSEBL?orderId=" + transactionModel2.getTxnId();
+			}
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+			redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
+			return "redirect:/failureSEBL?orderId=" + transactionModel2.getTxnId();
+		}
+
+		HTTPConnection.disconnect();
+
+		if (logger.isInfoEnabled()) {
+			logger.info("sebl -open payment page- START");
+		}
+
+		return null;
+	}
+
+	/**
+	 * This method is used to get Response from SEBL gateway after Payment.
+	 * 
+	 * @param request
+	 * @param model
+	 * @param response
+	 * @param redirectAttributes
+	 * @return String
+	 */
+	@RequestMapping(value = "/retriveOrderSEBL", method = RequestMethod.GET)
+	public String retriveOrderSEBL(HttpServletRequest request, Model model, HttpServletResponse response,
+			final RedirectAttributes redirectAttributes) {
+
+		if (logger.isInfoEnabled()) {
+			logger.info("retriveOrderSEBL -- START");
+		}
+
+		String returnURL = "";
+		String resultIndicator = (String) request.getParameter("resultIndicator");
+		System.out.println("resultIndicator ==>> " + resultIndicator);
+		String orderId = String.valueOf(transactionModelSaltTracker.getTxnId());
+
+		TransactionModel transactionModel2 = null;
+		try {
+
+			transactionModel2 = transactionService.fetchTransactionByTXNId(orderId);
+			if (Objects.isNull(transactionModel2)) {
+				throw new Exception();
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
+			returnURL = "redirect:/failureSEBL?orderId=" + orderId;
+		}
+
+		Map<String, String> argsMap = new HashMap<String, String>();
+		argsMap.put("apiOperation", "RETRIEVE_ORDER");
+		argsMap.put("order.id", orderId);
+		argsMap.put("merchant", transactionModel2.getMerchantModel().getEblId());
+		argsMap.put("apiPassword", transactionModel2.getMerchantModel().getEblPassword());
+		argsMap.put("apiUsername", transactionModel2.getMerchantModel().getEblUserName());
+
+		String requestURL = messageUtil.getBundle("sebl.third.url");
+
+		try {
+
+			HTTPConnection.sendPostRequest(requestURL, argsMap);
+			String[] resp = HTTPConnection.readMultipleLinesRespone();
+			//TODO
+			//TODO remove after debugging
+			logger.info("sebl - response: "+resp);
+			
+			String[] respArr = resp[0].split("&");
+
+			HashMap<String, String> respMap = new HashMap<String, String>();
+			for (String line : respArr) {
+				String[] respPart = line.split("=");
+
+				respMap.put(respPart[0], respPart[1]);
+			}
+
+			for (Map.Entry<String, String> entry : respMap.entrySet()) {
+
+				System.out.println("Key ==>> " + entry.getKey() + "  Value ==>> " + entry.getValue());
+			}
+
+			if (respMap.containsKey("result")) {
+				if (respMap.get("result").equals("SUCCESS")) {
+
+					System.out.println("SUCCESS");
+
+					System.err.println("orderId ==>> " + orderId);
+
+					int result = 0;
+					try {
+
+						TransactionModel transactionModel = transactionService.fetchTransactionByTXNId(orderId);
+
+						transactionModel.setAuthorizationResponse_date(
+								respMap.get("transaction%5B0%5D.authorizationResponse.date"));
+						transactionModel.setTotalCapturedAmount(respMap.get("totalCapturedAmount"));
+						transactionModel.setFundingMethod(respMap.get("sourceOfFunds.provided.card.fundingMethod"));
+						transactionModel.setAcquirerMessage(respMap.get("transaction%5B0%5D.response.acquirerMessage"));
+						transactionModel.setFinancialNetworkCode(
+								respMap.get("transaction%5B0%5D.authorizationResponse.financialNetworkCode"));
+						transactionModel.setTransactionIdentifier(
+								respMap.get("transaction%5B0%5D.authorizationResponse.transactionIdentifier"));
+						transactionModel.setNameOnCard(respMap.get("sourceOfFunds.provided.card.nameOnCard"));
+						transactionModel.setCard_expiry_year(
+								respMap.get("transaction%5B0%5D.sourceOfFunds.provided.card.expiry.year"));
+						transactionModel.setAuthorizationResponse_time(
+								respMap.get("transaction%5B0%5D.authorizationResponse.time"));
+						transactionModel
+								.setTransaction_currency(respMap.get("transaction%5B0%5D.transaction.currency"));
+						transactionModel.setSecureId(respMap.get("transaction%5B0%5D.3DSecureId"));
+						transactionModel.setAcquirerCode(
+								respMap.get("transaction%5B0%5D.response.cardSecurityCode.acquirerCode"));
+						transactionModel.setAuthorizationResponse_stan(
+								respMap.get("transaction%5B0%5D.authorizationResponse.stan"));
+						transactionModel.setMerchantId(respMap.get("transaction%5B0%5D.merchant"));
+						transactionModel.setTotalAuthorizedAmount(respMap.get("totalAuthorizedAmount"));
+						transactionModel.setProvided_card_number(
+								respMap.get("transaction%5B0%5D.sourceOfFunds.provided.card.number"));
+						transactionModel.setCardSecurityCode_gatewayCode(
+								respMap.get("transaction%5B0%5D.response.cardSecurityCode.gatewayCode"));
+						transactionModel
+								.setAuthenticationToken(respMap.get("transaction%5B0%5D.3DSecure.authenticationToken"));
+						transactionModel.setTransaction_receipt(respMap.get("transaction%5B0%5D.transaction.receipt"));
+						transactionModel
+								.setResponse_gatewayCode(respMap.get("transaction%5B0%5D.response.gatewayCode"));
+						transactionModel.setOrder_status(respMap.get("transaction%5B0%5D.order.status"));
+						transactionModel.setAcquirer_date(respMap.get("transaction%5B0%5D.transaction.acquirer.date"));
+						transactionModel.setVersion(respMap.get("transaction%5B0%5D.version"));
+						transactionModel.setCommercialCardIndicator(
+								respMap.get("transaction%5B0%5D.authorizationResponse.commercialCardIndicator"));
+						transactionModel
+								.setCard_brand(respMap.get("transaction%5B0%5D.sourceOfFunds.provided.card.brand"));
+						transactionModel.setSourceOfFunds_type(respMap.get("sourceOfFunds.type"));
+						transactionModel.setCustomer_firstName(respMap.get("customer.firstName"));
+						transactionModel.setCustomer_lastName(respMap.get("customer.lastName"));
+						transactionModel.setDevice_browser(respMap.get("transaction%5B0%5D.device.browser"));
+						transactionModel.setDevice_ipAddress(respMap.get("device.ipAddress"));
+						transactionModel.setAcsEci_value(respMap.get("transaction%5B0%5D.3DSecure.acsEci"));
+						transactionModel.setAcquirer_id(respMap.get("transaction%5B0%5D.transaction.acquirer.id"));
+						transactionModel.setSettlementDate(
+								respMap.get("transaction%5B0%5D.transaction.acquirer.settlementDate"));
+						transactionModel.setTransaction_source(respMap.get("transaction%5B0%5D.transaction.source"));
+						transactionModel.setResult(respMap.get("transaction%5B0%5D.result"));
+						transactionModel.setCreationTime(respMap.get("creationTime"));
+						transactionModel
+								.setTotalRefundedAmount(respMap.get("transaction%5B0%5D.order.totalRefundedAmount"));
+						transactionModel
+								.setAcquirer_batch(respMap.get("transaction%5B0%5D.transaction.acquirer.batch"));
+						transactionModel.setDescription(respMap.get("description"));
+						transactionModel.setTransaction_type(respMap.get("transaction%5B0%5D.transaction.type"));
+						transactionModel.setFinancialNetworkDate(
+								respMap.get("transaction%5B0%5D.authorizationResponse.financialNetworkDate"));
+						transactionModel
+								.setResponseCode(respMap.get("transaction%5B0%5D.authorizationResponse.responseCode"));
+						transactionModel
+								.setTransaction_frequency(respMap.get("transaction%5B0%5D.transaction.frequency"));
+						transactionModel
+								.setTransaction_terminal(respMap.get("transaction%5B0%5D.transaction.terminal"));
+						transactionModel
+								.setAuthorizationCode(respMap.get("transaction%5B0%5D.transaction.authorizationCode"));
+						transactionModel.setAuthenticationStatus(
+								respMap.get("transaction%5B0%5D.3DSecure.authenticationStatus"));
+						transactionModel.setProcessingCode(
+								respMap.get("transaction%5B0%5D.authorizationResponse.processingCode"));
+						transactionModel.setExpiry_month(respMap.get("sourceOfFunds.provided.card.expiry.month"));
+						transactionModel.setSecure_xid(respMap.get("transaction%5B0%5D.3DSecure.xid"));
+						transactionModel
+								.setEnrollmentStatus(respMap.get("transaction%5B0%5D.3DSecure.enrollmentStatus"));
+						transactionModel.setCardSecurityCodeError(
+								respMap.get("transaction%5B0%5D.authorizationResponse.cardSecurityCodeError"));
+						transactionModel.setTimeZone(respMap.get("transaction%5B0%5D.transaction.acquirer.timeZone"));
+						transactionModel.setGatewayEntryPoint(respMap.get("transaction%5B0%5D.gatewayEntryPoint"));
+						transactionModel.setBank("SEBL");
+
+						result = transactionServiceImpl.updateTransactionAfterPayment(transactionModel);
+						int cityUpdateResult = 0;
+						if (result > 0) {
+
+							cityUpdateResult = transactionServiceImpl
+									.updateEblTransactionAfterPayment(transactionModel);
+							if (cityUpdateResult > 0) {
+								returnURL = "redirect:/successSEBL?orderId=" + orderId;
+
+								System.out.println("Success Transaction Model-->" + transactionModel);
+
+								if (Objects.nonNull(transactionModel)) {
+
+									PaymentModel paymentModel = new PaymentModel();
+									Gson gson = new Gson();
+									// JSON to Java object, read it from a Json String.
+									paymentModel = gson.fromJson(
+											transactionModel.getPaymentModel().getCustomerDetails(),
+											PaymentModel.class);
+									System.out.println("paymentModel ==>> " + paymentModel);
+									if (Objects.nonNull(paymentModel.getEmailId())) {
+
+										// Send Email
+										String action = "transactionSuccess";
+										String [] retval = spiderEmailSender.fetchTempConfig(action);
+										
+										String jsonReqName = retval[0];
+										String jsonReqPath = retval[1];
+										String templateID = retval[2];
+										
+										String header = "Transaction successful";
+										String emailMessageBody = "<p>Dear Sir/Madam!</p><p>We have successfully received "
+												+ transactionModel.getGrossAmount()
+												+ " BDT. </p> <p>Thank You for paying with LEBUPAY</p>";
+										String subject = messageUtil.getBundle("transaction.email.subject");
+
+										String jsonReqString = getFileString(jsonReqName, jsonReqPath);
+										jsonReqString = jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+
+										jsonReqString = jsonReqString.replace("replace_header_here", header);
+										jsonReqString = jsonReqString.replace("replace_amount_here",
+												"" + transactionModel.getGrossAmount());
+										jsonReqString = jsonReqString.replace("replace_emailMessageBody_here",
+												emailMessageBody);
+										jsonReqString = jsonReqString.replace("replace_subject_here", subject);
+										jsonReqString = jsonReqString.replace("replace_to_here",
+												paymentModel.getEmailId());
+										jsonReqString = jsonReqString.replace("replace_cc_here", "");
+										jsonReqString = jsonReqString.replace("replace_bcc_here", "");
+										jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
+
+										spiderEmailSender.sendEmail(jsonReqString, true);
+
+										// sendMail.send(paymentModel.getEmailId(), messageBody, subject);
+
+									}
+
+									if (Objects.nonNull(paymentModel.getMobileNumber())) {
+										sendSMS.smsSend(paymentModel.getMobileNumber(),
+												"We have received " + transactionModel.getGrossAmount()
+														+ " BDT. Thank You for paying with LEBUPAY.");
+									}
+
+								}
+							} else {
+
+								System.out.println("Failure");
+								redirectAttributes.addFlashAttribute("failure",
+										messageUtil.getBundle("something.went.wrong"));
+								returnURL = "redirect:/failureSEBL?orderId=" + orderId;
+							}
+						} else {
+
+							System.out.println("Failure");
+							redirectAttributes.addFlashAttribute("failure",
+									messageUtil.getBundle("something.went.wrong"));
+							returnURL = "redirect:/failureSEBL?orderId=" + orderId;
+						}
+
+					} catch (Exception e) {
+						e.printStackTrace();
+						redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
+						returnURL = "redirect:/failureSEBL?orderId=" + orderId;
+					}
+
+				} else {
+
+					System.out.println("Failure");
+					redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
+					returnURL = "redirect:/failureSEBL?orderId=" + orderId;
+				}
+			} else {
+				System.out.println("No Response");
+				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
+				returnURL = "redirect:/failureSEBL?orderId=" + orderId;
+			}
+
+			HTTPConnection.disconnect();
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
+			returnURL = "redirect:/failureSEBL?orderId=" + orderId;
+		}
+
+		if (logger.isInfoEnabled()) {
+			logger.info("retriveOrderSEBL -- END");
+		}
+
+		return returnURL;
+	}
+
+	/**
+	 * This method is used to open success page after completion of SEBL payment.
+	 * 
+	 * @param request
+	 * @param model
+	 * @param response
+	 * @param orderId
+	 * @return payment-success.jsp
+	 */
+	@RequestMapping(value = "/successSEBL", method = RequestMethod.GET)
+	public String successSEBL(HttpServletRequest request, Model model, HttpServletResponse response,
+			@RequestParam(required = false) String orderId) {
+
+		if (logger.isInfoEnabled()) {
+			logger.info("successSEBL -- START");
+		}
+
+		try {
+			System.out.println("Coming In SUCCESS Section ==>> " + orderId);
+			TransactionModel transactionModel = transactionService.fetchTransactionByTXNId(orderId);
+
+			if (Objects.nonNull(transactionModel)) {
+
+				PaymentModel paymentModel = new PaymentModel();
+				Gson gson = new Gson();
+				// JSON to Java object, read it from a Json String.
+				paymentModel = gson.fromJson(transactionModel.getPaymentModel().getCustomerDetails(),
+						PaymentModel.class);
+				System.out.println("paymentModel success ==>> " + paymentModel);
+				if (Objects.nonNull(transactionModel.getPaymentModel().getSuccessURL()))
+					System.out.println("Success URL:" + transactionModel.getPaymentModel().getSuccessURL());
+				if (!transactionModel.getPaymentModel().getSuccessURL().equals("None")) {
+					response.sendRedirect(transactionModel.getPaymentModel().getSuccessURL());
+
+				}
+
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		if (logger.isInfoEnabled()) {
+			logger.info("successSEBL -- END");
+		}
+
+		return "payment-success";
+	}
+	
+	
+
+	/**
+	 * This method is used to open failure page if payment is failed.
+	 * 
+	 * @param request
+	 * @param model
+	 * @param response
+	 * @param orderId
+	 * @return payment-failure.jsp
+	 */
+	@RequestMapping(value = "/failureSEBL", method = RequestMethod.GET)
+	public String failureSEBL(HttpServletRequest request, Model model, HttpServletResponse response,
+			@RequestParam(required = false) String orderId) {
+
+		if (logger.isInfoEnabled()) {
+			logger.info("failureSEBL -- START");
+		}
+
+		try {
+
+			System.out.println("Coming In FAILURE Section ==>> " + orderId);
+			TransactionModel transactionModel = transactionService.fetchTransactionByTXNId(orderId);
+
+			if (Objects.nonNull(transactionModel)) {
+				if (transactionModel.getTransactionStatus() != 0) {
+					int result = transactionService.updateTransaction(
+							transactionModel.getMerchantModel().getMerchantId(), 3,
+							transactionModel.getTransactionId());
+					System.out.println("Result ==>> " + result);
+					if (Objects.nonNull(transactionModel.getPaymentModel().getFailureURL()))
+						if (!transactionModel.getPaymentModel().getFailureURL().equals("None")) {
+							response.sendRedirect(transactionModel.getPaymentModel().getFailureURL());
+						}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		if (logger.isInfoEnabled()) {
+			logger.info("failureSEBL -- END");
+		}
+
+		return "payment-failure";
+	}
+	
+
+	/**
+	 * This method is used for Hit from API. SEBL
+	 * 
+	 * @param paymentModel
+	 * @param request
+	 * @return PaymentModel
+	 */
+	/*
+	@RequestMapping(value = "/check-paymentSEBL", method = RequestMethod.POST)
+	public @ResponseBody PaymentModel checkPaymentSEBL(@RequestBody PaymentModel paymentModel, HttpServletRequest request) {
+
+		if (logger.isInfoEnabled()) {
+			logger.info("checkPaymentSEBL -- START");
+		}
+
+		try {
+
+			String ipAddress = "";
+			try {
+
+				ipAddress = request.getHeader("X-FORWARDED-FOR");
+				if (ipAddress == null) {
+					ipAddress = request.getRemoteAddr();
+					System.out.println("ipAddress ==>> " + ipAddress);
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			System.out.println("Check Payment-->" + paymentModel);
+			String token = UUID.randomUUID().toString();
+			paymentModel.setToken(token);
+			long result = transactionService.insertOrder(paymentModel);
+			System.out.println("paymentModel.getMerchantModel().getCompanyModel().getIp() ==>> "
+					+ paymentModel.getMerchantModel().getCompanyModel().getIp());
+			if (Objects.nonNull(paymentModel))
+				if (Objects.nonNull(paymentModel.getMerchantModel()))
+					if (Objects.nonNull(paymentModel.getMerchantModel().getCompanyModel()))
+						if (Objects.nonNull(paymentModel.getMerchantModel().getCompanyModel().getIp()))
+							if (!ipAddress.equals(paymentModel.getMerchantModel().getCompanyModel().getIp()))
+								throw new NumericException(messageUtil.getBundle("ip.not.matched"));
+
+			paymentModel = new PaymentModel();
+			paymentModel.setToken(token);
+			if (result > 0) {
+
+				paymentModel.setResponseCode("200");
+				paymentModel.setResponseMessage(messageUtil.getBundle("checkpayment.success"));
+
+			} else {
+
+				paymentModel.setResponseCode("201");
+				paymentModel.setResponseMessage(messageUtil.getBundle("checkpayment.failure"));
+			}
+
+		} catch (NumericException ne) {
+
+			paymentModel.setResponseCode(messageUtil.getBundle("ip.not.matched.code"));
+			paymentModel.setResponseMessage(ne.getMessage());
+
+		} catch (FormExceptions fe) {
+
+			fe.printStackTrace();
+			for (Entry<String, Exception> entry : fe.getExceptions().entrySet()) {
+
+				paymentModel.setResponseCode(entry.getKey());
+				paymentModel.setResponseMessage(entry.getValue().getMessage());
+
+				System.out.println(
+						"Form Exception :: " + entry.getValue().getMessage() + "==== KEY ==== " + entry.getKey());
+				break;
+			}
+
+		} catch (Exception e) {
+
+			paymentModel.setResponseCode("201");
+			paymentModel.setResponseMessage(messageUtil.getBundle("checkpayment.failure"));
+			e.printStackTrace();
+		}
+
+		if (logger.isInfoEnabled()) {
+			logger.info("checkPayment -- END");
+		}
+
+		return paymentModel;
+	}*/
+
+	/**
+	 * This method is used to execute payment after Hit from Api. SEBL
+	 * 
+	 * @param httpServletRequest
+	 * @param model
+	 * @param token
+	 * @param redirectAttributes
+	 * @param response
+	 * @return String
+	 */
+	/*
+	@RequestMapping(value = "/execute-payment", method = RequestMethod.GET)
+	public String executePayment(HttpServletRequest httpServletRequest, Model model, @RequestParam String token,
+			final RedirectAttributes redirectAttributes, HttpServletResponse response) {
+
+		if (logger.isInfoEnabled()) {
+			logger.info("executePayment -- START");
+		}
+
+		String ipAddress = "";
+		String sessionKey = "";
+		try {
+
+			ipAddress = httpServletRequest.getHeader("X-FORWARDED-FOR");
+			if (ipAddress == null) {
+				ipAddress = httpServletRequest.getRemoteAddr();
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		PaymentModel paymentModel = null;
+		try {
+
+			paymentModel = transactionService.fetchOrderByToken(token);
+			if (Objects.nonNull(paymentModel)) {
+
+				CompanyModel companyModel = merchantService
+						.fetchCompanyByMerchantId(paymentModel.getMerchantModel().getMerchantId());
+				if (Objects.nonNull(companyModel))
+					if (Objects.nonNull(companyModel.getIp()))
+						if (!companyModel.getIp().equals(ipAddress))
+							throw new NumericException(messageUtil.getBundle("ip.not.matched"));
+
+				String customerDetails = paymentModel.getCustomerDetails();
+				Gson gson = new Gson();
+				PaymentModel paymentModel2 = gson.fromJson(customerDetails, PaymentModel.class);
+				paymentModel.setFirstName(paymentModel2.getFirstName());
+				paymentModel.setLastName(paymentModel2.getLastName());
+				paymentModel.setMobileNumber(paymentModel2.getMobileNumber());
+				paymentModel.setEmailId(paymentModel2.getEmailId());
+
+				model.addAttribute("paymentModel", paymentModel);
+				String key = messageUtil.getBundle("secret.key");
+				TransactionModel transactionModel = new TransactionModel();
+				MerchantModel merchantModel = new MerchantModel();
+				merchantModel.setMerchantId(paymentModel.getMerchantModel().getMerchantId());
+				transactionModel.setMerchantModel(merchantModel);
+				transactionModel.setAmount(paymentModel.getAmount());
+				transactionModel.setOrder_id(paymentModel.getOrderID().toString());
+				Long transactionId = transactionService.insertTransaction(transactionModel);
+				if (transactionId > 0) {
+
+					sessionKey = encryption.encode(key, String.valueOf(transactionId)); // Modified
+
+					model.addAttribute("SESSIONKEY", sessionKey); // Modified
+
+					try {
+						CheckoutModel checkoutModel = checkOutService
+								.fetchCheckoutById(paymentModel.getMerchantModel().getMerchantId());
+						model.addAttribute("checkoutModel", checkoutModel);
+
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.err.println("Error in fetchCheckoutById");
+					}
+
+					try {
+						List<ParameterModel> parameterModels = checkOutService
+								.fetchParametersById(paymentModel.getMerchantModel().getMerchantId());
+
+						model.addAttribute("parameterModels", parameterModels);
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.err.println("Error in fetchParametersById");
+					}
+
+				}
+			} else {
+
+				Map<String, Exception> exceptions = new LinkedHashMap<String, Exception>();
+				exceptions.put(messageUtil.getBundle("token.invalid.code"),
+						new EmptyValueException(messageUtil.getBundle("token.invalid")));
+				if (exceptions.size() > 0)
+					throw new FormExceptions(exceptions);
+			}
+
+		} catch (NumericException ne) {
+
+			paymentModel.setResponseCode(messageUtil.getBundle("ip.not.matched.code"));
+			paymentModel.setResponseMessage(ne.getMessage());
+			try {
+				response.sendRedirect(paymentModel.getFailureURL());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		} catch (FormExceptions fe) {
+
+			fe.printStackTrace();
+			try {
+				response.sendRedirect(paymentModel.getFailureURL());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				response.sendRedirect(paymentModel.getFailureURL());
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+
+		if (logger.isInfoEnabled()) {
+			logger.info("executePayment -- END");
+		}
+
+		if (paymentModel.getOrderTransactionID() == null || paymentModel.getOrderTransactionID().trim().equals("")) {
+			return "quickpay-checkout";
+		} else {
+
+			httpServletRequest.setAttribute("SESSIONKEY", sessionKey);
+			httpServletRequest.setAttribute("csrfPreventionSalt",
+					httpServletRequest.getAttribute("csrfPreventionSaltPage"));
+
+			return "forward:/checkout-payment";
+		}
+	}*/
+
+	/**
+	 * This method is used for Check Out Payment.
+	 * 
+	 * @param paymentModel
+	 * @param httpServletRequest
+	 * @param redirectAttributes
+	 * @return String
+	 */
+	/*
+	@RequestMapping(value = "/checkout-payment", method = { RequestMethod.POST, RequestMethod.GET })
+	public String checkoutPayment(@ModelAttribute PaymentModel paymentModel, HttpServletRequest httpServletRequest,
+			final RedirectAttributes redirectAttributes) {
+
+		if (logger.isInfoEnabled()) {
+			logger.info("checkoutPayment -- START");
+		}
+
+		if (httpServletRequest.getAttribute("SESSIONKEY") != null) {
+			paymentModel.setSESSIONKEY((String) httpServletRequest.getAttribute("SESSIONKEY"));
+			paymentModel.setCsrfPreventionSalt((String) httpServletRequest.getAttribute("csrfPreventionSalt"));
+		}
+		String sessionId = httpServletRequest.getSession().getId();
+		List<String> activeSalts = SALT_TRACKER.get(sessionId);
+		String salt = "";
+
+		try {
+
+			salt = paymentModel.getCsrfPreventionSalt();
+
+			if (!org.springframework.util.CollectionUtils.isEmpty(activeSalts) & activeSalts.contains(salt)) {
+
+				try {
+					String key = messageUtil.getBundle("secret.key");
+					Long transactionId = Long.parseLong(encryption.decode(key, paymentModel.getSESSIONKEY()));
+					TransactionModel transactionModel = transactionService.fetchTransactionById(transactionId);
+					if (Objects.isNull(transactionModel))
+						redirectAttributes.addFlashAttribute("transactionidInvalid",
+								messageUtil.getBundle("transactionid.invalid"));
+					else {
+						paymentModel.setOrderID(Long.parseLong(transactionModel.getOrder_id()));
+						if (httpServletRequest.getAttribute("SESSIONKEY") != null) {
+							return "redirect:/link-pay?SESSIONKEY="
+									+ URLEncoder.encode(paymentModel.getSESSIONKEY(), "UTF-8");
+						} else {
+							int result = transactionService.updateOrderCustomerDetails(paymentModel);
+							if (result > 0)
+								return "redirect:/link-pay?SESSIONKEY="
+										+ URLEncoder.encode(paymentModel.getSESSIONKEY(), "UTF-8");
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			} else {
+				throw new ServletException(messageUtil.getBundle("CSRF"));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		} finally {
+			activeSalts.remove(salt);
+			String newSalt = (String) httpServletRequest.getAttribute("csrfPreventionSaltPage");
+			activeSalts.add(newSalt);
+		}
+
+		if (logger.isInfoEnabled()) {
+			logger.info("checkoutPayment -- END");
+		}
+
+		return "redirect:/execute-payment";
+	}
+	/**/
+	/***********************************************************************************************/
+	//TODO SEBL ENDS
+	
+	
+	
+	
+	
+	
 	/**
 	 * This method is used to open failure page if payment is failed.
 	 * 
@@ -1860,7 +2696,6 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			if (!org.springframework.util.CollectionUtils.isEmpty(activeSalts) & activeSalts.contains(salt)) {
 
 				try {
-
 					String key = messageUtil.getBundle("secret.key");
 					Long transactionId = Long.parseLong(encryption.decode(key, paymentModel.getSESSIONKEY()));
 					TransactionModel transactionModel = transactionService.fetchTransactionById(transactionId);
@@ -1878,9 +2713,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 								return "redirect:/link-pay?SESSIONKEY="
 										+ URLEncoder.encode(paymentModel.getSESSIONKEY(), "UTF-8");
 						}
-
 					}
-
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -1904,6 +2737,8 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 		return "redirect:/execute-payment";
 	}
+	
+
 
 	/**
 	 * This method is used to open BKASH payment page.
