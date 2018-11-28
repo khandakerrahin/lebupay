@@ -189,14 +189,14 @@ $(document).ready(function(){
                            <c:if test="${not empty sEBLUserName}">
                         		<c:if test="${not empty sEBLUserPassword}">
 	                        		<c:if test="${not empty sEBLUserId}">
-	                            		<li class="active" id="secD"><a href="#sectionD">Card SEBL</a></li>
+	                            		<li  id="secD"><a href="#sectionD">Card</a></li>
 	                           		</c:if>
                         		</c:if>
                            </c:if>
                            
                             
                             <c:if test="${not empty citybankMerchantId}">
-						    	 <li><a href="#sectionC">Card</a></li>
+						    	 <li id ="secC"><a href="#sectionC">Card</a></li>
 							</c:if>
 							<li  id="secB"><a href="#sectionB">bKash</a></li>
                             
@@ -223,13 +223,12 @@ $(document).ready(function(){
                            <c:if test="${not empty sEBLUserName}">
                         		<c:if test="${not empty sEBLUserPassword}">
 	                        		<c:if test="${not empty sEBLUserId}">
-			      						<div id="sectionD" class="tab-pane fade">
+			      						<div id="sectionD" class="tab-pane fade ">
 			                             	<div class="eachBox">
 				                                <h4>Debit/Credit SEBL Card</h4>
 				                                <ul>
 				                                	<li class="card_logos"><a href="sebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/visa.png" alt="visa card"></a></li>
 				                                    <li class="card_logos"><a href="sebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/mastercard.png" alt="master card"></a></li>
-				                                    <li class="card_logos diner"><a href="sebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/diners_club.png" alt="diners club"></a></li>
 				                                </ul>
 			                                </div>
 			                            </div>
@@ -257,8 +256,7 @@ $(document).ready(function(){
 	                                	<li class="card_logos"><a href="bkash?transactionId=${transactionId1 }"><img src="resources/images/bkash.png" alt="bkash"></a></li>
 	                                </ul>
                                 </div>
-                            </div>
-                         
+                            </div>                        
 				 	</div>
                 </div>
             </div>
@@ -317,14 +315,30 @@ var eBLUserName = '${eBLUserName}';
 var eBLUserPassword = '${eBLUserPassword}';
 var eBLUserId = '${eBLUserId}';
 
+var sEBLUserName = '${sEBLUserName}';
+var sEBLUserPassword = '${sEBLUserPassword}';
+var sEBLUserId = '${sEBLUserId}';
+var cITYMid = '${citybankMerchantId}';
+
 if(eBLUserName == "" || eBLUserPassword == "" || eBLUserId==""){
 	$("#sectionA").removeClass("in active");
-	$("#sectionB").addClass("in active");
-	$("#sectionD").addClass("in active");
-	
 	$("#secA").removeClass("active");
-	$("#secB").addClass("active");
-	$("#secD").addClass("active");
-	
-}
+	if(sEBLUserName == "" || sEBLUserPassword == "" || sEBLUserId==""){
+		$("#sectionD").removeClass("in active");
+		$("#secD").removeClass("active");
+		if(cITYMid == ""){
+			$("#sectionC").removeClass("in active");//CITY
+			$("#sec").removeClass("active");//CITY
+			$("#sectionB").addClass("in active");//bkash
+			$("#secB").addClass("active");//bkash
+		}else{
+			$("#sectionC").addClass("in active");//CITY
+			$("#sec").addClass("active");//CITY
+		}
+	}else{
+		$("#sectionD").addClass("in active");//bkash
+		$("#secD").addClass("active");//bkash
+	}
+ }
+
 </script>
