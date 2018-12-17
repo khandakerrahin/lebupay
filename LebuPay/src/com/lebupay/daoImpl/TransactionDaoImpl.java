@@ -958,7 +958,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 	}
 	
 	/**
-	 * This method is used to fetch all the transaction details according to the searching citeria for Customer, Merchant and Admin.
+	 * This method is used to fetch all the l details according to the searching citeria for Customer, Merchant and Admin.
 	 * @param status
 	 * @param dataTableModel
 	 * @return List<TransactionModel>
@@ -1409,7 +1409,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 			String sql = "update TRANSACTION_MASTER set TXN_ID =:TXN_ID, BALANCE =:BALANCE, LOYALTY_POINT =:LOYALTY_POINT, STATUS =:STATUS, BKASHID=:BKASHID, BANK=:BANK, "
 					+ "AUTHORIZATION_RESPONSE_DATE=:AUTHORIZATION_RESPONSE_DATE,FUNDING_METHOD=:FUNDING_METHOD,ACQUIRER_MESSAGE=:ACQUIRER_MESSAGE,FINANCIAL_NETWORK_CODE=:FINANCIAL_NETWORK_CODE,TRANSACTION_IDENTIFIER=:TRANSACTION_IDENTIFIER,GROSS_AMOUNT=:GROSS_AMOUNT,AMOUNT=:AMOUNT, " // 5
 					+ "NAME_ON_CARD=:NAME_ON_CARD,CARD_EXPIRY_YEAR=:CARD_EXPIRY_YEAR,AUTHORIZATION_RESPONSE_TIME=:AUTHORIZATION_RESPONSE_TIME,SECURE_ID=:SECURE_ID,ACQUIRER_CODE=:ACQUIRER_CODE,AUTHORIZATION_RESPONSE_STAN=:AUTHORIZATION_RESPONSE_STAN," // 6
-					+ "MERCHANT_EBL_ID=:MERCHANT_EBL_ID,TOTAL_AUTHORIZED_AMOUNT=:TOTAL_AUTHORIZED_AMOUNT,PROVIDED_CARD_NUMBER=:PROVIDED_CARD_NUMBER,CARD_SECURITY_CODE=:CARD_SECURITY_CODE,AUTHENTICATION_TOKEN=:AUTHENTICATION_TOKEN," // 5
+					+ "BANK_MERCHANT_ID=:BANK_MERCHANT_ID,TOTAL_AUTHORIZED_AMOUNT=:TOTAL_AUTHORIZED_AMOUNT,PROVIDED_CARD_NUMBER=:PROVIDED_CARD_NUMBER,CARD_SECURITY_CODE=:CARD_SECURITY_CODE,AUTHENTICATION_TOKEN=:AUTHENTICATION_TOKEN," // 5
 					+ "TRANSACTION_RECEIPT=:TRANSACTION_RECEIPT,RESPONSE_GATEWAY_CODE=:RESPONSE_GATEWAY_CODE,ORDER_STATUS=:ORDER_STATUS,ACQUIRER_DATE=:ACQUIRER_DATE,VERSION=:VERSION,COMMERCIAL_CARD_INDICATOR=:COMMERCIAL_CARD_INDICATOR," // 7
 					+ "CARD_BRAND=:CARD_BRAND,SOURCE_OF_FUNDS_TYPE=:SOURCE_OF_FUNDS_TYPE,CUSTOMER_FIRSTNAME=:CUSTOMER_FIRSTNAME,DEVICE_BROWSER=:DEVICE_BROWSER,DEVICE_IPADDRESS=:DEVICE_IPADDRESS,ACSECI_VALUE=:ACSECI_VALUE,ACQUIRER_ID=:ACQUIRER_ID,SETTLEMENT_DATE=:SETTLEMENT_DATE," // 8
 					+ "TRANSACTION_SOURCE=:TRANSACTION_SOURCE,RESULT=:RESULT,CREATION_TIME=:CREATION_TIME,CUSTOMER_LASTNAME=:CUSTOMER_LASTNAME,TOTAL_REFUNDED_AMOUNT=:TOTAL_REFUNDED_AMOUNT,ACQUIRER_BATCH=:ACQUIRER_BATCH,DESCRIPTION=:DESCRIPTION,TRANSACTION_TYPE=:TRANSACTION_TYPE," // 8
@@ -1433,7 +1433,8 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 			pst.setStringAtName("SECURE_ID", transactionModel.getSecureId());
 			pst.setStringAtName("ACQUIRER_CODE", transactionModel.getAcquirerCode());
 			pst.setStringAtName("AUTHORIZATION_RESPONSE_STAN", transactionModel.getAuthorizationResponse_stan());
-			pst.setStringAtName("MERCHANT_EBL_ID", transactionModel.getMerchantId());
+			//TODO
+			pst.setStringAtName("BANK_MERCHANT_ID", transactionModel.getMerchantId());
 			pst.setStringAtName("TOTAL_AUTHORIZED_AMOUNT", transactionModel.getTotalAuthorizedAmount());
 			pst.setStringAtName("PROVIDED_CARD_NUMBER", transactionModel.getProvided_card_number());
 			pst.setStringAtName("CARD_SECURITY_CODE", transactionModel.getCardSecurityCode_gatewayCode());
@@ -1592,7 +1593,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ "m.EBL_USER_NAME," // 19
 					+ "m.EBL_PASSWORD," // 20
 					+ "m.EBL_ID, " // 21
-					+ "GROSS_AMOUNT, " //22
+					+ "tm.GROSS_AMOUNT, " //22
 					+ "m.CITYBANK_MERCHANT_ID," // 23
 					+ "om.CUTOMER_DETAILS, " // 24
 					//WASIF 20181114
@@ -2758,7 +2759,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 		try {
 			String sql = "update TRANSACTION_MASTER set BANK =:BANK, TXN_ID =:TXN_ID, BALANCE =:BALANCE, LOYALTY_POINT =:LOYALTY_POINT, STATUS =:STATUS, "
 					+ "AUTHORIZATION_RESPONSE_DATE=:AUTHORIZATION_RESPONSE_DATE,ACQUIRER_MESSAGE=:ACQUIRER_MESSAGE," // 5
-					+ "MERCHANT_EBL_ID=:MERCHANT_EBL_ID,TOTAL_AUTHORIZED_AMOUNT=:TOTAL_AUTHORIZED_AMOUNT," // 5
+					+ "BANK_MERCHANT_ID=:BANK_MERCHANT_ID,TOTAL_AUTHORIZED_AMOUNT=:TOTAL_AUTHORIZED_AMOUNT," // 5
 					+ "ORDER_STATUS=:ORDER_STATUS," // 7
 					+ "CARD_BRAND=:CARD_BRAND," // 8
 					+ "TRANSACTION_TYPE=:TRANSACTION_TYPE," // 8
@@ -2776,7 +2777,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 			pst.setLongAtName("STATUS", 0); // STATUS
 			pst.setStringAtName("AUTHORIZATION_RESPONSE_DATE", transactionModel.getAuthorizationResponse_date());
 			pst.setStringAtName("ACQUIRER_MESSAGE", transactionModel.getAcquirerMessage());
-			pst.setStringAtName("MERCHANT_EBL_ID", transactionModel.getMerchantId());
+			pst.setStringAtName("BANK_MERCHANT_ID", transactionModel.getMerchantId());
 			pst.setStringAtName("TOTAL_AUTHORIZED_AMOUNT", transactionModel.getTotalAuthorizedAmount());
 			pst.setStringAtName("RESPONSE_GATEWAY_CODE", transactionModel.getResponse_gatewayCode());
 			pst.setStringAtName("ORDER_STATUS", transactionModel.getOrder_status());
@@ -2883,7 +2884,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 		try {
 			String sql = "update TRANSACTION_MASTER set BANK =:BANK, TXN_ID =:TXN_ID, BALANCE =:BALANCE, LOYALTY_POINT =:LOYALTY_POINT, STATUS =:STATUS, "
 					+ "AUTHORIZATION_RESPONSE_DATE=:AUTHORIZATION_RESPONSE_DATE,ACQUIRER_MESSAGE=:ACQUIRER_MESSAGE," // 5
-					+ "MERCHANT_EBL_ID=:MERCHANT_EBL_ID,TOTAL_AUTHORIZED_AMOUNT=:TOTAL_AUTHORIZED_AMOUNT," // 5
+					+ "BANK_MERCHANT_ID=:BANK_MERCHANT_ID,TOTAL_AUTHORIZED_AMOUNT=:TOTAL_AUTHORIZED_AMOUNT," // 5
 					+ "ORDER_STATUS=:ORDER_STATUS," // 7
 					+ "CARD_BRAND=:CARD_BRAND," // 8
 					+ "TRANSACTION_TYPE=:TRANSACTION_TYPE," // 8
@@ -2900,7 +2901,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 			pst.setLongAtName("STATUS", status); // STATUS
 			pst.setStringAtName("AUTHORIZATION_RESPONSE_DATE", transactionModel.getAuthorizationResponse_date());
 			pst.setStringAtName("ACQUIRER_MESSAGE", transactionModel.getAcquirerMessage());
-			pst.setStringAtName("MERCHANT_EBL_ID", transactionModel.getMerchantId());
+			pst.setStringAtName("BANK_MERCHANT_ID", transactionModel.getMerchantId());
 			pst.setStringAtName("TOTAL_AUTHORIZED_AMOUNT", transactionModel.getTotalAuthorizedAmount());
 			pst.setStringAtName("RESPONSE_GATEWAY_CODE", transactionModel.getResponse_gatewayCode());
 			pst.setStringAtName("ORDER_STATUS", transactionModel.getOrder_status());
@@ -3245,7 +3246,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 	public int insertSEblTransactionAfterPayment(TransactionModel transactionModel) throws Exception {
 		
 		if (logger.isInfoEnabled()) {
-			logger.info("insertEblTransactionAfterPayment -- Start");
+			logger.info("insertSeblTransactionAfterPayment -- Start");
 		}
 		int result = 0;
 		Connection connection = oracleConnection.Connect();
@@ -3254,7 +3255,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 			String sql = "insert into SEBL_TRANSACTION_MASTER (SEBL_TRANSACTION_ID,AMOUNT,BALANCE,RESPONSE_MESSAGE,"
 					+ "AUTHORIZATION_RESPONSE_DATE,FUNDING_METHOD,ACQUIRER_MESSAGE,FINANCIAL_NETWORK_CODE,TRANSACTION_IDENTIFIER,"
 					+ "NAME_ON_CARD, CARD_EXPIRY_YEAR,AUTHORIZATION_RESPONSE_TIME,SECURE_ID,ACQUIRER_CODE,AUTHORIZATION_RESPONSE_STAN,"
-					+ "MERCHANT_EBL_ID,TOTAL_AUTHORIZED_AMOUNT,PROVIDED_CARD_NUMBER,CARD_SECURITY_CODE,AUTHENTICATION_TOKEN,"
+					+ "MERCHANT_SEBL_ID,TOTAL_AUTHORIZED_AMOUNT,PROVIDED_CARD_NUMBER,CARD_SECURITY_CODE,AUTHENTICATION_TOKEN,"
 					+ "TRANSACTION_RECEIPT,RESPONSE_GATEWAY_CODE,ORDER_STATUS,ACQUIRER_DATE,VERSION,COMMERCIAL_CARD_INDICATOR,CARD_BRAND,"
 					+ "SOURCE_OF_FUNDS_TYPE,CUSTOMER_FIRSTNAME,DEVICE_BROWSER,DEVICE_IPADDRESS,ACSECI_VALUE,ACQUIRER_ID,SETTLEMENT_DATE,"
 					+ "TRANSACTION_SOURCE,RESULT,CREATION_TIME,CUSTOMER_LASTNAME,TOTAL_REFUNDED_AMOUNT,ACQUIRER_BATCH,DESCRIPTION,"
@@ -3265,7 +3266,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ "SEBL_TRANSACTION_MASTER_SEQ.nextval,"
 					+ ":AMOUNT,:BALANCE,:RESPONSE_MESSAGE, :AUTHORIZATION_RESPONSE_DATE, :FUNDING_METHOD,"
 					+ ":ACQUIRER_MESSAGE, :FINANCIAL_NETWORK_CODE, :TRANSACTION_IDENTIFIER, :NAME_ON_CARD, :CARD_EXPIRY_YEAR,"
-					+ ":AUTHORIZATION_RESPONSE_TIME, :SECURE_ID, :ACQUIRER_CODE, :AUTHORIZATION_RESPONSE_STAN, :MERCHANT_EBL_ID,"
+					+ ":AUTHORIZATION_RESPONSE_TIME, :SECURE_ID, :ACQUIRER_CODE, :AUTHORIZATION_RESPONSE_STAN, :MERCHANT_SEBL_ID,"
 					+ ":TOTAL_AUTHORIZED_AMOUNT, :PROVIDED_CARD_NUMBER, :CARD_SECURITY_CODE, :AUTHENTICATION_TOKEN, :TRANSACTION_RECEIPT,"
 					+ ":RESPONSE_GATEWAY_CODE,:ORDER_STATUS,:ACQUIRER_DATE,:VERSION,:COMMERCIAL_CARD_INDICATOR,:CARD_BRAND,:SOURCE_OF_FUNDS_TYPE,"
 					+ ":CUSTOMER_FIRSTNAME,:DEVICE_BROWSER,:DEVICE_IPADDRESS,:ACSECI_VALUE,:ACQUIRER_ID,:SETTLEMENT_DATE,:TRANSACTION_SOURCE,"
@@ -3290,7 +3291,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 			pst.setStringAtName("SECURE_ID", transactionModel.getSecureId());
 			pst.setStringAtName("ACQUIRER_CODE", transactionModel.getAcquirerCode());
 			pst.setStringAtName("AUTHORIZATION_RESPONSE_STAN", transactionModel.getAuthorizationResponse_stan());
-			pst.setStringAtName("MERCHANT_EBL_ID", transactionModel.getMerchantId());
+			pst.setStringAtName("MERCHANT_SEBL_ID", transactionModel.getMerchantId());
 			pst.setStringAtName("TOTAL_AUTHORIZED_AMOUNT", transactionModel.getTotalAuthorizedAmount());
 			pst.setStringAtName("PROVIDED_CARD_NUMBER", transactionModel.getProvided_card_number());
 			pst.setStringAtName("CARD_SECURITY_CODE", transactionModel.getCardSecurityCode_gatewayCode());

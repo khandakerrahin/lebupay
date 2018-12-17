@@ -219,6 +219,12 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 		// For getting the required values
 		xmlDoc.getDocumentElement().normalize();
+		//TODO
+		//TODO
+		if (logger.isInfoEnabled()) {
+			logger.info("City Bank Payment response -->"+xmlDoc);
+		}
+		
 
 		NodeList nList = xmlDoc.getElementsByTagName("Order");
 		CityBankUtil.OrderID = nList.item(0).getChildNodes().item(0).getTextContent();
@@ -1110,11 +1116,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		return "payment-failure";
 	}
 
-	//TODO EBl STARTS HERE
-	
-	//TODO EBl STARTS HERE
-	
-	
+           //TODO EBL STARTS HERE	
 	/**
 	 * This method is used to open payment page for EBL gateway.
 	 * 
@@ -1560,22 +1562,9 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 		return "payment-success";
 	}
-	
-	//TODO not sure if EBl ENDS HERE
 
-	//TODO SEBL STARTS HERE 
-	//TODO 
-	
-	
-	
 	
 	//TODO SEBL STARTS HERE 
-	//TODO 
-	
-	
-	
-	//TODO SEBL STARTS HERE 
-	//TODO 
 	
 	/**********************************************************************************************/
 
@@ -1625,15 +1614,12 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			return "redirect:/link-pay?SESSIONKEY=" + transactionId;
 
 		} else {
-
 			if (transactionModel2.getTransactionStatus() == 0 || transactionModel2.getTransactionStatus() == 1
-					|| transactionModel2.getTransactionStatus() == 2) { // Already Paid
-
+					|| transactionModel2.getTransactionStatus() == 2) { // Already Paid				
 				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("already.paid"));
 				return "redirect:/failure?orderId=" + transactionModel2.getTxnId();
 
 			} else if (transactionModel2.getTransactionStatus() == 3) { // Failed
-
 				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
 				return "redirect:/failure?orderId=" + transactionModel2.getTxnId();
 
@@ -1650,16 +1636,13 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		argsMap.put("interaction.merchant.name", "Lebupay");
 		argsMap.put("interaction.displayControl.orderSummary", "HIDE");
 		argsMap.put("interaction.returnUrl", basePath + "retriveOrderSEBL");
-		argsMap.put("interaction.cancelUrl", basePath + "failureSEBL?orderId=" + transactionModel2.getTxnId());
+		argsMap.put("interaction.cancelUrl", basePath + "failure?orderId=" + transactionModel2.getTxnId());
 
 		argsMap.put("merchant", transactionModel2.getMerchantModel().getSeblId());
 		argsMap.put("apiPassword", transactionModel2.getMerchantModel().getSeblPassword());
 		argsMap.put("apiUsername", transactionModel2.getMerchantModel().getSeblUserName());
 
 		String requestURL = messageUtil.getBundle("sebl.first.url");
-		System.out.println("requestURL ==>> " + requestURL);
-		//TODO remove after debug
-		logger.info("requestURL ==>> " + requestURL);
 
 		try {
 
@@ -1674,32 +1657,31 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				String[] respPart = line.split("=");
 				respMap.put(respPart[0], respPart[1]);
 			}
-
+			System.out.println("SEBl 1st url inside try respArr "+ respArr);
 			if (respMap.containsKey("result")) {
 				if (respMap.get("result").equals("SUCCESS")) {
-
-					System.out.println("SUCCESS");
+					System.out.println("SEBL first API SUCCESS");
 					String secondAPI = messageUtil.getBundle("sebl.second.url") + respMap.get("session.id");
-					System.out.println("secondAPI ==>> " + secondAPI);
-					logger.info("secondAPI ==>> " + secondAPI);
+					System.out.println("SEBL secondAPI ==>> " + secondAPI);
+				    logger.info("SEBL secondAPI ==>> " + secondAPI);
 					response.sendRedirect(secondAPI);
 				} else {
 
-					System.out.println("Failure");
+					System.out.println("SEBL Failure");
 					redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
-					return "redirect:/failureSEBL?orderId=" + transactionModel2.getTxnId();
+					return "redirect:/failure?orderId=" + transactionModel2.getTxnId();
 				}
 			} else {
 
-				System.out.println("No Response");
+				System.out.println("SEBL No Response");
 				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
-				return "redirect:/failureSEBL?orderId=" + transactionModel2.getTxnId();
+				return "redirect:/failure?orderId=" + transactionModel2.getTxnId();
 			}
 
 		} catch (IOException ex) {
 			ex.printStackTrace();
 			redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
-			return "redirect:/failureSEBL?orderId=" + transactionModel2.getTxnId();
+			return "redirect:/failure?orderId=" + transactionModel2.getTxnId();
 		}
 
 		HTTPConnection.disconnect();
@@ -1720,10 +1702,11 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	 * @param redirectAttributes
 	 * @return String
 	 */
+
 	@RequestMapping(value = "/retriveOrderSEBL", method = RequestMethod.GET)
 	public String retriveOrderSEBL(HttpServletRequest request, Model model, HttpServletResponse response,
 			final RedirectAttributes redirectAttributes) {
-
+		System.out.println("SEBl retriveOrderSEBL entered");
 		if (logger.isInfoEnabled()) {
 			logger.info("retriveOrderSEBL -- START");
 		}
@@ -1741,28 +1724,26 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				throw new Exception();
 			}
 
-		} catch (Exception e) {
+		} catch (Exception e) {			
 			e.printStackTrace();
 			redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
-			returnURL = "redirect:/failureSEBL?orderId=" + orderId;
+			returnURL = "redirect:/failure?orderId=" + orderId;
 		}
 
 		Map<String, String> argsMap = new HashMap<String, String>();
 		argsMap.put("apiOperation", "RETRIEVE_ORDER");
 		argsMap.put("order.id", orderId);
-		argsMap.put("merchant", transactionModel2.getMerchantModel().getEblId());
-		argsMap.put("apiPassword", transactionModel2.getMerchantModel().getEblPassword());
-		argsMap.put("apiUsername", transactionModel2.getMerchantModel().getEblUserName());
+		argsMap.put("merchant", transactionModel2.getMerchantModel().getSeblId());
+		argsMap.put("apiPassword", transactionModel2.getMerchantModel().getSeblPassword());
+		argsMap.put("apiUsername", transactionModel2.getMerchantModel().getSeblUserName());
 
 		String requestURL = messageUtil.getBundle("sebl.third.url");
 
 		try {
 
 			HTTPConnection.sendPostRequest(requestURL, argsMap);
+		
 			String[] resp = HTTPConnection.readMultipleLinesRespone();
-			//TODO
-			//TODO remove after debugging
-			logger.info("sebl - response: "+resp);
 			
 			String[] respArr = resp[0].split("&");
 
@@ -1774,15 +1755,12 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			}
 
 			for (Map.Entry<String, String> entry : respMap.entrySet()) {
-
 				System.out.println("Key ==>> " + entry.getKey() + "  Value ==>> " + entry.getValue());
 			}
 
 			if (respMap.containsKey("result")) {
 				if (respMap.get("result").equals("SUCCESS")) {
-
-					System.out.println("SUCCESS");
-
+					System.out.println("SUCCESS SEBL ");
 					System.err.println("orderId ==>> " + orderId);
 
 					int result = 0;
@@ -1872,13 +1850,14 @@ public class PaymentController extends BaseDao implements SaltTracker {
 						transactionModel.setBank("SEBL");
 
 						result = transactionServiceImpl.updateTransactionAfterPayment(transactionModel);
-						int cityUpdateResult = 0;
+						int seblUpdateResult = 0;
 						if (result > 0) {
 
-							cityUpdateResult = transactionServiceImpl
-									.updateEblTransactionAfterPayment(transactionModel);
-							if (cityUpdateResult > 0) {
-								returnURL = "redirect:/successSEBL?orderId=" + orderId;
+							seblUpdateResult = transactionServiceImpl
+									.updateSEblTransactionAfterPayment(transactionModel);
+							if (seblUpdateResult > 0) {
+								
+								returnURL = "redirect:/success?orderId=" + orderId;
 
 								System.out.println("Success Transaction Model-->" + transactionModel);
 
@@ -1940,32 +1919,33 @@ public class PaymentController extends BaseDao implements SaltTracker {
 								System.out.println("Failure");
 								redirectAttributes.addFlashAttribute("failure",
 										messageUtil.getBundle("something.went.wrong"));
-								returnURL = "redirect:/failureSEBL?orderId=" + orderId;
+								returnURL = "redirect:/failure?orderId=" + orderId;
 							}
 						} else {
 
 							System.out.println("Failure");
 							redirectAttributes.addFlashAttribute("failure",
 									messageUtil.getBundle("something.went.wrong"));
-							returnURL = "redirect:/failureSEBL?orderId=" + orderId;
+							returnURL = "redirect:/failure?orderId=" + orderId;
 						}
 
 					} catch (Exception e) {
 						e.printStackTrace();
 						redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
-						returnURL = "redirect:/failureSEBL?orderId=" + orderId;
+						returnURL = "redirect:/failure?orderId=" + orderId;
 					}
 
 				} else {
-
+					logger.info("sebl - response:  Failure ");
 					System.out.println("Failure");
 					redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
-					returnURL = "redirect:/failureSEBL?orderId=" + orderId;
+					returnURL = "redirect:/failure?orderId=" + orderId;
 				}
 			} else {
+				logger.info("sebl - response: contains No response");
 				System.out.println("No Response");
 				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
-				returnURL = "redirect:/failureSEBL?orderId=" + orderId;
+				returnURL = "redirect:/failure?orderId=" + orderId;
 			}
 
 			HTTPConnection.disconnect();
@@ -1973,7 +1953,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
-			returnURL = "redirect:/failureSEBL?orderId=" + orderId;
+			returnURL = "redirect:/failure?orderId=" + orderId;
 		}
 
 		if (logger.isInfoEnabled()) {
@@ -1992,6 +1972,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	 * @param orderId
 	 * @return payment-success.jsp
 	 */
+	/*
 	@RequestMapping(value = "/successSEBL", method = RequestMethod.GET)
 	public String successSEBL(HttpServletRequest request, Model model, HttpServletResponse response,
 			@RequestParam(required = false) String orderId) {
@@ -2031,7 +2012,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 		return "payment-success";
 	}
-	
+	/**/
 	
 
 	/**
@@ -2043,6 +2024,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	 * @param orderId
 	 * @return payment-failure.jsp
 	 */
+	/*
 	@RequestMapping(value = "/failureSEBL", method = RequestMethod.GET)
 	public String failureSEBL(HttpServletRequest request, Model model, HttpServletResponse response,
 			@RequestParam(required = false) String orderId) {
@@ -2079,7 +2061,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 		return "payment-failure";
 	}
-	
+	/**/
 
 	/**
 	 * This method is used for Hit from API. SEBL
@@ -2385,7 +2367,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	}
 	/**/
 	/***********************************************************************************************/
-	//TODO SEBL ENDS
+	// SEBL ENDS
 	
 	
 	

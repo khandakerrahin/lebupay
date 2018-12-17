@@ -1670,7 +1670,10 @@ public class MerchantDaoImpl extends BaseDao implements MerchantDao{
 						+ "m.EBL_USER_NAME,"//48
 						+ "m.EBL_PASSWORD,"//49
 						+ "m.EBL_ID,"//50
-						+ "m.CITYBANK_MERCHANT_ID"//51
+						+ "m.CITYBANK_MERCHANT_ID,"//51
+						+ "m.SEBL_USER_NAME,"//52
+						+ "m.SEBL_PASSWORD,"//53
+						+ "m.SEBL_ID"//54
 						+ " from MERCHANT_MASTER m left outer join TYPE_MASTER t on m.TYPE_ID = t.TYPE_ID "
 						+ "left outer join COMPANY_MASTER c on m.MERCHANT_ID = c.MERCHANT_ID "
 						+ "where m.MERCHANT_ID=:MERCHANT_ID";//m.STATUS =:STATUS1 OR m.STATUS =:STATUS2
@@ -1757,6 +1760,9 @@ public class MerchantDaoImpl extends BaseDao implements MerchantDao{
 					merchantModel.setEblPassword(rs.getString(49));
 					merchantModel.setEblId(rs.getString(50));
 					merchantModel.setCityMerchantId(rs.getString(51));
+					merchantModel.setSeblUserName(rs.getString(52));
+					merchantModel.setSeblPassword(rs.getString(53));
+					merchantModel.setSeblId(rs.getString(54));
 					
 					merchantModel.setCompanyModel(companyModel);
 					merchantModel.setTypeModel(typeModel);
@@ -3220,6 +3226,9 @@ public class MerchantDaoImpl extends BaseDao implements MerchantDao{
 					+ "ebl_password =:ebl_password,"
 					+ "ebl_id =:ebl_id, "
 					+ "citybank_merchant_id =:citybank_merchant_id, "
+					+ "sebl_user_name =:sebl_user_name,"
+					+ "sebl_password =:sebl_password,"
+					+ "sebl_id =:sebl_id, "
 					+ "A_MODIFIED_DATE = localtimestamp(0),"
 					+ "A_MODIFIED_BY =:A_MODIFIED_BY where MERCHANT_ID =:MERCHANT_ID ";
 				
@@ -3229,6 +3238,9 @@ public class MerchantDaoImpl extends BaseDao implements MerchantDao{
 			pst.setStringAtName("ebl_password", merchantModel.getEblPassword()); // ebl_password
 			pst.setStringAtName("ebl_id", merchantModel.getEblId()); // ebl_id
 			pst.setStringAtName("citybank_merchant_id", merchantModel.getCityMerchantId()); // city_merchant_id
+			pst.setStringAtName("sebl_user_name", merchantModel.getSeblUserName()); // sebl_user_name
+			pst.setStringAtName("sebl_password", merchantModel.getSeblPassword()); // sebl_password
+			pst.setStringAtName("sebl_id", merchantModel.getSeblId()); // sebl_id
 			pst.setLongAtName("A_MODIFIED_BY", merchantModel.getaModifiedBy()); // MODIFIED_BY
 			pst.setLongAtName("MERCHANT_ID", merchantModel.getMerchantId()); // MERCHANT_ID
 			

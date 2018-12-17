@@ -61,6 +61,40 @@
 												placeholder="Merchant ID" name="cityMerchantId" value="${merchantModel.cityMerchantId}" >
 										</div>
 									</div>
+									
+									
+									
+								<label>SEBL Details:</label>
+								<div class="form-group">
+										<div class="customBox">
+											<span class="iArea"><img
+												src="<%=basePath%>resources/images/a3.png"></span> <input
+												class="form-control customInput required" name="seblId"
+												id="seblId" placeholder="SEBL ID" value="${merchantModel.seblId}">
+										</div>
+									</div>
+
+									<div class="form-group">
+										<div class="customBox">
+											<span class="iArea"><img
+												src="<%=basePath%>resources/images/ficon1.png"></span> <input
+												class="form-control customInput required" name="seblUserName"
+												value="${merchantModel.seblUserName}" id="seblUserName"
+												placeholder="SEBL User Name">
+										</div>
+									</div>
+
+									<div class="form-group">
+										<div class="customBox">
+											<span class="iArea"><img
+												src="<%=basePath%>resources/images/ficon2.png" /></span> <input
+												type="password" class="form-control customInput" id="seblPassword"
+												placeholder="SEBL Password" name="seblPassword" value="${merchantModel.seblPassword}">
+										</div>
+									</div>
+									
+									
+									
 
 
 								</div>

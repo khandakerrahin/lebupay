@@ -225,7 +225,7 @@ $(document).ready(function(){
 	                        		<c:if test="${not empty sEBLUserId}">
 			      						<div id="sectionD" class="tab-pane fade ">
 			                             	<div class="eachBox">
-				                                <h4>Debit/Credit SEBL Card</h4>
+				                                <h4>Debit/Credit Card</h4>
 				                                <ul>
 				                                	<li class="card_logos"><a href="sebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/visa.png" alt="visa card"></a></li>
 				                                    <li class="card_logos"><a href="sebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/mastercard.png" alt="master card"></a></li>
@@ -336,8 +336,8 @@ if(eBLUserName == "" || eBLUserPassword == "" || eBLUserId==""){
 			$("#sec").addClass("active");//CITY
 		}
 	}else{
-		$("#sectionD").addClass("in active");//bkash
-		$("#secD").addClass("active");//bkash
+		$("#sectionD").addClass("in active");//SEBL
+		$("#secD").addClass("active");//SEBL
 	}
  }
 
