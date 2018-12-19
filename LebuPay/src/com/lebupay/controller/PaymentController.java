@@ -186,7 +186,11 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		data += "<CancelURL>" + basePath + "cancelOrder" + "</CancelURL>";
 		data += "<DeclineURL>" + basePath + "declineOrder" + "</DeclineURL>";
 		data += "</Order></Request></TKKPG>";
-
+		
+		//TODO remove after debugging
+		if (logger.isInfoEnabled()) {
+			logger.info("City Bank request data --> "+data);
+		}
 		String Response = null;
 		try {
 
@@ -220,9 +224,11 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		// For getting the required values
 		xmlDoc.getDocumentElement().normalize();
 		//TODO
-		//TODO
+		//TODO remove after debugging
 		if (logger.isInfoEnabled()) {
-			logger.info("City Bank Payment response -->"+xmlDoc);
+			logger.info("City Bank Payment xmlDoc response -->"+xmlDoc);
+			logger.info("City Bank Payment response -->"+Response);
+			
 		}
 		
 

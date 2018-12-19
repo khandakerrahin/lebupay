@@ -9,6 +9,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
     <head>
+  <meta name="description" content="Lebupay is an affordable online payment gateway provider in Bangladesh. We enable small to large buiness with payment gateway solution. You will get the money in your account automatically within two days.">
+  <meta name="keywords" content="online payment, payment gateway bangladesh, payment platform bangladesh, payment gateway, afforadle payment gateway,payment gateway for small business, reliable payment gateway, spider digital commerce">
+    
 <script src="<%=basePath%>resources/js/jquery-2.1.1.js"></script>
 <script type="text/javascript">
 $(window).on('keydown',function(event)
@@ -235,7 +238,7 @@ html {
                         	<form> 
                             	<div class="row">
                                 	<label for="phone" class="col-lg-3 col-xs-4"> Phone- </label>
-                                	<span class="col-lg-5"> +88 01708367941</span>
+                                	<span class="col-lg-5"> +88 01911310261</span>
                                     
                                 </div>
                                 <div class="row">
@@ -244,7 +247,7 @@ html {
                                     
                                 </div>
                                 <div class="row">
-                                	<label for="messenger" class="col-lg-3 col-xs-4"> Messenger-</label>
+                                	<label 0for="messenger" class="col-lg-3 col-xs-4"> Messenger-</label>
                                     <span class="col-lg-5">  m.me/lebupay</span>
                                 </div>
                             </form>
