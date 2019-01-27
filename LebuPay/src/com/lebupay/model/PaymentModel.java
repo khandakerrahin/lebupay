@@ -22,7 +22,16 @@ public class PaymentModel extends CommonModel {
 	private TransactionModel transactionModel;
 	private String transactionStatus;
 	private String transactionDate;
+	//WASIF 20190110
+    private String card_brand;
+    private String provided_card_number;
+    private String bank_merchant_id;
+    private String transaction_type;
+    private String bkash_payment_number;
+    private String billing_name;
+    private String device_ipaddress;
 
+	
 	public Long getOrderID() {
 		return orderID;
 	}
@@ -182,8 +191,85 @@ public class PaymentModel extends CommonModel {
 	public void setTransactionDate(String transactionDate) {
 		this.transactionDate = transactionDate;
 	}
+    public String getCard_brand() {
+		return card_brand;
+	}
 
+	public void setCard_brand(String card_brand) {
+		this.card_brand = card_brand;
+	}
+
+	public String getProvided_card_number() {
+		return provided_card_number;
+	}
+
+	public void setProvided_card_number(String provided_card_number) {
+		this.provided_card_number = provided_card_number;
+	}
+
+	public String getBank_merchant_id() {
+		return bank_merchant_id;
+	}
+
+	public void setBank_merchant_id(String bank_merchant_id) {
+		this.bank_merchant_id = bank_merchant_id;
+	}
+
+	public String getTransaction_type() {
+		return transaction_type;
+	}
+
+	public void setTransaction_type(String transaction_type) {
+		this.transaction_type = transaction_type;
+	}
+
+	public String getBkash_customer() {
+		return bkash_payment_number;
+	}
+
+	public void setBkash_customer(String bkash_payment_number) {
+		this.bkash_payment_number = bkash_payment_number;
+	}
+
+	public String getBilling_name() {
+		return billing_name;
+	}
+
+	public void setBilling_name(String billing_name) {
+		this.billing_name = billing_name;
+	}
+
+	public String getDevice_ipaddress() {
+		return device_ipaddress;
+	}
+
+	public void setDevice_ipaddress(String device_ipaddress) {
+		this.device_ipaddress = device_ipaddress;
+	}
+
+//TODO
+    
+    
 	@Override
+
+	public String toString() {
+		return "PaymentModel [orderID=" + orderID + ", firstName=" + firstName
+				+ ", lastName=" + lastName + ", name=" + name + ", email="
+				+ email + ", mobileNumber=" + mobileNumber + ", successURL="
+				+ successURL + ", failureURL=" + failureURL + ", amount="
+				+ amount + ", accessKey=" + accessKey + ", orderTransactionID="
+				+ orderTransactionID + ", token=" + token + ", responseCode="
+				+ responseCode + ", responseMessage=" + responseMessage
+				+ ", card_brand=" + card_brand + ", provided_card_number="+provided_card_number
+				+ ", bank_merchant_id=" + bank_merchant_id + ", transaction_type="+transaction_type
+				+ ", bkash_payment_number=" + bkash_payment_number + ", billing_name="+billing_name
+				+ ", device_ipaddress=" + device_ipaddress 
+				+ ", merchantModel=" + merchantModel + ", customerDetails="
+				+ customerDetails + ", SESSIONKEY=" + SESSIONKEY + ",transactionDate=" + transactionDate
+				+ ", transactionModel=" + transactionModel + ", transactionStatus="
+				+ transactionStatus + "]";
+	}/**/
+	/*
 	public String toString() {
 		return "PaymentModel [orderID=" + orderID + ", firstName=" + firstName
 				+ ", lastName=" + lastName + ", name=" + name + ", email="
@@ -196,6 +282,6 @@ public class PaymentModel extends CommonModel {
 				+ customerDetails + ", SESSIONKEY=" + SESSIONKEY + ",transactionDate=" + transactionDate
 				+ ", transactionModel=" + transactionModel + ", transactionStatus="
 				+ transactionStatus + "]";
-	}
+	}/**/
 
 }

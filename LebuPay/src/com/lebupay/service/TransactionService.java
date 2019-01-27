@@ -184,6 +184,15 @@ public interface TransactionService {
 	 * @return PaymentModel
 	 * @throws Exception
 	 */
+	public PaymentModel fetchTransactionByAccessKey_V2(String accessKey, String orderTransactionId) throws Exception ;
+	
+	/**
+	 * This method is used for fetching the Transaction Details w.r.t AccessKey,orderTransactionId.
+	 * @param accessKey
+	 * @param orderTransactionId
+	 * @return PaymentModel
+	 * @throws Exception
+	 */
 	public PaymentModel fetchTransactionByAccessKey(String accessKey, String orderTransactionId) throws Exception ;
 	
 	/**

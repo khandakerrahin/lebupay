@@ -68,7 +68,7 @@ $(window).on('keydown',function(event)
 	
 	$(document).on("contextmenu",function(e)
 	{
-	   e.preventDefault();
+	 //  e.preventDefault();
 	});
 	
 	
@@ -181,7 +181,7 @@ $(document).ready(function(){
                         	<c:if test="${not empty eBLUserName}">
                         		<c:if test="${not empty eBLUserPassword}">
 	                        		<c:if test="${not empty eBLUserId}">
-	                            		<li class="active" id="secA"><a href="#sectionA">Card</a></li>
+	                            		<li class="active" id="secA"><a href="#sectionA">Payment Options</a></li>
 	                           		</c:if>
                         		</c:if>
                            </c:if> 
@@ -189,17 +189,23 @@ $(document).ready(function(){
                            <c:if test="${not empty sEBLUserName}">
                         		<c:if test="${not empty sEBLUserPassword}">
 	                        		<c:if test="${not empty sEBLUserId}">
-	                            		<li  id="secD"><a href="#sectionD">Card</a></li>
+	                            		<li  id="secD"><a href="#sectionD">Payment Options</a></li>
 	                           		</c:if>
                         		</c:if>
                            </c:if>
                            
                             
                             <c:if test="${not empty citybankMerchantId}">
-						    	 <li id ="secC"><a href="#sectionC">Card</a></li>
+						    	 <li id ="secC"><a href="#sectionC">Payment Options</a></li>
 							</c:if>
-							<li  id="secB"><a href="#sectionB">bKash</a></li>
-                            
+							<!--  Changed by Wasif Ahmed -->
+							<c:if test="${empty eBLUserName}">
+						   	  <c:if test="${empty sEBLUserName}">
+								<c:if test="${empty citybankMerchantId}">
+							 		<li id="secB"><a href="#sectionB">bKash</a></li>
+                            	</c:if>
+                              </c:if>
+                            </c:if>
    						 </ul>
                          
    						 <div class="tab-content">  						 
@@ -208,11 +214,11 @@ $(document).ready(function(){
 	                        		<c:if test="${not empty eBLUserId}">
 			      						<div id="sectionA" class="tab-pane fade in active">
 			                             	<div class="eachBox">
-				                                <h4>Debit/Credit Card</h4>
 				                                <ul>
 				                                	<li class="card_logos"><a href="ebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/visa.png" alt="visa card"></a></li>
 				                                    <li class="card_logos"><a href="ebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/mastercard.png" alt="master card"></a></li>
 				                                    <li class="card_logos diner"><a href="ebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/diners_club.png" alt="diners club"></a></li>
+				                                    <li id="bkash_hov" class="card_logos"><a href="bkash?transactionId=${transactionId1 }"><img src="resources/images/bkash_v2.png" style= "width: 25px" alt="bkash"></a></li>
 				                                </ul>
 			                                </div>
 			                            </div>
@@ -225,10 +231,10 @@ $(document).ready(function(){
 	                        		<c:if test="${not empty sEBLUserId}">
 			      						<div id="sectionD" class="tab-pane fade ">
 			                             	<div class="eachBox">
-				                                <h4>Debit/Credit Card</h4>
 				                                <ul>
 				                                	<li class="card_logos"><a href="sebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/visa.png" alt="visa card"></a></li>
 				                                    <li class="card_logos"><a href="sebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/mastercard.png" alt="master card"></a></li>
+				                                    <li class="card_logos"><a href="bkash?transactionId=${transactionId1 }"><img src="resources/images/bkash_v2.png" style= "width: 25px" alt="bkash"></a></li>
 				                                </ul>
 			                                </div>
 			                            </div>
@@ -240,20 +246,19 @@ $(document).ready(function(){
                             <c:if test="${not empty citybankMerchantId}">
     						 <div id="sectionC"  class="tab-pane fade">
 	                               <div class="eachBox">
-		                                <h4>Debit/Credit Card</h4>
 		                                <ul ><!-- onclick="return clickOnEMI()" -->
 		                                	<li class="card_logos"><a href="paycitybank?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/visa.png" alt="visa card"></a></li>
 		                                    <li class="card_logos"><a href="paycitybank?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/mastercard.png" alt="master card"></a></li>
 		                                    <li class="card_logos diner"><a href="paycitybank?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/amex.png" alt="diners club"></a></li>
+		                                    <li class="card_logos"><a href="bkash?transactionId=${transactionId1 }"><img src="resources/images/bkash_v2.png" style= "width: 25px" alt="bkash"></a></li>
 		                                </ul>
 	                             	</div>
 	                          </div>
    						 </c:if>
         					<div id="sectionB" class="tab-pane fade">
                                <div class="eachBox bkashl">
-	                                <h4>bKash</h4>
 	                                <ul>
-	                                	<li class="card_logos"><a href="bkash?transactionId=${transactionId1 }"><img src="resources/images/bkash.png" alt="bkash"></a></li>
+	                                	<li class="card_logos"><a href="bkash?transactionId=${transactionId1 }"><img src="resources/images/bkash_v2.png" style= "width: 25px"  alt="bkash"></a></li>
 	                                </ul>
                                 </div>
                             </div>                        
@@ -271,8 +276,7 @@ $(document).ready(function(){
 					<li><img src="<%=basePath%>resources/images/verified-by-visa.png" alt="verified by visa"></li>
 					<li><img src="<%=basePath%>resources/images/mastercard-secure-code.png" alt="mastercard secured code"></li>
 					<li><img src="<%=basePath%>resources/images/american-express-safekey.png" alt="american express safekey"></li>
-					<li><img src="<%=basePath%>resources/images/diner-club-protect.png" alt="diners-club-protect"></li>
-										
+					<li><img src="<%=basePath%>resources/images/diner-club-protect.png" alt="diners-club-protect"></li>										
 				</ul>
 			</div>
 		</div>

@@ -233,6 +233,15 @@ public interface TransactionDAO {
 	 */
 	public PaymentModel fetchTransactionByAccessKey(String accessKey,String orderTransactionId) throws Exception ;
 	
+	/**
+	 * This method is used to fetch the Transaction Details according to his/her ACCESSKEY, orderTransactionId.
+	 * @param accessKey
+ 	 * @param orderTransactionId
+	 * @return TransactionModel
+	 * @throws Exception
+	 */
+	public PaymentModel fetchTransactionByAccessKey_V2(String accessKey,String orderTransactionId) throws Exception ;
+	
 	
 	/**
 	 * This method is used to fetch card percentage

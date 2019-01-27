@@ -657,10 +657,8 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 	
 	@Override
 	public CardTypePercentageModel fetchCardPercentageByMerchantId (Long merchantId,String cardType) throws Exception {
-		
-		if (logger.isInfoEnabled()) {
-			logger.info("fetchCardPercentageByMerchantId -- START");
-		}
+		//TODO
+		System.out.println("fetchCardPercentageByMerchantId -- START cardType:merchantId "+cardType+" : "+merchantId);
 		
 		Connection connection = oracleConnection.Connect();
 		OraclePreparedStatement  pst = null;
@@ -673,6 +671,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 				pst = (OraclePreparedStatement) connection.prepareStatement(sql);
 				pst.setLongAtName("MERCHANT_ID", merchantId); // merchantId
 				pst.setStringAtName("CARD_TYPE", cardType.toUpperCase()); // cardType
+//				pst.setStringAtName("CARD_TYPE", cardType==null?"NULL":cardType.toUpperCase()); // cardType
 				ResultSet rs =  pst.executeQuery();
 				if(rs.next()){
 					
@@ -692,14 +691,17 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					} else {
 						cardTypePercentageModel.setFinalCardPercentage(cardTypePercentageModel.getCardPercentage());
 						cardTypePercentageModel.setType("PERCENTAGE");
-					}
-					
-					
-				}
-				
-		} finally {
-	          try{
-	           
+					}										
+				}				
+		}catch(Exception e) {
+			//TODO remove the catch block 
+			e.printStackTrace();
+			if (logger.isInfoEnabled()) {
+				logger.info("fetchCardPercentageByMerchantId catch block "+e);
+		   }
+		}
+			finally {		
+	          try{           
 	           if(pst != null)
 	            if(!pst.isClosed())
 	            	pst.close();
@@ -709,7 +711,6 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 	          }
 	
 	          try{
-	
 	           if(connection != null)
 	            if(!connection.isClosed())
 	             connection.close();
@@ -1433,7 +1434,6 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 			pst.setStringAtName("SECURE_ID", transactionModel.getSecureId());
 			pst.setStringAtName("ACQUIRER_CODE", transactionModel.getAcquirerCode());
 			pst.setStringAtName("AUTHORIZATION_RESPONSE_STAN", transactionModel.getAuthorizationResponse_stan());
-			//TODO
 			pst.setStringAtName("BANK_MERCHANT_ID", transactionModel.getMerchantId());
 			pst.setStringAtName("TOTAL_AUTHORIZED_AMOUNT", transactionModel.getTotalAuthorizedAmount());
 			pst.setStringAtName("PROVIDED_CARD_NUMBER", transactionModel.getProvided_card_number());
@@ -1600,8 +1600,6 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ "m.SEBL_USER_NAME," // 25
 					+ "m.SEBL_PASSWORD," // 26
 					+ "m.SEBL_ID " // 27
-					
-					// TODO user name , password and ebl id
 					+ " from TRANSACTION_MASTER tm, ORDER_MASTER om, MERCHANT_MASTER m where tm.MERCHANT_ID = m.MERCHANT_ID and tm.ORDER_ID = om.ORDER_ID and tm.TRANSACTION_ID =:TRANSACTION_ID order by tm.CREATED_DATE desc";
 			
 				System.out.println("Fetch Transaction By ID ==>> "+sql);
@@ -1835,7 +1833,9 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					//WASIF 20181114
 					+ "m.SEBL_USER_NAME," // 27
 					+ "m.SEBL_PASSWORD," // 28
-					+ "m.SEBL_ID " // 29
+					+ "m.SEBL_ID, " // 29
+					+ "m.CITYBANK_MERCHANT_ID " // 30
+					//TODO add citybank_merchant_id
 					//WASIF 20181114
 					+ " from TRANSACTION_MASTER tm, MERCHANT_MASTER m, ORDER_MASTER om "
 					+ "where tm.MERCHANT_ID = m.MERCHANT_ID and tm.TXN_ID =:TXN_ID and tm.ORDER_ID = om.ORDER_ID order by tm.CREATED_DATE desc";
@@ -1892,6 +1892,8 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					merchantModel.setSeblUserName(rs.getString(27));
 					merchantModel.setSeblPassword(rs.getString(28));
 					merchantModel.setSeblId(rs.getString(29));
+					//TODO
+					merchantModel.setCityMerchantId(rs.getString(30));
 					//WASIF 20181114
 					transactionModel.setMerchantModel(merchantModel);
 					
@@ -2522,7 +2524,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 	}
 	
 	/**
-	 * This method is used for fetching Transaction by TXNID.
+	 * This method is used for fetching Transaction by TXNID. 3rd API also use this method
 	 * @param accessKey
 	 * @param orderTransactionId
 	 * @return TransactionModel
@@ -2539,7 +2541,6 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 		TransactionModel transactionModel = null;
 		PaymentModel paymentModel = null;
 		try {
-			
 			String sql = "select " 
 					+ "NVL(tm.GROSS_AMOUNT,tm.AMOUNT) AS AMOUNT," // 1
 					+ "tm.TXN_ID," // 2
@@ -2565,7 +2566,8 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ "om.CUTOMER_DETAILS" // 8
 					+ " from  MERCHANT_MASTER m, ORDER_MASTER om LEFT OUTER JOIN TRANSACTION_MASTER tm ON tm.ORDER_ID = om.ORDER_ID "
 					+ "where om.MERCHANT_ID = m.MERCHANT_ID and m.ACCESS_KEY='"+accessKey+"' and om.ORDER_TRANSACTION_ID='"+orderTransactionId+"'";
-				System.out.println("Fetch Transaction By Access Key & Order Transaction ID ==>> "+sql1);
+			
+			System.out.println("Fetch Transaction By Access Key & Order Transaction ID ==>> "+sql1);
 				
 				pst = (OraclePreparedStatement) connection.prepareStatement(sql);
 				pst.setStringAtName("ACCESS_KEY", accessKey); // ACCESS_KEY
@@ -2640,6 +2642,177 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 		
 	   if (logger.isInfoEnabled()) {
 			logger.info("fetchTransactionByAccessKey -- END");
+	   }
+		
+		return paymentModel;
+	}
+
+	
+//WASIF NEW method 20190110
+	/**
+	 * This method is used for fetching Transaction by TXNID Specially new 3rd API also use this method
+	 * @param accessKey
+	 * @param orderTransactionId
+	 * @return TransactionModel
+	 * @throws Exception
+	 */
+	public PaymentModel fetchTransactionByAccessKey_V2(String accessKey, String orderTransactionId) throws Exception {
+		
+		if (logger.isInfoEnabled()) {
+			logger.info("fetchTransactionByAccessKey_V2 -- START");
+			logger.info("fetchTransactionByAccessKey_V2 --orderTransactionId: "+orderTransactionId);
+			logger.info("fetchTransactionByAccessKey_V2 --accessKey: "+accessKey);
+		}
+		
+		Connection connection = oracleConnection.Connect();
+		OraclePreparedStatement  pst = null;
+		TransactionModel transactionModel = null;
+		PaymentModel paymentModel = null;
+		try {
+	//TODO needs work here 
+
+			String sql = "select " 
+					+ "NVL(tm.GROSS_AMOUNT,tm.AMOUNT) AS AMOUNT," // 1
+					+ "tm.TXN_ID," // 2
+					+ "tm.RESPONSE_MESSAGE," // 3
+					+ "tm.RESPONSE_CODE," // 4
+					+ "tm.STATUS," // 5
+					+ "TO_CHAR(tm.CREATED_DATE,'YYYY-MM-DD HH24:MI:SS')," // 6
+					+ "om.ORDER_TRANSACTION_ID," // 7
+					+ "om.CUTOMER_DETAILS," // 8
+//new fields
+					+ "tm.card_brand," //9
+					+ "tm.provided_card_number," //10
+					+ "tm.bank_merchant_id," //11
+					+ "tm.transaction_type," //12
+					+ "tm.enrollment_status," //13 bkash sender
+					+ "tm.customer_firstname," //14 
+					+ "tm.customer_lastname," //15
+					+ "tm.device_ipaddress," //16
+					+ "cm.transaction_type," //17
+					+ "cm.pan " //18 CITYBANK CARD MASKING
+					+ "from MERCHANT_MASTER m,CITYBANK_TRANSACTION_MASTER cm, ORDER_MASTER om,TRANSACTION_MASTER tm "
+					+ "where tm.ORDER_ID = om.ORDER_ID and tm.transaction_id=cm.transaction_master_id(+) and om.MERCHANT_ID = m.MERCHANT_ID and m.ACCESS_KEY=:ACCESS_KEY and om.ORDER_TRANSACTION_ID=:ORDER_TRANSACTION_ID";
+		
+				
+				pst = (OraclePreparedStatement) connection.prepareStatement(sql);
+				pst.setStringAtName("ACCESS_KEY", accessKey); // ACCESS_KEY
+				pst.setStringAtName("ORDER_TRANSACTION_ID", orderTransactionId); // ORDER_TRANSACTION_ID
+		
+				ResultSet rs =  pst.executeQuery();
+				//TODO remove try block
+				/*
+				try {
+				rs =  pst.executeQuery();
+				}catch(Exception e) {
+					e.printStackTrace();
+					if (logger.isInfoEnabled()) { 
+						logger.info(" transactionDaoImpl -fetchTransactionByAccessKey_V2 responseCode: "+ e+"\n"+e.getStackTrace());			
+					}
+				}/**/
+				//TODO NEED to remove
+				
+				
+				while(rs.next()){
+					
+					if (logger.isInfoEnabled()) { 
+						logger.info(" transactionDaoImpl -fetchTransactionByAccessKey_V2 responseCode: "+rs.getString(4));			
+						System.out.println("trxDaoImpl -fetchTransactionByAccessKey_V2 responseCode: print "+rs.getString(4));
+					}
+					transactionModel = new TransactionModel();
+										
+					paymentModel = new PaymentModel();
+					paymentModel.setAmount(rs.getDouble(1));
+					transactionModel.setTxnId(rs.getString(2));
+					paymentModel.setResponseMessage(rs.getString(3));
+					paymentModel.setResponseCode(rs.getString(4));
+					paymentModel.setTransactionDate(rs.getString(6));
+					paymentModel.setOrderTransactionID(rs.getString(7));
+					paymentModel.setCustomerDetails(rs.getString(8));					
+
+					
+
+					//WASIF 20190110
+					transactionModel.setCard_brand(rs.getString(9));
+					paymentModel.setBank_merchant_id(rs.getString(11));
+					//paymentModel.setBkash_customer(rs.getString(13));
+					paymentModel.setBilling_name(rs.getString(14)+" "+rs.getString(15));
+					paymentModel.setDevice_ipaddress(rs.getString(16));
+					if(rs.getString(18)!=null && !rs.getString(18).isEmpty()) {//CITYBANK
+						System.out.println("CITYBANK Card found");
+						
+						paymentModel.setProvided_card_number(rs.getString(18));
+						paymentModel.setTransaction_type(rs.getString(17));
+					}else {
+						paymentModel.setProvided_card_number(rs.getString(10));
+						paymentModel.setTransaction_type(rs.getString(12));
+					}
+				//	if(!rs.getString(13).isEmpty()) { //If bkash respond this //TODO needs to change 
+						paymentModel.setBkash_customer(rs.getString(13));
+				//	}
+					
+					int status = rs.getInt(5);
+					
+					if(status == 0 || status == 1 || status == 2) {
+						paymentModel.setTransactionStatus("Success");
+					}
+					else if(status == 3 || status == 5) {
+						paymentModel.setTransactionStatus("Cancelled");
+					}
+					else if(status == 4) {
+						paymentModel.setTransactionStatus("Incomplete");
+					}
+					//TODO
+					if (logger.isInfoEnabled()) { 
+						logger.info("fetchTrxAccessKey_V2 0,1,2 -S, 3,5-cancel, 4 incomplete status: "+rs.getString(5));
+					}
+					
+					PaymentModel paymentModel3 = new PaymentModel();
+					Gson gson = new Gson();
+					paymentModel3 = gson.fromJson(paymentModel.getCustomerDetails(),PaymentModel.class);
+					
+					if(Objects.nonNull(paymentModel3)) {
+						paymentModel.setName(paymentModel3.getName());
+						paymentModel.setEmailId(paymentModel3.getEmailId());
+						paymentModel.setMobileNumber(paymentModel3.getMobileNumber());
+					}
+					
+					paymentModel.setCustomerDetails(null);
+					
+					//paymentModel.setTransactionModel(transactionModel);
+				}				
+		} //TODO added by Wasif
+		catch(Exception e) {
+			//TODO NEED to remove
+			if (logger.isInfoEnabled()) { 
+				logger.info(" transactionDaoImpl -fetchTransactionByAccessKey_V2 responseCode: "+ e+"\n"+e.getStackTrace());			
+			}
+			e.printStackTrace();
+		} //TODO added by Wasif 
+		finally {
+	          try{
+	           
+	           if(pst != null)
+	            if(!pst.isClosed())
+	            	pst.close();
+	           
+	          }catch(Exception e){
+	                 e.printStackTrace();
+	          }
+	
+	          try{
+	
+	           if(connection != null)
+	            if(!connection.isClosed())
+	             connection.close();
+	
+	          }catch(Exception e){
+	        	  e.printStackTrace();
+	          }      
+	   }
+		
+	   if (logger.isInfoEnabled()) {
+			logger.info("fetchTransactionByAccessKey_V2 -- END");
 	   }
 		
 		return paymentModel;

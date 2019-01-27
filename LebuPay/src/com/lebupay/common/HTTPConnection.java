@@ -28,7 +28,7 @@ public class HTTPConnection {
      */
     private static HttpURLConnection httpConn;
     /* modified at 20180627 */
-  //  private static SSLServerSocket sslSocket;
+    // private static SSLServerSocket sslSocket;
     /* modified at 20180627 */
  
     /**

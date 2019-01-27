@@ -253,6 +253,7 @@ public Object[][] exportAllTransactionsForExcelByMerchantId(DataTableModel dataT
 			objects2[j++] = transactionModels.get(i).getMerchantModel().getEmailId();
 			objects2[j++] = transactionModels.get(i).getMerchantModel().getMobileNo();
 			objects2[j++] = transactionModels.get(i).getMerchantModel().getEblId();
+			//TODO change getEBLId to get bank merchant ID
 			objects2[j++] = String.valueOf(transactionModels.get(i).getBalance());
 			objects2[j++] = String.valueOf(transactionModels.get(i).getLoyaltyPoint());
 			objects2[j++] = String.valueOf(transactionModels.get(i).getGrossAmount());
@@ -346,10 +347,18 @@ public Object[][] exportAllTransactionsForExcelByMerchantId(DataTableModel dataT
 	 * @throws Exception
 	 */
 	public synchronized int updateTransactionAfterPayment(TransactionModel transactionModel) throws Exception {
-		
+
 		if (logger.isInfoEnabled()) {
 			logger.info("updateTransactionAfterPayment -- START");
-		}
+			//TODO
+			try {
+			logger.info("updateTransactionAfterPayment transactionModel.getCard_brand() :"+transactionModel.getCard_brand());
+			}catch(Exception e) {
+				e.printStackTrace();
+				logger.info(e);
+			}
+			
+			}
 		
 		MerchantModel merchantModel = merchantDao.fetchActiveMerchantById(transactionModel.getMerchantModel().getMerchantId());
 		TransactionModel transactionModel2 = transactionDao.fetchTransactionById(transactionModel.getTransactionId());
@@ -634,6 +643,29 @@ public Object[][] exportAllTransactionsForExcelByMerchantId(DataTableModel dataT
 		
 		return paymentModel;
 	}
+	
+	/**
+	 * This method is used for fetching the Merchant Details w.r.t AccessKey. used for 3rd API
+	 * @param accessKey
+	 * @param orderTransactionId
+	 * @return PaymentModel
+	 * @throws Exception
+	 */
+	public PaymentModel fetchTransactionByAccessKey_V2(String accessKey, String orderTransactionId) throws Exception {
+		
+		if (logger.isInfoEnabled()) {
+			logger.info("Merchant fetchMerchantByAccessKey_V2-- START");
+		}
+		
+		PaymentModel paymentModel = transactionDao.fetchTransactionByAccessKey_V2(accessKey, orderTransactionId);
+		
+		if (logger.isInfoEnabled()) {
+			logger.info("Merchant fetchMerchantByAccessKey_V2 -- END");
+	    }
+		
+		return paymentModel;
+	}
+	
 	
 	/**
 	 * This method is used for fetching all the Transaction Details By Merchant Id.

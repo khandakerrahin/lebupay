@@ -521,7 +521,7 @@ public class MerchantServiceImpl extends BaseDao implements MerchantService {
 				String templateID = retval[2];
 				
 				String header = "OTP";
-				String emailMessageBody = "<p>Hi there!</p><p>Your new OTP is "+phoneCode+". </p> <p>Payment GateWay Team </p>";
+				String emailMessageBody = "<p>Hi there!</p><p>Your new OTP is "+phoneCode+". </p> <p>. Thank you for using Lebupay. </p>";
 				String subject = messageUtil.getBundle("new.otp.email.subject");
 				
 				String jsonReqString = getFileString(jsonReqName,jsonReqPath);

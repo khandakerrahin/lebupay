@@ -349,10 +349,8 @@ html {
 							<div class="col-sm-5 lp-no-display">
 								<img src="<%=basePath%>resources/images/form_image.png"
 									class="img-responsive" width="329" height="213" alt="">
-
 							</div>
 						</div>
-
 					</div>
 				</div>
 			</div>
@@ -396,7 +394,6 @@ html {
 									class="img-responsive" width="329" height="213" alt="">
 							</div>
 						</div>
-
 					</div>
 				</div>
 			</div>
@@ -532,7 +529,6 @@ html {
 									class="img-responsive" width="329" height="213" alt="">
 							</div>
 						</div>
-
 					</div>
 				</div>
 			</div>

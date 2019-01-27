@@ -17,7 +17,7 @@
 				<div class="row">
 					<div class="col-sm-6 col-xs-12">
 						<h3>
-							<b>Recipient :</b> contact@lebupay.com
+							<b>Recipient :</b> support@lebupay.com
 						</h3>
 					</div>
 					<div class="col-sm-6 col-xs-12">

@@ -187,10 +187,11 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		data += "<DeclineURL>" + basePath + "declineOrder" + "</DeclineURL>";
 		data += "</Order></Request></TKKPG>";
 		
-		//TODO remove after debugging
+		//remove after debugging
+		/*
 		if (logger.isInfoEnabled()) {
 			logger.info("City Bank request data --> "+data);
-		}
+		}/**/
 		String Response = null;
 		try {
 
@@ -223,12 +224,10 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 		// For getting the required values
 		xmlDoc.getDocumentElement().normalize();
-		//TODO
-		//TODO remove after debugging
+
+		//remove after debugging
 		if (logger.isInfoEnabled()) {
-			logger.info("City Bank Payment xmlDoc response -->"+xmlDoc);
-			logger.info("City Bank Payment response -->"+Response);
-			
+			logger.info("City Bank Payment xmlDoc response -->"+xmlDoc);		
 		}
 		
 
@@ -249,7 +248,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	}
 
 	/**
-	 * This method is Used to Payment of CityBank.
+	 * This method is Used to Payment of CityBank. Create order
 	 * 
 	 * @param request
 	 * @param model
@@ -317,7 +316,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		data += "<Merchant>" + transactionModel2.getMerchantModel().getCityMerchantId() + "</Merchant>";
 		data += "<Amount>" + transactionModel2.getAmount() * 100 + "</Amount>";
 		data += "<Currency>" + "050" + "</Currency>";
-		data += "<Description>" + transactionModel2.getTxnId() + "</Description>";
+		data += "<Description>" + transactionModel2.getTxnId() + "</Description>"; //TODO add 26-3-trx ID 26=amex 3=tenure(can be changed) and trxid
 		data += "<ApproveURL>" + basePath + "approveOrder" + "</ApproveURL>";
 		data += "<CancelURL>" + basePath + "cancelOrder" + "</CancelURL>";
 		data += "<DeclineURL>" + basePath + "declineOrder" + "</DeclineURL>";
@@ -503,7 +502,8 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				transactionModel.setDescription(cityOrderID);
 				transactionModel.setNameOnCard(cardHolderName);
 				transactionModel.setCustomer_firstName(name);
-
+			//	transactionModel.setMerchantId(transactionModel2.getMerchantModel().getCityMerchantId());
+                //TODO  city bank todo mid add
 				int result = transactionServiceImpl.updateTransactionAfterCityPayment(transactionModel);
 
 				if (result > 0) {
@@ -591,9 +591,14 @@ public class PaymentController extends BaseDao implements SaltTracker {
 							if (Objects.nonNull(paymentModel.getMobileNumber())
 									|| !paymentModel.getMobileNumber().equals("")) {
 								try {
+									/*
 									sendSMS.smsSend(paymentModel.getMobileNumber(),
 											"Thank you for the payment. We have received "
-													+ transactionModel.getGrossAmount() + " BDT");
+													+ transactionModel.getGrossAmount() + " BDT.");/**/
+									
+									sendSMS.smsSend(paymentModel.getMobileNumber(),
+											"We have received "
+													+ transactionModel.getGrossAmount() + " BDT. Thank You for paying with LEBUPAY. Visit www.we-top-up.com form mobile recharge.");
 								} catch (Exception e) {
 									e.printStackTrace();
 								}
@@ -780,10 +785,11 @@ public class PaymentController extends BaseDao implements SaltTracker {
 									System.out.println("Mail Sending Failed");
 								}
 							}
-
+							//TODO remove comment tag to enable sms sending when order is cancelled
+/*
 							if (Objects.nonNull(paymentModel.getMobileNumber())
 									|| !paymentModel.getMobileNumber().equals("")) {
-
+                            //SMS for cancel order
 								try {
 									sendSMS.smsSend(paymentModel.getMobileNumber(),
 											"You have cancelled your order. Please try again.");
@@ -791,7 +797,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 									e.printStackTrace();
 									System.out.println("Send SMS");
 								}
-							}
+							}/**/
 						}
 
 					} else {
@@ -1122,7 +1128,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		return "payment-failure";
 	}
 
-           //TODO EBL STARTS HERE	
+           // EBL STARTS HERE	
 	/**
 	 * This method is used to open payment page for EBL gateway.
 	 * 
@@ -1468,7 +1474,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 									if (Objects.nonNull(paymentModel.getMobileNumber())) {
 										sendSMS.smsSend(paymentModel.getMobileNumber(),
 												"We have received " + transactionModel.getGrossAmount()
-														+ " BDT. Thank You for paying with LEBUPAY.");
+														+ " BDT. Thank You for paying with LEBUPAY. Visit www.we-top-up.com form mobile recharge.");
 									}
 
 								}
@@ -1570,7 +1576,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	}
 
 	
-	//TODO SEBL STARTS HERE 
+	//SEBL STARTS HERE 
 	
 	/**********************************************************************************************/
 
@@ -1916,7 +1922,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 									if (Objects.nonNull(paymentModel.getMobileNumber())) {
 										sendSMS.smsSend(paymentModel.getMobileNumber(),
 												"We have received " + transactionModel.getGrossAmount()
-														+ " BDT. Thank You for paying with LEBUPAY.");
+														+ " BDT. Thank You for paying with LEBUPAY. Visit www.we-top-up.com form mobile recharge.");
 									}
 
 								}
@@ -1969,409 +1975,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		return returnURL;
 	}
 
-	/**
-	 * This method is used to open success page after completion of SEBL payment.
-	 * 
-	 * @param request
-	 * @param model
-	 * @param response
-	 * @param orderId
-	 * @return payment-success.jsp
-	 */
-	/*
-	@RequestMapping(value = "/successSEBL", method = RequestMethod.GET)
-	public String successSEBL(HttpServletRequest request, Model model, HttpServletResponse response,
-			@RequestParam(required = false) String orderId) {
-
-		if (logger.isInfoEnabled()) {
-			logger.info("successSEBL -- START");
-		}
-
-		try {
-			System.out.println("Coming In SUCCESS Section ==>> " + orderId);
-			TransactionModel transactionModel = transactionService.fetchTransactionByTXNId(orderId);
-
-			if (Objects.nonNull(transactionModel)) {
-
-				PaymentModel paymentModel = new PaymentModel();
-				Gson gson = new Gson();
-				// JSON to Java object, read it from a Json String.
-				paymentModel = gson.fromJson(transactionModel.getPaymentModel().getCustomerDetails(),
-						PaymentModel.class);
-				System.out.println("paymentModel success ==>> " + paymentModel);
-				if (Objects.nonNull(transactionModel.getPaymentModel().getSuccessURL()))
-					System.out.println("Success URL:" + transactionModel.getPaymentModel().getSuccessURL());
-				if (!transactionModel.getPaymentModel().getSuccessURL().equals("None")) {
-					response.sendRedirect(transactionModel.getPaymentModel().getSuccessURL());
-
-				}
-
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		if (logger.isInfoEnabled()) {
-			logger.info("successSEBL -- END");
-		}
-
-		return "payment-success";
-	}
-	/**/
 	
-
-	/**
-	 * This method is used to open failure page if payment is failed.
-	 * 
-	 * @param request
-	 * @param model
-	 * @param response
-	 * @param orderId
-	 * @return payment-failure.jsp
-	 */
-	/*
-	@RequestMapping(value = "/failureSEBL", method = RequestMethod.GET)
-	public String failureSEBL(HttpServletRequest request, Model model, HttpServletResponse response,
-			@RequestParam(required = false) String orderId) {
-
-		if (logger.isInfoEnabled()) {
-			logger.info("failureSEBL -- START");
-		}
-
-		try {
-
-			System.out.println("Coming In FAILURE Section ==>> " + orderId);
-			TransactionModel transactionModel = transactionService.fetchTransactionByTXNId(orderId);
-
-			if (Objects.nonNull(transactionModel)) {
-				if (transactionModel.getTransactionStatus() != 0) {
-					int result = transactionService.updateTransaction(
-							transactionModel.getMerchantModel().getMerchantId(), 3,
-							transactionModel.getTransactionId());
-					System.out.println("Result ==>> " + result);
-					if (Objects.nonNull(transactionModel.getPaymentModel().getFailureURL()))
-						if (!transactionModel.getPaymentModel().getFailureURL().equals("None")) {
-							response.sendRedirect(transactionModel.getPaymentModel().getFailureURL());
-						}
-				}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		if (logger.isInfoEnabled()) {
-			logger.info("failureSEBL -- END");
-		}
-
-		return "payment-failure";
-	}
-	/**/
-
-	/**
-	 * This method is used for Hit from API. SEBL
-	 * 
-	 * @param paymentModel
-	 * @param request
-	 * @return PaymentModel
-	 */
-	/*
-	@RequestMapping(value = "/check-paymentSEBL", method = RequestMethod.POST)
-	public @ResponseBody PaymentModel checkPaymentSEBL(@RequestBody PaymentModel paymentModel, HttpServletRequest request) {
-
-		if (logger.isInfoEnabled()) {
-			logger.info("checkPaymentSEBL -- START");
-		}
-
-		try {
-
-			String ipAddress = "";
-			try {
-
-				ipAddress = request.getHeader("X-FORWARDED-FOR");
-				if (ipAddress == null) {
-					ipAddress = request.getRemoteAddr();
-					System.out.println("ipAddress ==>> " + ipAddress);
-				}
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			System.out.println("Check Payment-->" + paymentModel);
-			String token = UUID.randomUUID().toString();
-			paymentModel.setToken(token);
-			long result = transactionService.insertOrder(paymentModel);
-			System.out.println("paymentModel.getMerchantModel().getCompanyModel().getIp() ==>> "
-					+ paymentModel.getMerchantModel().getCompanyModel().getIp());
-			if (Objects.nonNull(paymentModel))
-				if (Objects.nonNull(paymentModel.getMerchantModel()))
-					if (Objects.nonNull(paymentModel.getMerchantModel().getCompanyModel()))
-						if (Objects.nonNull(paymentModel.getMerchantModel().getCompanyModel().getIp()))
-							if (!ipAddress.equals(paymentModel.getMerchantModel().getCompanyModel().getIp()))
-								throw new NumericException(messageUtil.getBundle("ip.not.matched"));
-
-			paymentModel = new PaymentModel();
-			paymentModel.setToken(token);
-			if (result > 0) {
-
-				paymentModel.setResponseCode("200");
-				paymentModel.setResponseMessage(messageUtil.getBundle("checkpayment.success"));
-
-			} else {
-
-				paymentModel.setResponseCode("201");
-				paymentModel.setResponseMessage(messageUtil.getBundle("checkpayment.failure"));
-			}
-
-		} catch (NumericException ne) {
-
-			paymentModel.setResponseCode(messageUtil.getBundle("ip.not.matched.code"));
-			paymentModel.setResponseMessage(ne.getMessage());
-
-		} catch (FormExceptions fe) {
-
-			fe.printStackTrace();
-			for (Entry<String, Exception> entry : fe.getExceptions().entrySet()) {
-
-				paymentModel.setResponseCode(entry.getKey());
-				paymentModel.setResponseMessage(entry.getValue().getMessage());
-
-				System.out.println(
-						"Form Exception :: " + entry.getValue().getMessage() + "==== KEY ==== " + entry.getKey());
-				break;
-			}
-
-		} catch (Exception e) {
-
-			paymentModel.setResponseCode("201");
-			paymentModel.setResponseMessage(messageUtil.getBundle("checkpayment.failure"));
-			e.printStackTrace();
-		}
-
-		if (logger.isInfoEnabled()) {
-			logger.info("checkPayment -- END");
-		}
-
-		return paymentModel;
-	}*/
-
-	/**
-	 * This method is used to execute payment after Hit from Api. SEBL
-	 * 
-	 * @param httpServletRequest
-	 * @param model
-	 * @param token
-	 * @param redirectAttributes
-	 * @param response
-	 * @return String
-	 */
-	/*
-	@RequestMapping(value = "/execute-payment", method = RequestMethod.GET)
-	public String executePayment(HttpServletRequest httpServletRequest, Model model, @RequestParam String token,
-			final RedirectAttributes redirectAttributes, HttpServletResponse response) {
-
-		if (logger.isInfoEnabled()) {
-			logger.info("executePayment -- START");
-		}
-
-		String ipAddress = "";
-		String sessionKey = "";
-		try {
-
-			ipAddress = httpServletRequest.getHeader("X-FORWARDED-FOR");
-			if (ipAddress == null) {
-				ipAddress = httpServletRequest.getRemoteAddr();
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		PaymentModel paymentModel = null;
-		try {
-
-			paymentModel = transactionService.fetchOrderByToken(token);
-			if (Objects.nonNull(paymentModel)) {
-
-				CompanyModel companyModel = merchantService
-						.fetchCompanyByMerchantId(paymentModel.getMerchantModel().getMerchantId());
-				if (Objects.nonNull(companyModel))
-					if (Objects.nonNull(companyModel.getIp()))
-						if (!companyModel.getIp().equals(ipAddress))
-							throw new NumericException(messageUtil.getBundle("ip.not.matched"));
-
-				String customerDetails = paymentModel.getCustomerDetails();
-				Gson gson = new Gson();
-				PaymentModel paymentModel2 = gson.fromJson(customerDetails, PaymentModel.class);
-				paymentModel.setFirstName(paymentModel2.getFirstName());
-				paymentModel.setLastName(paymentModel2.getLastName());
-				paymentModel.setMobileNumber(paymentModel2.getMobileNumber());
-				paymentModel.setEmailId(paymentModel2.getEmailId());
-
-				model.addAttribute("paymentModel", paymentModel);
-				String key = messageUtil.getBundle("secret.key");
-				TransactionModel transactionModel = new TransactionModel();
-				MerchantModel merchantModel = new MerchantModel();
-				merchantModel.setMerchantId(paymentModel.getMerchantModel().getMerchantId());
-				transactionModel.setMerchantModel(merchantModel);
-				transactionModel.setAmount(paymentModel.getAmount());
-				transactionModel.setOrder_id(paymentModel.getOrderID().toString());
-				Long transactionId = transactionService.insertTransaction(transactionModel);
-				if (transactionId > 0) {
-
-					sessionKey = encryption.encode(key, String.valueOf(transactionId)); // Modified
-
-					model.addAttribute("SESSIONKEY", sessionKey); // Modified
-
-					try {
-						CheckoutModel checkoutModel = checkOutService
-								.fetchCheckoutById(paymentModel.getMerchantModel().getMerchantId());
-						model.addAttribute("checkoutModel", checkoutModel);
-
-					} catch (Exception e) {
-						e.printStackTrace();
-						System.err.println("Error in fetchCheckoutById");
-					}
-
-					try {
-						List<ParameterModel> parameterModels = checkOutService
-								.fetchParametersById(paymentModel.getMerchantModel().getMerchantId());
-
-						model.addAttribute("parameterModels", parameterModels);
-					} catch (Exception e) {
-						e.printStackTrace();
-						System.err.println("Error in fetchParametersById");
-					}
-
-				}
-			} else {
-
-				Map<String, Exception> exceptions = new LinkedHashMap<String, Exception>();
-				exceptions.put(messageUtil.getBundle("token.invalid.code"),
-						new EmptyValueException(messageUtil.getBundle("token.invalid")));
-				if (exceptions.size() > 0)
-					throw new FormExceptions(exceptions);
-			}
-
-		} catch (NumericException ne) {
-
-			paymentModel.setResponseCode(messageUtil.getBundle("ip.not.matched.code"));
-			paymentModel.setResponseMessage(ne.getMessage());
-			try {
-				response.sendRedirect(paymentModel.getFailureURL());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-		} catch (FormExceptions fe) {
-
-			fe.printStackTrace();
-			try {
-				response.sendRedirect(paymentModel.getFailureURL());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			try {
-				response.sendRedirect(paymentModel.getFailureURL());
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}
-		}
-
-		if (logger.isInfoEnabled()) {
-			logger.info("executePayment -- END");
-		}
-
-		if (paymentModel.getOrderTransactionID() == null || paymentModel.getOrderTransactionID().trim().equals("")) {
-			return "quickpay-checkout";
-		} else {
-
-			httpServletRequest.setAttribute("SESSIONKEY", sessionKey);
-			httpServletRequest.setAttribute("csrfPreventionSalt",
-					httpServletRequest.getAttribute("csrfPreventionSaltPage"));
-
-			return "forward:/checkout-payment";
-		}
-	}*/
-
-	/**
-	 * This method is used for Check Out Payment.
-	 * 
-	 * @param paymentModel
-	 * @param httpServletRequest
-	 * @param redirectAttributes
-	 * @return String
-	 */
-	/*
-	@RequestMapping(value = "/checkout-payment", method = { RequestMethod.POST, RequestMethod.GET })
-	public String checkoutPayment(@ModelAttribute PaymentModel paymentModel, HttpServletRequest httpServletRequest,
-			final RedirectAttributes redirectAttributes) {
-
-		if (logger.isInfoEnabled()) {
-			logger.info("checkoutPayment -- START");
-		}
-
-		if (httpServletRequest.getAttribute("SESSIONKEY") != null) {
-			paymentModel.setSESSIONKEY((String) httpServletRequest.getAttribute("SESSIONKEY"));
-			paymentModel.setCsrfPreventionSalt((String) httpServletRequest.getAttribute("csrfPreventionSalt"));
-		}
-		String sessionId = httpServletRequest.getSession().getId();
-		List<String> activeSalts = SALT_TRACKER.get(sessionId);
-		String salt = "";
-
-		try {
-
-			salt = paymentModel.getCsrfPreventionSalt();
-
-			if (!org.springframework.util.CollectionUtils.isEmpty(activeSalts) & activeSalts.contains(salt)) {
-
-				try {
-					String key = messageUtil.getBundle("secret.key");
-					Long transactionId = Long.parseLong(encryption.decode(key, paymentModel.getSESSIONKEY()));
-					TransactionModel transactionModel = transactionService.fetchTransactionById(transactionId);
-					if (Objects.isNull(transactionModel))
-						redirectAttributes.addFlashAttribute("transactionidInvalid",
-								messageUtil.getBundle("transactionid.invalid"));
-					else {
-						paymentModel.setOrderID(Long.parseLong(transactionModel.getOrder_id()));
-						if (httpServletRequest.getAttribute("SESSIONKEY") != null) {
-							return "redirect:/link-pay?SESSIONKEY="
-									+ URLEncoder.encode(paymentModel.getSESSIONKEY(), "UTF-8");
-						} else {
-							int result = transactionService.updateOrderCustomerDetails(paymentModel);
-							if (result > 0)
-								return "redirect:/link-pay?SESSIONKEY="
-										+ URLEncoder.encode(paymentModel.getSESSIONKEY(), "UTF-8");
-						}
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-			} else {
-				throw new ServletException(messageUtil.getBundle("CSRF"));
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-
-		} finally {
-			activeSalts.remove(salt);
-			String newSalt = (String) httpServletRequest.getAttribute("csrfPreventionSaltPage");
-			activeSalts.add(newSalt);
-		}
-
-		if (logger.isInfoEnabled()) {
-			logger.info("checkoutPayment -- END");
-		}
-
-		return "redirect:/execute-payment";
-	}
-	/**/
 	/***********************************************************************************************/
 	// SEBL ENDS
 	
@@ -2425,7 +2029,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 		return "payment-failure";
 	}
-
+//TODO
 	/**
 	 * This method is used for Hit from API.
 	 * 
@@ -2817,7 +2421,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		if (logger.isInfoEnabled()) {
 			logger.info("bkashCheck -- START");
 		}
-
+//TODO needs to look closely
 		String orderId = String.valueOf(transactionModelSaltTracker.getTxnId());
 		String returnURL = "";
 		String sessionId = request.getSession().getId();
@@ -2887,6 +2491,8 @@ public class PaymentController extends BaseDao implements SaltTracker {
 											transactionModel.setResponseCode(bKashModel2.getTrxStatus());
 											transactionModel.setSecureId(bKashModel2.getTrx_id());
 											transactionModel.setBkashTrxId(bKashModel.getTrx_id());
+											//TODO
+											
 											if (bKashModel2.getTrxStatus().equals("0000") && (bKashModel2.getAmount()
 													.equals(transactionModel.getPaymentModel().getAmount()))) {
 
@@ -2943,7 +2549,9 @@ public class PaymentController extends BaseDao implements SaltTracker {
 												jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
 
 												spiderEmailSender.sendEmail(jsonReqString, true);
-												
+												//TODO
+												result = transactionServiceImpl.updateTransactionAfterPayment(transactionModel);
+												//TODO added by wasif 20190122
 												returnURL = "redirect:/success?orderId=" + orderId;
 
 											} else {
@@ -2955,7 +2563,9 @@ public class PaymentController extends BaseDao implements SaltTracker {
 											}
 											System.out.println("transactionModel -----> "
 													+ new ObjectMapper().writeValueAsString(transactionModel));
-											result = transactionServiceImpl.updateTransactionAfterPayment(transactionModel);
+											
+											//TODO comment added by Wasif 20190122
+											//result = transactionServiceImpl.updateTransactionAfterPayment(transactionModel);
 
 										} catch (Exception e) {
 											e.printStackTrace();
@@ -2964,11 +2574,9 @@ public class PaymentController extends BaseDao implements SaltTracker {
 											returnURL = "redirect:/failure?orderId=" + orderId;
 										}
 									}
-								}
-							}
-
+								}							
 						}
-
+						}
 					} catch (Exception e) {
 						e.printStackTrace();
 						redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
@@ -3018,7 +2626,6 @@ public class PaymentController extends BaseDao implements SaltTracker {
 					client_response = webResource.type("application/json").post(ClientResponse.class, inputString);
 				} else {
 					client_response = webResource.type("application/json").get(ClientResponse.class);
-
 				}
 			}
 		} catch (Exception e) {
@@ -3029,7 +2636,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	}
 
 	/**
-	 * Hit from API to get order details.
+	 * Hit from API to get order details.	
 	 * 
 	 * @param paymentModel
 	 * @param request
@@ -3038,7 +2645,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	@RequestMapping(value = "/get-order-trx-status", method = RequestMethod.POST)
 	public @ResponseBody PaymentModel checkOrderStatus(@RequestBody PaymentModel paymentModel,
 			HttpServletRequest request) {
-
+//TODO need to work here
 		if (logger.isInfoEnabled()) {
 			logger.info("Get Order -- START");
 		}
@@ -3081,6 +2688,62 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		return paymentModel3;
 
 	}
+	
+	
+	/**
+	 * Hit from API to get order details. new 3rd API
+	 * 
+	 * @param paymentModel
+	 * @param request
+	 * @return paymentModel
+	 */
+	@RequestMapping(value = "/get-order-trx-status-v2", method = RequestMethod.POST)
+	public @ResponseBody PaymentModel checkOrderStatus_v2(@RequestBody PaymentModel paymentModel,
+			HttpServletRequest request) {
+//TODO need to work here
+		System.out.println("print get-order-trx-status-v2 -- START");
+		if (logger.isInfoEnabled()) {
+			logger.info("get-order-trx-status-v2 -- START");
+		}
+
+		PaymentModel paymentModel2 = null;
+		PaymentModel paymentModel3 = new PaymentModel();
+		try {
+
+			MerchantModel merchantModel = merchantService.fetchMerchantByAccessKey(paymentModel.getAccessKey());
+			if (Objects.nonNull(merchantModel)) {
+				paymentModel2 = transactionService.fetchTransactionByAccessKey_V2(paymentModel.getAccessKey(),
+						paymentModel.getOrderTransactionID());
+
+				if (Objects.nonNull(paymentModel2)) {
+					paymentModel2.setResponseCode("200");
+					return paymentModel2;
+				} else {
+					paymentModel3.setResponseCode("202");
+					paymentModel3.setResponseMessage(messageUtil.getBundle("wrong.order.id"));
+				}
+			} else {
+				paymentModel3.setResponseCode("201");
+				paymentModel3.setResponseMessage(messageUtil.getBundle("wrong.access.key"));
+			}
+
+		} catch (Exception e) {
+			//TODO remove later
+			System.out.println("get-order-trx-status exception print -->" + e);
+			e.printStackTrace();
+			//logger.info("Exception caught: "+e);
+			paymentModel3.setResponseCode("203");
+			paymentModel3.setResponseMessage(messageUtil.getBundle("someting.went.wrong"));
+		}
+
+		if (logger.isInfoEnabled()) {
+			logger.info("get-order-trx-status-v2 -- END");
+		}
+
+		return paymentModel3;
+	}
+	
+	
 
 	public String getFileString(String filename, String path) throws IOException {
 		File fl = new File(path + "/" + filename);
