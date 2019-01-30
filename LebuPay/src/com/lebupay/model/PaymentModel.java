@@ -30,6 +30,7 @@ public class PaymentModel extends CommonModel {
     private String bkash_payment_number;
     private String billing_name;
     private String device_ipaddress;
+    private String bank;
 
 	
 	public Long getOrderID() {
@@ -250,6 +251,14 @@ public class PaymentModel extends CommonModel {
 //TODO
     
     
+	public String getBank() {
+		return bank;
+	}
+
+	public void setBank(String bank) {
+		this.bank = bank;
+	}
+
 	@Override
 
 	public String toString() {

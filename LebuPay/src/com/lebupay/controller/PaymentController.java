@@ -448,6 +448,15 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				XPath xpath = XPathFactory.newInstance().newXPath();
 
 				Object citiResponse = xpath.evaluate("/Message", source, XPathConstants.NODE);
+				//TODO needs to remove later
+				System.out.println("City bank resp print: "+citiResponse.toString());
+				System.out.println("City bank resp print:source:  "+source.toString());
+
+				if (logger.isInfoEnabled()) {
+					logger.info("City bank full source response"+source.toString());
+					
+					logger.info("City bank full response"+citiResponse.toString());
+				}
 
 				cityOrderID = xpath.evaluate("OrderID", citiResponse);
 				transactionType = xpath.evaluate("TransactionType", citiResponse);
@@ -502,6 +511,9 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				transactionModel.setDescription(cityOrderID);
 				transactionModel.setNameOnCard(cardHolderName);
 				transactionModel.setCustomer_firstName(name);
+			//	transactionModel.setDevice_ipAddress(device_ipAddress);
+				transactionModel.setProvided_card_number(pan);;
+				
 			//	transactionModel.setMerchantId(transactionModel2.getMerchantModel().getCityMerchantId());
                 //TODO  city bank todo mid add
 				int result = transactionServiceImpl.updateTransactionAfterCityPayment(transactionModel);
