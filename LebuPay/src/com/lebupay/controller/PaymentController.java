@@ -349,6 +349,12 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		//TODO remove after debugging
+		if (logger.isInfoEnabled()) {
+			logger.info("City Bank Payment xmlDoc response -->"+xmlDoc);	
+			System.out.println("City Bank Payment xmlDoc response print -->"+xmlDoc);	
+		}
 
 		// For getting the required values
 		xmlDoc.getDocumentElement().normalize();
@@ -409,6 +415,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		String threeDSStatus = "";
 		String cardHolderName = "";
 		String name = "";
+		String merchantId="";
 
 		if (request.getParameter("xmlmsg") != "") {
 
@@ -449,13 +456,13 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 				Object citiResponse = xpath.evaluate("/Message", source, XPathConstants.NODE);
 				//TODO needs to remove later
-				System.out.println("City bank resp print: "+citiResponse.toString());
 				System.out.println("City bank resp print:source:  "+source.toString());
-
+				System.out.println("City bank resp print:xmlDoc:  "+xmlDoc.toString());
+				System.out.println("City bank resp print: "+citiResponse.toString());
+				
 				if (logger.isInfoEnabled()) {
-					logger.info("City bank full source response"+source.toString());
-					
 					logger.info("City bank full response"+citiResponse.toString());
+					logger.info("City bank full source response"+source.toString());										
 				}
 
 				cityOrderID = xpath.evaluate("OrderID", citiResponse);
@@ -512,7 +519,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				transactionModel.setNameOnCard(cardHolderName);
 				transactionModel.setCustomer_firstName(name);
 			//	transactionModel.setDevice_ipAddress(device_ipAddress);
-				transactionModel.setProvided_card_number(pan);;
+				transactionModel.setProvided_card_number(pan);
 				
 			//	transactionModel.setMerchantId(transactionModel2.getMerchantModel().getCityMerchantId());
                 //TODO  city bank todo mid add
@@ -602,6 +609,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 							if (Objects.nonNull(paymentModel.getMobileNumber())
 									|| !paymentModel.getMobileNumber().equals("")) {
+								//TODO add option to send SMS only if amount more than 100
 								try {
 									/*
 									sendSMS.smsSend(paymentModel.getMobileNumber(),
@@ -614,7 +622,8 @@ public class PaymentController extends BaseDao implements SaltTracker {
 								} catch (Exception e) {
 									e.printStackTrace();
 								}
-							}
+								
+							}							
 						}
 					} else {
 						redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("something.went.wrong"));

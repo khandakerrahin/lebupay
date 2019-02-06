@@ -2907,6 +2907,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 	 */
 	public int updateTransactionAfterCityPayment(TransactionModel transactionModel) throws Exception {
 
+
 		if (logger.isInfoEnabled()) {
 			logger.info("updateTransactionAfterCityPayment -- START");
 		}
@@ -2928,7 +2929,9 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ "RESPONSE_CODE=:RESPONSE_CODE," // 7
 					+ "MODIFIED_DATE=CURRENT_TIMESTAMP, RESPONSE_GATEWAY_CODE=:RESPONSE_GATEWAY_CODE, DESCRIPTION=:DESCRIPTION, NAME_ON_CARD=:NAME_ON_CARD,"
 					+ "CUSTOMER_FIRSTNAME=:CUSTOMER_FIRSTNAME, " // 7
-					+ "GROSS_AMOUNT=:GROSS_AMOUNT,AMOUNT=:AMOUNT " // Amount & Gross Amount Update
+					+ "GROSS_AMOUNT=:GROSS_AMOUNT,AMOUNT=:AMOUNT, " // Amount & Gross Amount Update
+					//TODO Changed by wasif
+					+ "PROVIDED_CARD_NUMBER=:PROVIDED_CARD_NUMBER"
 					+ "where MERCHANT_ID =:MERCHANT_ID and TRANSACTION_ID =:TRANSACTION_ID";
 
 			pst = (OraclePreparedStatement) connection.prepareStatement(sql);
@@ -2954,6 +2957,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 			pst.setLongAtName("TRANSACTION_ID", transactionModel.getTransactionId()); // TRANSACTION_ID
 			pst.setDoubleAtName("GROSS_AMOUNT", transactionModel.getGrossAmount());
 			pst.setDoubleAtName("AMOUNT", transactionModel.getAmount());
+			pst.setStringAtName("PROVIDED_CARD_NUMBER", transactionModel.getProvided_card_number());
 
 			System.out.println("Update City Transaction By Merchant After Successful Transaction==>> "+sql);
 
