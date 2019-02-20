@@ -2063,8 +2063,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		if (logger.isInfoEnabled()) {
 			//logger.info("checkPayment -- START");
 			//TODO 20190220
-			logger.info("checkPayment -- START for "+paymentModel.getOrderTransactionID() +" Amount: "+paymentModel.getAmount());
-					
+			logger.info("checkPayment -- START for "+paymentModel.getOrderTransactionID() +" Amount: "+paymentModel.getAmount());					
 		}
 
 		try {
