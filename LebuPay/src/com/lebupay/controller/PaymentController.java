@@ -805,6 +805,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 								} catch (Exception e) {
 									System.out.println("Mail Sending Failed");
 								}
+								
 							}
 							//TODO remove comment tag to enable sms sending when order is cancelled
 /*
