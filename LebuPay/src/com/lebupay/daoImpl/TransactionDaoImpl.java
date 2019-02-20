@@ -1600,7 +1600,11 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ "m.SEBL_USER_NAME," // 25
 					+ "m.SEBL_PASSWORD," // 26
 					+ "m.SEBL_ID " // 27
-					+ " from TRANSACTION_MASTER tm, ORDER_MASTER om, MERCHANT_MASTER m where tm.MERCHANT_ID = m.MERCHANT_ID and tm.ORDER_ID = om.ORDER_ID and tm.TRANSACTION_ID =:TRANSACTION_ID order by tm.CREATED_DATE desc";
+					/*
+					+ " , m.NOTIFICATION_SMS," //28
+					+ "m.NOTIFICATION_EMAIL " //29 /**/
+					
+					+ "from TRANSACTION_MASTER tm, ORDER_MASTER om, MERCHANT_MASTER m where tm.MERCHANT_ID = m.MERCHANT_ID and tm.ORDER_ID = om.ORDER_ID and tm.TRANSACTION_ID =:TRANSACTION_ID order by tm.CREATED_DATE desc";
 
 			System.out.println("Fetch Transaction By ID ==>> "+sql);
 
@@ -1617,9 +1621,8 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 				transactionModel.setLoyaltyPoint(rs.getDouble(6));
 				transactionModel.setResponseMessage(rs.getString(7));
 				transactionModel.setResponseCode(rs.getString(8));
-
 				transactionModel.setTransactionStatus(rs.getInt(9));
-
+				
 				String date_s = rs.getString(10); 
 				SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss. S"); 
 				Date date = dt.parse(date_s); 
@@ -1645,7 +1648,13 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 				//WASIF 20181114
 				merchantModel.setSeblUserName(rs.getString(25));
 				merchantModel.setSeblPassword(rs.getString(26));
-				merchantModel.setSeblId(rs.getString(27));				
+				merchantModel.setSeblId(rs.getString(27));
+				//TODO
+				/*
+				merchantModel.setNotification_sms(rs.getString(28));
+				merchantModel.setNotification_email(rs.getString(29));/**/
+				//.set(rs.getString(27));
+				
 				transactionModel.setMerchantModel(merchantModel);
 
 			}
@@ -2133,7 +2142,9 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 	public long insertOrder(PaymentModel paymentModel) throws Exception {
 
 		if (logger.isInfoEnabled()) {
-			logger.info("insertOrder -- START");
+			//logger.info("insertOrder -- START");
+			//TODO 20190220
+			logger.info("insertOrder -- START for "+paymentModel.getOrderTransactionID() +" Amount: "+paymentModel.getAmount());
 		}
 		long result = 0;
 		Connection connection = oracleConnection.Connect();
@@ -2150,7 +2161,24 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ ":TOKEN,"
 					+ ":STATUS,"
 					+ ":CREATED_BY,"
-					+ "localtimestamp(0)) ";
+					+ "localtimestamp(0)"
+					+ ") ";
+			//TODO 20190220
+			/*
+			String sql = "insert into ORDER_MASTER (ORDER_ID,AMOUNT,MERCHANT_ID,SUCCESS_URL,FAILURE_URL,ORDER_TRANSACTION_ID,CUTOMER_DETAILS,TOKEN,STATUS,CREATED_BY,CREATED_DATE,NOTIFICATION_SMS,NOTIFICATION_EMAIL) values(ORDER_MASTER_SEQ.nextval,"
+					+ ":AMOUNT,"
+					+ ":MERCHANT_ID,"
+					+ ":SUCCESS_URL,"
+					+ ":FAILURE_URL,"
+					+ ":ORDER_TRANSACTION_ID,"
+					+ ":CUTOMER_DETAILS,"					
+					+ ":TOKEN,"
+					+ ":STATUS,"
+					+ ":CREATED_BY,"
+					+ "localtimestamp(0),"
+					+ ":NOTIFICATION_SMS,"
+					+ ":NOTIFICATION_EMAIL"
+					+ ") "; /**/
 
 			String pk[] = {"ORDER_ID"};
 			pst = (OraclePreparedStatement) connection.prepareStatement(sql, pk);
@@ -2163,7 +2191,9 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 			pst.setStringAtName("TOKEN", paymentModel.getToken()); // TOKEN
 			pst.setIntAtName("STATUS", 1); // STATUS
 			pst.setLongAtName("CREATED_BY", paymentModel.getMerchantModel().getMerchantId()); // CREATED_BY
-
+       //TODO 20190220
+			/*    pst.setStringAtName("NOTIFICATION_SMS",paymentModel.getNotification_sms());
+            pst.setStringAtName("NOTIFICATION_EMAIL",paymentModel.getNotification_email());/**/
 			System.out.println("Insert Order By Merchant==>> "+sql);
 
 
@@ -2687,7 +2717,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ "tm.customer_firstname," //14 
 					+ "tm.customer_lastname," //15
 					+ "tm.device_ipaddress," //16
-					+ "cm.transaction_type," //17
+					+ "cm.transaction_type," //17 
 					+ "cm.pan, " //18 CITYBANK CARD MASKING
 					+ "tm.bank " //19 name of Bank
 					+ "from MERCHANT_MASTER m,CITYBANK_TRANSACTION_MASTER cm, ORDER_MASTER om,TRANSACTION_MASTER tm "

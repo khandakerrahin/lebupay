@@ -1793,7 +1793,7 @@ public class MerchantValidation {
 			exceptions.put(messageUtil.getBundle("amount.null.code"), new EmptyValueException(messageUtil.getBundle("amount.null")));
 			
 		} else {
-			
+
 			paymentModel.setAmount(Double.parseDouble(Util.strip_html_tags(paymentModel.getAmount().toString(), "url")));
 			if(Util.isEmpty(paymentModel.getAmount())) {
 				

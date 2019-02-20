@@ -39,6 +39,10 @@ public class MerchantModel extends CommonModel {
 	private String seblPassword;
 	private String seblUserName;
 	private String seblId;
+	//TODO
+	/*
+	private String notification_sms;
+	private String notification_email;/**/
 
 	public Long getMerchantId() {
 		return merchantId;
@@ -295,6 +299,23 @@ public class MerchantModel extends CommonModel {
 	public void setCityMerchantId(String cityMerchantId) {
 		this.cityMerchantId = cityMerchantId;
 	}
+	//TODO 
+/*
+	public String getNotification_sms() {
+		return notification_sms;
+	}
+
+	public void setNotification_sms(String notification_sms) {
+		this.notification_sms = notification_sms;
+	}
+
+	public String getNotification_email() {
+		return notification_email;
+	}
+
+	public void setNotification_email(String notification_email) {
+		this.notification_email = notification_email;
+	} /**/
 
 	@Override
 	public String toString() {
@@ -308,6 +329,10 @@ public class MerchantModel extends CommonModel {
 				+ secretKey + ", phoneCode=" + phoneCode + ", phoneVerified="
 				+ phoneVerified + ", captcha=" + captcha
 				+ ", transactionAmount=" + transactionAmount
+				//TODO
+				/*
+				+ ", notification_sms=" + notification_sms
+				+ ", notification_email=" + notification_email /**/
 				+ ", loyaltyPoint=" + loyaltyPoint + ", logoName=" + logoName
 				+ ", logo=" + logo + ", ticketModels=" + ticketModels
 				+ ", quickPayModels=" + quickPayModels + ", transactionModels="

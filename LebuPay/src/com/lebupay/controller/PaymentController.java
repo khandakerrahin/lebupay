@@ -81,7 +81,7 @@ import oracle.jdbc.OraclePreparedStatement;
 
 /**
  * This is Payment Controller that will handle all the payment related work like
- * CitiBank,EBL, BKSAH etc.
+ * CityBank,EBL, BKASH etc.
  * 
  * @author Java-Team
  *
@@ -1690,7 +1690,6 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				String[] respPart = line.split("=");
 				respMap.put(respPart[0], respPart[1]);
 			}
-			System.out.println("SEBl 1st url inside try respArr "+ respArr);
 			if (respMap.containsKey("result")) {
 				if (respMap.get("result").equals("SUCCESS")) {
 					System.out.println("SEBL first API SUCCESS");
@@ -2062,7 +2061,10 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	public @ResponseBody PaymentModel checkPayment(@RequestBody PaymentModel paymentModel, HttpServletRequest request) {
 
 		if (logger.isInfoEnabled()) {
-			logger.info("checkPayment -- START");
+			//logger.info("checkPayment -- START");
+			//TODO 20190220
+			logger.info("checkPayment -- START for "+paymentModel.getOrderTransactionID() +" Amount: "+paymentModel.getAmount());
+					
 		}
 
 		try {
@@ -2095,12 +2097,9 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			paymentModel = new PaymentModel();
 			paymentModel.setToken(token);
 			if (result > 0) {
-
 				paymentModel.setResponseCode("200");
 				paymentModel.setResponseMessage(messageUtil.getBundle("checkpayment.success"));
-
 			} else {
-
 				paymentModel.setResponseCode("201");
 				paymentModel.setResponseMessage(messageUtil.getBundle("checkpayment.failure"));
 			}
@@ -2173,14 +2172,16 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 			paymentModel = transactionService.fetchOrderByToken(token);
 			if (Objects.nonNull(paymentModel)) {
-
+				//TOOD WASIF 20190217 block unidentified block seems like no use currently may be used for test purpose
+				// so that only 
+/*
 				CompanyModel companyModel = merchantService
 						.fetchCompanyByMerchantId(paymentModel.getMerchantModel().getMerchantId());
 				if (Objects.nonNull(companyModel))
 					if (Objects.nonNull(companyModel.getIp()))
 						if (!companyModel.getIp().equals(ipAddress))
 							throw new NumericException(messageUtil.getBundle("ip.not.matched"));
-
+/**/
 				String customerDetails = paymentModel.getCustomerDetails();
 				Gson gson = new Gson();
 				PaymentModel paymentModel2 = gson.fromJson(customerDetails, PaymentModel.class);
@@ -2750,7 +2751,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 		} catch (Exception e) {
 			//TODO remove later
-			System.out.println("get-order-trx-status exception print -->" + e);
+			System.out.println("get-order-trx-status-v2 exception print -->" + e);
 			e.printStackTrace();
 			//logger.info("Exception caught: "+e);
 			paymentModel3.setResponseCode("203");

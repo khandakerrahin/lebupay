@@ -31,6 +31,11 @@ public class PaymentModel extends CommonModel {
     private String billing_name;
     private String device_ipaddress;
     private String bank;
+    //WASIF 20190210
+    /*
+    private String notification_email;
+    private String notification_sms;
+   /**/ 
 
 	
 	public Long getOrderID() {
@@ -258,6 +263,29 @@ public class PaymentModel extends CommonModel {
 	public void setBank(String bank) {
 		this.bank = bank;
 	}
+	//TODO
+/*
+	public String getNotification_email() {
+		if(notification_email != null && !notification_email.isEmpty())
+			notification_email="0";
+		return notification_email;
+	}
+
+	public void setNotification_email(String notification_email) {
+		this.notification_email = notification_email;
+	}
+
+	public String getNotification_sms() {
+
+			if(notification_sms != null && !notification_sms.isEmpty())
+				notification_sms="0";
+			
+		return notification_sms;
+	}
+
+	public void setNotification_sms(String notification_sms) {
+		this.notification_sms = notification_sms;
+	}/**/
 
 	@Override
 
@@ -273,11 +301,15 @@ public class PaymentModel extends CommonModel {
 				+ ", bank_merchant_id=" + bank_merchant_id + ", transaction_type="+transaction_type
 				+ ", bkash_payment_number=" + bkash_payment_number + ", billing_name="+billing_name
 				+ ", device_ipaddress=" + device_ipaddress 
+				//TODO
+				/*
+				+ ", notification_sms=" +notification_sms
+				+ ", notification_email=" +notification_email/**/
 				+ ", merchantModel=" + merchantModel + ", customerDetails="
 				+ customerDetails + ", SESSIONKEY=" + SESSIONKEY + ",transactionDate=" + transactionDate
 				+ ", transactionModel=" + transactionModel + ", transactionStatus="
 				+ transactionStatus + "]";
-	}/**/
+	}
 	/*
 	public String toString() {
 		return "PaymentModel [orderID=" + orderID + ", firstName=" + firstName
