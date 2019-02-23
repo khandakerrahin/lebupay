@@ -487,8 +487,9 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				name = xpath.evaluate("Name", citiResponse);
 				threeDSVerificaion = xpath.evaluate("ThreeDSVerificaion", citiResponse);
 				threeDSStatus = xpath.evaluate("ThreeDSStatus", citiResponse);
-
-				String txnId = String.valueOf(transactionModelSaltTracker.getTxnId());
+                //TODO issue trxid takes from global value
+				//String txnId = String.valueOf(transactionModelSaltTracker.getTxnId());
+			    String txnId = orderDescription; //update by Wasif 20190223
 				TransactionModel transactionModel = null;
 
 				try {
@@ -522,7 +523,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				transactionModel.setProvided_card_number(pan);
 				
 			//	transactionModel.setMerchantId(transactionModel2.getMerchantModel().getCityMerchantId());
-                //TODO  city bank todo mid add
+                //TODO  city bank  mid add
 				int result = transactionServiceImpl.updateTransactionAfterCityPayment(transactionModel);
 
 				if (result > 0) {
@@ -1220,7 +1221,8 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		argsMap.put("interaction.displayControl.billingAddress", "HIDE");
 		argsMap.put("interaction.merchant.name", "Lebupay");
 		argsMap.put("interaction.displayControl.orderSummary", "HIDE");
-		argsMap.put("interaction.returnUrl", basePath + "retriveOrder");
+	//	argsMap.put("interaction.returnUrl", basePath + "retriveOrder");
+		argsMap.put("interaction.returnUrl", basePath + "retriveOrder?orderId=" + transactionModel2.getTxnId()); //TODO Wasif 20190223
 		argsMap.put("interaction.cancelUrl", basePath + "failure?orderId=" + transactionModel2.getTxnId());
 
 		argsMap.put("merchant", transactionModel2.getMerchantModel().getEblId());
@@ -1290,7 +1292,13 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	 */
 	@RequestMapping(value = "/retriveOrder", method = RequestMethod.GET)
 	public String retriveOrder(HttpServletRequest request, Model model, HttpServletResponse response,
-			final RedirectAttributes redirectAttributes) {
+			@RequestParam(required = false) String orderId,final RedirectAttributes redirectAttributes) {
+		
+/* 20190223
+		public String retriveOrder(HttpServletRequest request, Model model, HttpServletResponse response
+				,final RedirectAttributes redirectAttributes) { /**/
+		
+		
 
 		if (logger.isInfoEnabled()) {
 			logger.info("retriveOrder -- START");
@@ -1298,9 +1306,9 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 		String returnURL = "";
 		String resultIndicator = (String) request.getParameter("resultIndicator");
-		System.out.println("resultIndicator ==>> " + resultIndicator);
-		String orderId = String.valueOf(transactionModelSaltTracker.getTxnId());
-
+		System.out.println("resultIndicator ==>> " + resultIndicator +" orderId: "+orderId);
+		//TODO Wasif 20190223 String orderId = String.valueOf(transactionModelSaltTracker.getTxnId()); 
+		
 		TransactionModel transactionModel2 = null;
 		try {
 
@@ -2050,7 +2058,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 		return "payment-failure";
 	}
-//TODO
+
 	/**
 	 * This method is used for Hit from API.
 	 * 
@@ -2064,7 +2072,8 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		if (logger.isInfoEnabled()) {
 			//logger.info("checkPayment -- START");
 			//TODO 20190220
-			logger.info("checkPayment -- START for "+paymentModel.getOrderTransactionID() +" Amount: "+paymentModel.getAmount());					
+			logger.info("checkPayment -- START for "+paymentModel.getOrderTransactionID() +" Amount: "+(paymentModel.getAmount()!=null ? paymentModel.getAmount():null ));	
+			
 		}
 
 		try {

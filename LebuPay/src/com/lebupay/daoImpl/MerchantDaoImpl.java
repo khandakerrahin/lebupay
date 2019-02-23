@@ -3098,7 +3098,7 @@ public class MerchantDaoImpl extends BaseDao implements MerchantDao{
 						+ "from MERCHANT_MASTER m left outer join TYPE_MASTER t on m.TYPE_ID = t.TYPE_ID "
 						+ "left outer join COMPANY_MASTER c on m.MERCHANT_ID = c.MERCHANT_ID "
 						+ "where m.ACCESS_KEY=:ACCESS_KEY and m.STATUS !=:STATUS";
-				
+				//TODO query optimization 
 				System.out.println("Fetch Active MerchantById ==>> "+sql);
 				
 				pst = (OraclePreparedStatement) connection.prepareStatement(sql);

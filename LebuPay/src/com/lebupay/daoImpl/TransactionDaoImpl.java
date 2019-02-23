@@ -2960,8 +2960,8 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ "MODIFIED_DATE=CURRENT_TIMESTAMP, RESPONSE_GATEWAY_CODE=:RESPONSE_GATEWAY_CODE, DESCRIPTION=:DESCRIPTION, NAME_ON_CARD=:NAME_ON_CARD,"
 					+ "CUSTOMER_FIRSTNAME=:CUSTOMER_FIRSTNAME, " // 7
 					+ "GROSS_AMOUNT=:GROSS_AMOUNT,AMOUNT=:AMOUNT, " // Amount & Gross Amount Update
-					//TODO Changed by wasif
-					+ "PROVIDED_CARD_NUMBER=:PROVIDED_CARD_NUMBER"
+					// Changed by wasif
+					+ "PROVIDED_CARD_NUMBER=:PROVIDED_CARD_NUMBER "
 					+ "where MERCHANT_ID =:MERCHANT_ID and TRANSACTION_ID =:TRANSACTION_ID";
 
 			pst = (OraclePreparedStatement) connection.prepareStatement(sql);
