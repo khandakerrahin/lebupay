@@ -21,6 +21,7 @@ import org.springframework.stereotype.Repository;
 import com.google.gson.Gson;
 import com.lebupay.common.Util;
 import com.lebupay.dao.TransactionDAO;
+import com.lebupay.logwriter.Logwriter;
 import com.lebupay.model.CardTypePercentageModel;
 import com.lebupay.model.CityBankTransactionModel;
 import com.lebupay.model.DataTableModel;
@@ -28,7 +29,7 @@ import com.lebupay.model.MerchantModel;
 import com.lebupay.model.PaymentModel;
 import com.lebupay.model.Status;
 import com.lebupay.model.TransactionModel;
-
+ 
 /**
  * This is TransactionDaoImpl extends BaseDao and Implements TransactionDAO Interface used to perform operation on Transaction.
  * @author Java Team
@@ -38,6 +39,7 @@ import com.lebupay.model.TransactionModel;
 public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 
 	private static Logger logger = Logger.getLogger(TransactionDaoImpl.class);
+	//public Logwriter logwrite=new Logwriter();
 
 	/**
 	 * This method is used by Merchant for fetching the full Transaction List.

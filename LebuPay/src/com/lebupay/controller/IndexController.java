@@ -2,6 +2,8 @@ package com.lebupay.controller;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -25,6 +27,7 @@ import com.lebupay.common.Encryption;
 import com.lebupay.common.MessageUtil;
 import com.lebupay.common.SaltTracker;
 import com.lebupay.common.Util;
+import com.lebupay.connection.OracleConnection;
 import com.lebupay.exception.FormExceptions;
 import com.lebupay.model.CheckoutModel;
 import com.lebupay.model.CommonModel;
@@ -43,13 +46,17 @@ import com.lebupay.service.MerchantService;
 import com.lebupay.service.QuickPayService;
 import com.lebupay.service.TransactionService;
 
+import oracle.jdbc.OraclePreparedStatement;
+import com.lebupay.daoImpl.BaseDao;
+//import com.lebupay.connection.OracleConnection;
+
 /**
  * This class is used to all the methods that are not related to any session and all error pages.
  * @author Java-Team
  *
  */
 @Controller
-public class IndexController implements SaltTracker {
+public class IndexController extends BaseDao implements SaltTracker {
 
 	private static Logger logger = Logger.getLogger(IndexController.class);
 	
@@ -410,12 +417,23 @@ public class IndexController implements SaltTracker {
 			TransactionModel transactionModel = transactionService.fetchTransactionById(transactionId);
 			if(Objects.isNull(transactionModel))
 				model.addAttribute("transactionidInvalid", messageUtil.getBundle("transactionid.invalid"));
+			String transactionId1 =URLEncoder.encode(SESSIONKEY, "UTF-8");
 			
 			model.addAttribute("merchantName", transactionModel.getMerchantModel().getFirstName()+ " "+transactionModel.getMerchantModel().getLastName());
 			model.addAttribute("amount", transactionModel.getAmount());
 			model.addAttribute("grossAmount", transactionModel.getGrossAmount());
-			model.addAttribute("transactionId1", URLEncoder.encode(SESSIONKEY, "UTF-8"));
+			model.addAttribute("transactionId1", transactionId1);
 			model.addAttribute("transactionId", transactionModel.getTxnId());
+			
+			try {
+				//logwrite.writeLog(0L,"Citybank approveOrder",2, "approveOrder respCity txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
+				writeLogV2(0L,"IndexController/link-pay",1, "initial txnId:"+transactionId+",SESSIONKEY:"+SESSIONKEY+",transactionId1 "+transactionId1+",transactionId"+transactionId);
+				
+		    } catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
 			model.addAttribute("citybankMerchantId", transactionModel.getMerchantModel().getCityMerchantId());
 			
 			model.addAttribute("eBLUserName", transactionModel.getMerchantModel().getEblUserName());
@@ -444,5 +462,76 @@ public class IndexController implements SaltTracker {
 		}
 
 		return "merchant-link-pay";
+	}
+	
+	//TODO remove
+		//TODO remove below block it is for testing only
+		public void writeLogV2(Long merchant_id,String action,int action_type,String log) throws Exception {
+
+			
+			System.out.println("logwriter.writeLog -- START");
+			System.out.println("logwriter.writeLog -log ===>"+log);
+			if(log.length()>999)
+				log=log.substring(0,999);
+
+		//OracleConnection oracleConnection = new OracleConnection();
+		Connection connection = oracleConnection.Connect();
+		OraclePreparedStatement pst = null;
+		try {
+			String sql = "insert into APPLICATION_LOG (merchant_id,action,action_type,log) values("
+					+ ":merchant_id,:action,:action_type,:log)";
+
+			String pk[] = {"ID"};
+			pst = (OraclePreparedStatement) connection.prepareStatement(sql, pk);
+
+			pst.setLongAtName("merchant_id", merchant_id); 
+			pst.setStringAtName("action", action); 
+			pst.setIntAtName("action_type", action_type); 
+			pst.setStringAtName("log", log); 
+			
+
+			//System.out.println("logwriter.writeLog==>> "+sql);
+
+			boolean result1 = pst.execute();
+			if (!result1) {
+
+				ResultSet rs = pst.getGeneratedKeys();
+				rs.next();
+			}
+			connection.commit();
+
+		} finally {
+
+			try{
+
+				if(pst != null)
+					if(!pst.isClosed())
+						pst.close();
+
+			} catch(Exception e){
+				e.printStackTrace();
+			}
+
+			try { // Closing Connection Object
+				if (connection != null) {
+
+					if (!connection.isClosed())
+						connection.close();
+				}
+			} catch (Exception e) {
+				System.out.println("Connection not closed for logwriter.writeLog ");
+				/*
+				if (logger.isDebugEnabled()) {
+					logger.debug("Connection not closed for updateTransaction"+ e.getMessage());
+				}/**/
+
+			}
+		}
+	/*
+		if (logger.isInfoEnabled()) {
+			logger.info("updateOrderCustomerDetails -- END");
+		}/**/
+
+
 	}
 }

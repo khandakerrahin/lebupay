@@ -73,6 +73,7 @@ import com.lebupay.service.CheckOutService;
 import com.lebupay.service.MerchantService;
 import com.lebupay.service.TransactionService;
 import com.lebupay.serviceImpl.TransactionServiceImpl;
+import com.lebupay.logwriter.Logwriter;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -90,6 +91,8 @@ import oracle.jdbc.OraclePreparedStatement;
 public class PaymentController extends BaseDao implements SaltTracker {
 
 	private static Logger logger = Logger.getLogger(PaymentController.class);
+//TODO needs attention below
+	//private static Logwriter logwrite ; //WASIF 20190224
 
 	@Autowired
 	private TransactionService transactionService;
@@ -117,6 +120,8 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 	@Autowired
 	private SendSMS sendSMS;
+	
+	
 
 	/**
 	 * This method is used to Open CityBank Payment Page.
@@ -132,7 +137,8 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	@RequestMapping(value = "/paycitybank", method = RequestMethod.GET)
 	public String payCityBank(HttpServletRequest request, Model model, @RequestParam String transactionId,
 			HttpServletResponse response, final RedirectAttributes redirectAttributes) {
-
+		
+		
 		if (logger.isInfoEnabled()) {
 			logger.info("City Bank Payment -- START");
 		}
@@ -149,6 +155,15 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			String key = messageUtil.getBundle("secret.key");
 			transactionId1 = Long.parseLong(encryption.decode(key, transactionId));
 			System.out.println("TransactionId After Decode== >> " + transactionId1);
+			
+			try {
+				
+				///transactionService..writeLog(0L,"Start Citybank",1,"trxId:"+transactionId+",paycitybank RequestMethod.GET");
+				writeLogV2(0L,"Start Citybank",1,"trxId:"+transactionId1+",paycitybank RequestMethod.GET");
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 
 			transactionModel2 = transactionService.fetchTransactionById(transactionId1);
 
@@ -192,11 +207,26 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		if (logger.isInfoEnabled()) {
 			logger.info("City Bank request data --> "+data);
 		}/**/
+		
+		
+		try {
+		//	logwrite.writeLog(0L,"Citybank Get REQ",1,"data:"+data);
+			writeLogV2(0L,"Citybank CreateOrder Get",1,"trxID:"+transactionModel2.getTxnId()+",data:"+data);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		String Response = null;
 		try {
 
 			Response = CityBankUtil.PostQW(data);
-
+			try {
+				//logwrite.writeLog(0L,"Citybank Get resp",2,"Response:"+Response);
+				writeLogV2(0L,"Citybank CreateOrder Get",2,"trxID:"+transactionModel2.getTxnId()+",Response:"+Response);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ParserConfigurationException e) {
@@ -322,6 +352,14 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		data += "<DeclineURL>" + basePath + "declineOrder" + "</DeclineURL>";
 		data += "</Order></Request></TKKPG>";
 
+		try {
+			//logwrite.writeLog(0L,"Citybank paycity POST",1,"trxID:"+transactionModel2.getTxnId()+", data:"+data);
+			writeLogV2(0L,"Citybank paycity POST",1,"trxID:"+transactionModel2.getTxnId()+", data:"+data);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		String Response = null;
 		try {
 			Response = CityBankUtil.PostQW(data);
@@ -331,6 +369,15 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			e.printStackTrace();
 		} catch (SAXException e) {
 			e.printStackTrace();
+		}
+		
+		try {
+			//logwrite.writeLog(0L,"Citybank paycity POST",2,"trxID:"+transactionModel2.getTxnId()+", Response:"+Response);
+			writeLogV2(0L,"Citybank paycity POST",2,"trxID:"+transactionModel2.getTxnId()+", Response:"+Response);
+			
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 
 		// For getting only the responsed XML
@@ -389,6 +436,14 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		if (logger.isInfoEnabled()) {
 			logger.info("City Bank Approve Order -- START");
 		}
+		/*
+		try {
+			//logwrite.writeLog(0L,"Citybank approveOrder",1, "approveOrder POST start");
+			writeLogV2(0L,"Citybank approveOrder",1, "approveOrder POST start");
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}/**/
 
 		Document xmlDoc;
 
@@ -456,9 +511,10 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 				Object citiResponse = xpath.evaluate("/Message", source, XPathConstants.NODE);
 				//TODO needs to remove later
+				/*
 				System.out.println("City bank resp print:source:  "+source.toString());
 				System.out.println("City bank resp print:xmlDoc:  "+xmlDoc.toString());
-				System.out.println("City bank resp print: "+citiResponse.toString());
+				System.out.println("City bank resp print: "+citiResponse.toString());/**/
 				
 				if (logger.isInfoEnabled()) {
 					logger.info("City bank full response"+citiResponse.toString());
@@ -490,6 +546,15 @@ public class PaymentController extends BaseDao implements SaltTracker {
                 //TODO issue trxid takes from global value
 				//String txnId = String.valueOf(transactionModelSaltTracker.getTxnId());
 			    String txnId = orderDescription; //update by Wasif 20190223
+			    
+			    try {
+					//logwrite.writeLog(0L,"Citybank approveOrder",2, "approveOrder respCity txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
+					writeLogV2(0L,"Citybank approveOrder",2, "approveOrder respCity txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
+					
+			    } catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				TransactionModel transactionModel = null;
 
 				try {
@@ -552,6 +617,15 @@ public class PaymentController extends BaseDao implements SaltTracker {
 					cityTransactionModel.setThreeDsStatus(threeDSStatus);
 					cityTransactionModel.setTransactionMasterId(String.valueOf(transactionId));
 					cityTransactionModel.setCreatedBy(transactionModel.getMerchantModel().getMerchantId());
+					
+					try {
+						//logwrite.writeLog(transactionModel.getMerchantModel().getMerchantId(),"Citybank approveOrder",1, "approveOrder cityTrxModelUpd txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
+						writeLogV2(transactionModel.getMerchantModel().getMerchantId(),"Citybank approveOrder",1, "CityTrxModelUpd txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
+						
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 
 					int cityResult = transactionServiceImpl.saveCityBankTransaction(cityTransactionModel);
 
@@ -1183,7 +1257,15 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			String key = messageUtil.getBundle("secret.key");
 			transactionId1 = Long.parseLong(encryption.decode(key, transactionId));
 			System.out.println("TransactionId After Decode== >> " + transactionId1);
-
+			
+			try {
+				//TODO
+				//logwrite.writeLog
+				writeLogV2(0L,"EBL GET",1, "trxID:"+transactionId1+",SESSIONKEY:"+transactionId);				
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			transactionModel2 = transactionService.fetchTransactionById(transactionId1);
 
 		} catch (Exception e) {
@@ -1231,7 +1313,16 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 		String requestURL = messageUtil.getBundle("ebi.first.url");
 		System.out.println("requestURL ==>> " + requestURL);
-
+		
+	
+		try {
+			//TODO
+			//logwrite.writeLog
+			writeLogV2(0L,"EBL CREATE_CHECKOUT_SESSION GET",1, "trxid:"+transactionId1+",CREATE_CHECKOUT_SESSION, REQ MAP :"+argsMap.toString());				
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		try {
 
 			HTTPConnection.sendPostRequest(requestURL, argsMap);
@@ -1245,6 +1336,15 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				String[] respPart = line.split("=");
 				respMap.put(respPart[0], respPart[1]);
 			}
+			
+			try {
+				//TODO
+				//logwrite.writeLog
+				writeLogV2(0L,"EBL CREATE_CHECKOUT_SESSION GET",2, "trxid:"+transactionId1+",CREATE_CHECKOUT_SESSION, resp Map :"+respMap.toString());				
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 
 			if (respMap.containsKey("result")) {
 				if (respMap.get("result").equals("SUCCESS")) {
@@ -1252,6 +1352,15 @@ public class PaymentController extends BaseDao implements SaltTracker {
 					System.out.println("SUCCESS");
 					String secondAPI = messageUtil.getBundle("ebi.second.url") + respMap.get("session.id");
 					System.out.println("secondAPI ==>> " + secondAPI);
+					
+					try {
+						//TODO
+						//logwrite.writeLog
+						writeLogV2(0L,"EBL 2nd API GET",1, "trxid:"+transactionId1+",secondAPI, request session :"+respMap.get("session.id"));				
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					response.sendRedirect(secondAPI);
 				} else {
 
@@ -1307,6 +1416,15 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		String returnURL = "";
 		String resultIndicator = (String) request.getParameter("resultIndicator");
 		System.out.println("resultIndicator ==>> " + resultIndicator +" orderId: "+orderId);
+		
+		try {
+			//TODO
+			//logwrite.writeLog
+			writeLogV2(0L,"EBL RETRIEVE_ORDER GET",1, "orderId:"+orderId+",resultIndicator :"+resultIndicator);				
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		//TODO Wasif 20190223 String orderId = String.valueOf(transactionModelSaltTracker.getTxnId()); 
 		
 		TransactionModel transactionModel2 = null;
@@ -1344,6 +1462,15 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				String[] respPart = line.split("=");
 
 				respMap.put(respPart[0], respPart[1]);
+			}
+			
+			try {
+				//TODO
+				//logwrite.writeLog
+				writeLogV2(0L,"EBL RETRIEVE_ORDER POST",2, "respMap :"+respMap.toString());				
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 
 			for (Map.Entry<String, String> entry : respMap.entrySet()) {
@@ -2075,6 +2202,16 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			logger.info("checkPayment -- START for "+paymentModel.getOrderTransactionID() +" Amount: "+(paymentModel.getAmount()!=null ? paymentModel.getAmount():null ));	
 			
 		}
+		
+		try {
+			//logwrite.writeLog
+			writeLogV2(0L,"check-payment",1, "Start order txnId:"+paymentModel.getOrderTransactionID()+",Amount:"+paymentModel.getAmount());
+			
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
 
 		try {
 
@@ -2093,6 +2230,16 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			System.out.println("Check Payment-->" + paymentModel);
 			String token = UUID.randomUUID().toString();
 			paymentModel.setToken(token);
+			
+			try {
+				//logwrite.writeLog
+				writeLogV2(0L,"check-payment",1, "order txnId:"+paymentModel.getOrderTransactionID()+",Amount:"+paymentModel.getAmount()+",token:"+token);
+				
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
 			long result = transactionService.insertOrder(paymentModel);
 			System.out.println("paymentModel.getMerchantModel().getCompanyModel().getIp() ==>> "
 					+ paymentModel.getMerchantModel().getCompanyModel().getIp());
@@ -2105,6 +2252,14 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 			paymentModel = new PaymentModel();
 			paymentModel.setToken(token);
+			try {
+				//logwrite.writeLog
+				writeLogV2(0L,"check-payment",1, "order txnId:"+paymentModel.getOrderTransactionID()+",Amount:"+paymentModel.getAmount()+",token:"+token);
+				
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			if (result > 0) {
 				paymentModel.setResponseCode("200");
 				paymentModel.setResponseMessage(messageUtil.getBundle("checkpayment.success"));
@@ -2177,6 +2332,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		}
 
 		PaymentModel paymentModel = null;
+		
 		try {
 
 			paymentModel = transactionService.fetchOrderByToken(token);
@@ -2213,7 +2369,16 @@ public class PaymentController extends BaseDao implements SaltTracker {
 					sessionKey = encryption.encode(key, String.valueOf(transactionId)); // Modified
 
 					model.addAttribute("SESSIONKEY", sessionKey); // Modified
-
+					
+					try {
+						//logwrite.writeLog
+						writeLogV2(0L,"execute-payment",1, "trxId:"+transactionId+",token:"+token+",sessionKey:"+sessionKey);
+						
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
 					try {
 						CheckoutModel checkoutModel = checkOutService
 								.fetchCheckoutById(paymentModel.getMerchantModel().getMerchantId());
@@ -2308,10 +2473,12 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			paymentModel.setSESSIONKEY((String) httpServletRequest.getAttribute("SESSIONKEY"));
 			paymentModel.setCsrfPreventionSalt((String) httpServletRequest.getAttribute("csrfPreventionSalt"));
 		}
+		//TODO didnt understand
+		
 		String sessionId = httpServletRequest.getSession().getId();
 		List<String> activeSalts = SALT_TRACKER.get(sessionId);
 		String salt = "";
-
+		
 		try {
 
 			salt = paymentModel.getCsrfPreventionSalt();
@@ -2322,6 +2489,16 @@ public class PaymentController extends BaseDao implements SaltTracker {
 					String key = messageUtil.getBundle("secret.key");
 					Long transactionId = Long.parseLong(encryption.decode(key, paymentModel.getSESSIONKEY()));
 					TransactionModel transactionModel = transactionService.fetchTransactionById(transactionId);
+					
+					try {
+						//logwrite.writeLog
+						writeLogV2(0L,"checkout-payment",1, "trxID:"+transactionId+",sessionId:"+sessionId+",SESSIONKEY:"+(String) httpServletRequest.getAttribute("SESSIONKEY"));
+						
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
 					if (Objects.isNull(transactionModel))
 						redirectAttributes.addFlashAttribute("transactionidInvalid",
 								messageUtil.getBundle("transactionid.invalid"));
@@ -2391,7 +2568,15 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			System.out.println("TransactionId After Decode== >> " + transactionId1);
 
 			transactionModel2 = transactionService.fetchTransactionById(transactionId1);
-
+			try {
+				//TODO
+				//logwrite.writeLog
+				writeLogV2(0L,"bkash GET",1, "trxID:"+transactionId1+",sessionId:"+transactionId);				
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
 		} catch (Exception e) {
 
 			redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transactionid.invalid"));
@@ -2458,6 +2643,15 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		String sessionId = request.getSession().getId();
 		List<String> activeSalts = SALT_TRACKER.get(sessionId);
 		String salt = "";
+		
+		try {
+			//TODO
+			//logwrite.writeLog
+			writeLogV2(0L,"bkash POST",1, "orderId:"+orderId+",sessionId:"+sessionId);				
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		try {
 			salt = bKashModel.getCsrfPreventionSalt();
@@ -2790,4 +2984,79 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		String keyMessage = mb.containsKey(key) ? (String) mb.get(key) : "";
 		return keyMessage;
 	}
+	//TODO remove
+	//TODO remove belwo block it is for testing only
+	public void writeLogV2(Long merchant_id,String action,int action_type,String log) throws Exception {
+
+		
+		System.out.println("logwriter.writeLog -- START");
+		System.out.println("logwriter.writeLog -log ===>"+log);
+		if(log.length()>1000)
+			log=log.substring(0,999);
+		
+		if(action.length()>100)
+			action=action.substring(0,99);
+		
+
+
+
+	Connection connection = oracleConnection.Connect();
+	OraclePreparedStatement pst = null;
+	try {
+		String sql = "insert into APPLICATION_LOG (merchant_id,action,action_type,log) values("
+				+ ":merchant_id,:action,:action_type,:log)";
+
+		String pk[] = {"ID"};
+		pst = (OraclePreparedStatement) connection.prepareStatement(sql, pk);
+
+		pst.setLongAtName("merchant_id", merchant_id); 
+		pst.setStringAtName("action", action); 
+		pst.setIntAtName("action_type", action_type); 
+		pst.setStringAtName("log", log); 
+		
+
+		//System.out.println("logwriter.writeLog==>> "+sql);
+
+		boolean result1 = pst.execute();
+		if (!result1) {
+
+			ResultSet rs = pst.getGeneratedKeys();
+			rs.next();
+		}
+		connection.commit();
+
+	} finally {
+
+		try{
+
+			if(pst != null)
+				if(!pst.isClosed())
+					pst.close();
+
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+
+		try { // Closing Connection Object
+			if (connection != null) {
+
+				if (!connection.isClosed())
+					connection.close();
+			}
+		} catch (Exception e) {
+			System.out.println("Connection not closed for logwriter.writeLog ");
+			/*
+			if (logger.isDebugEnabled()) {
+				logger.debug("Connection not closed for updateTransaction"+ e.getMessage());
+			}/**/
+
+		}
+	}
+/*
+	if (logger.isInfoEnabled()) {
+		logger.info("updateOrderCustomerDetails -- END");
+	}/**/
+
+
+}
 }
