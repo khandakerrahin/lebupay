@@ -82,6 +82,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 
 			pst = (OraclePreparedStatement) connection.prepareStatement(sql);
 			pst.setLongAtName("MERCHANT_ID", merchantId); // merchantId
+			
 			ResultSet rs =  pst.executeQuery();
 			while(rs.next()){
 
@@ -131,7 +132,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 				transactionModel.setBank(rs.getString(17));
 				transactionModels.add(transactionModel);
 			}
-
+			
 		} finally {
 			try{
 
@@ -1845,9 +1846,13 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ "m.SEBL_USER_NAME," // 27
 					+ "m.SEBL_PASSWORD," // 28
 					+ "m.SEBL_ID, " // 29
-					+ "m.CITYBANK_MERCHANT_ID " // 30
+					+ "m.CITYBANK_MERCHANT_ID, " // 30
 					//TODO add citybank_merchant_id
 					//WASIF 20181114
+					//WASIF 20190304 
+					+ "om.NOTIFICATION_EMAIL," // 31
+					+ "om.NOTIFICATION_SMS" // 32
+					
 					+ " from TRANSACTION_MASTER tm, MERCHANT_MASTER m, ORDER_MASTER om "
 					+ "where tm.MERCHANT_ID = m.MERCHANT_ID and tm.TXN_ID =:TXN_ID and tm.ORDER_ID = om.ORDER_ID order by tm.CREATED_DATE desc";
 
@@ -1893,6 +1898,10 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 				paymentModel.setFailureURL(rs.getString(20));
 				paymentModel.setCustomerDetails(rs.getString(21));
 				paymentModel.setAmount(rs.getDouble(22));
+				//TODO Wasif 20190304
+				paymentModel.setNotification_email(rs.getString(31));
+				paymentModel.setNotification_sms(rs.getString(32));
+				/**/
 
 
 				merchantModel.setEblUserName(rs.getString(23));
@@ -2152,7 +2161,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 		Connection connection = oracleConnection.Connect();
 		OraclePreparedStatement pst = null;
 		try {
-
+/*
 			String sql = "insert into ORDER_MASTER (ORDER_ID,AMOUNT,MERCHANT_ID,SUCCESS_URL,FAILURE_URL,ORDER_TRANSACTION_ID,CUTOMER_DETAILS,TOKEN,STATUS,CREATED_BY,CREATED_DATE) values(ORDER_MASTER_SEQ.nextval,"
 					+ ":AMOUNT,"
 					+ ":MERCHANT_ID,"
@@ -2164,9 +2173,9 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ ":STATUS,"
 					+ ":CREATED_BY,"
 					+ "localtimestamp(0)"
-					+ ") ";
+					+ ") ";/**/
 			//TODO 20190220
-			/*
+		
 			String sql = "insert into ORDER_MASTER (ORDER_ID,AMOUNT,MERCHANT_ID,SUCCESS_URL,FAILURE_URL,ORDER_TRANSACTION_ID,CUTOMER_DETAILS,TOKEN,STATUS,CREATED_BY,CREATED_DATE,NOTIFICATION_SMS,NOTIFICATION_EMAIL) values(ORDER_MASTER_SEQ.nextval,"
 					+ ":AMOUNT,"
 					+ ":MERCHANT_ID,"
@@ -2194,7 +2203,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 			pst.setIntAtName("STATUS", 1); // STATUS
 			pst.setLongAtName("CREATED_BY", paymentModel.getMerchantModel().getMerchantId()); // CREATED_BY
        //TODO 20190220
-			/*    pst.setStringAtName("NOTIFICATION_SMS",paymentModel.getNotification_sms());
+		    pst.setStringAtName("NOTIFICATION_SMS",paymentModel.getNotification_sms());
             pst.setStringAtName("NOTIFICATION_EMAIL",paymentModel.getNotification_email());/**/
 			System.out.println("Insert Order By Merchant==>> "+sql);
 

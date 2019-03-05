@@ -23,21 +23,21 @@ public class PaymentModel extends CommonModel {
 	private String transactionStatus;
 	private String transactionDate;
 	//WASIF 20190110
-    private String card_brand;
-    private String provided_card_number;
-    private String bank_merchant_id;
-    private String transaction_type;
-    private String bkash_payment_number;
-    private String billing_name;
-    private String device_ipaddress;
-    private String bank;
-    //WASIF 20190210
-    /*
-    private String notification_email;
-    private String notification_sms;
-   /**/ 
+	private String card_brand;
+	private String provided_card_number;
+	private String bank_merchant_id;
+	private String transaction_type;
+	private String bkash_payment_number;
+	private String billing_name;
+	private String device_ipaddress;
+	private String bank;
+	//WASIF 20190210
 
-	
+	private String notification_email;
+	private String notification_sms;
+
+
+
 	public Long getOrderID() {
 		return orderID;
 	}
@@ -181,7 +181,7 @@ public class PaymentModel extends CommonModel {
 	public void setTransactionModel(TransactionModel transactionModel) {
 		this.transactionModel = transactionModel;
 	}
-	
+
 	public String getTransactionStatus() {
 		return transactionStatus;
 	}
@@ -189,7 +189,7 @@ public class PaymentModel extends CommonModel {
 	public void setTransactionStatus(String transactionStatus) {
 		this.transactionStatus = transactionStatus;
 	}
-	
+
 	public String getTransactionDate() {
 		return transactionDate;
 	}
@@ -197,7 +197,7 @@ public class PaymentModel extends CommonModel {
 	public void setTransactionDate(String transactionDate) {
 		this.transactionDate = transactionDate;
 	}
-    public String getCard_brand() {
+	public String getCard_brand() {
 		return card_brand;
 	}
 
@@ -253,9 +253,7 @@ public class PaymentModel extends CommonModel {
 		this.device_ipaddress = device_ipaddress;
 	}
 
-//TODO
-    
-    
+
 	public String getBank() {
 		return bank;
 	}
@@ -263,11 +261,19 @@ public class PaymentModel extends CommonModel {
 	public void setBank(String bank) {
 		this.bank = bank;
 	}
-	//TODO
-/*
-	public String getNotification_email() {
-		if(notification_email != null && !notification_email.isEmpty())
-			notification_email="0";
+
+	/**
+	 * send email if flag =1 or no flag mentioned
+	 * @return
+	 */
+	public String getNotification_email() {		
+		if(notification_email != null && !notification_email.isEmpty()) {
+			if(!notification_email.equals("0")) {
+				notification_email="1";
+			}			
+		}else {
+			notification_email="1";
+		}
 		return notification_email;
 	}
 
@@ -275,11 +281,21 @@ public class PaymentModel extends CommonModel {
 		this.notification_email = notification_email;
 	}
 
+	/**
+	 * send sms if flag =1 
+	 * do not send if no flag or flag =0
+	 * @return
+	 */
 	public String getNotification_sms() {
 
-			if(notification_sms != null && !notification_sms.isEmpty())
+		if(notification_sms != null && !notification_sms.isEmpty()) {
+			if(!notification_sms.equals("1")) {
 				notification_sms="0";
-			
+			}			
+		}else {
+			notification_sms="0";
+		}
+
 		return notification_sms;
 	}
 
@@ -301,10 +317,9 @@ public class PaymentModel extends CommonModel {
 				+ ", bank_merchant_id=" + bank_merchant_id + ", transaction_type="+transaction_type
 				+ ", bkash_payment_number=" + bkash_payment_number + ", billing_name="+billing_name
 				+ ", device_ipaddress=" + device_ipaddress 
-				//TODO
-				/*
+
 				+ ", notification_sms=" +notification_sms
-				+ ", notification_email=" +notification_email/**/
+				+ ", notification_email=" +notification_email
 				+ ", merchantModel=" + merchantModel + ", customerDetails="
 				+ customerDetails + ", SESSIONKEY=" + SESSIONKEY + ",transactionDate=" + transactionDate
 				+ ", transactionModel=" + transactionModel + ", transactionStatus="

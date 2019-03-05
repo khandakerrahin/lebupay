@@ -91,7 +91,7 @@ import oracle.jdbc.OraclePreparedStatement;
 public class PaymentController extends BaseDao implements SaltTracker {
 
 	private static Logger logger = Logger.getLogger(PaymentController.class);
-//TODO needs attention below
+	//TODO needs attention below
 	//private static Logwriter logwrite ; //WASIF 20190224
 
 	@Autowired
@@ -120,8 +120,8 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 	@Autowired
 	private SendSMS sendSMS;
-	
-	
+
+
 
 	/**
 	 * This method is used to Open CityBank Payment Page.
@@ -137,8 +137,8 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	@RequestMapping(value = "/paycitybank", method = RequestMethod.GET)
 	public String payCityBank(HttpServletRequest request, Model model, @RequestParam String transactionId,
 			HttpServletResponse response, final RedirectAttributes redirectAttributes) {
-		
-		
+
+
 		if (logger.isInfoEnabled()) {
 			logger.info("City Bank Payment -- START");
 		}
@@ -155,13 +155,13 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			String key = messageUtil.getBundle("secret.key");
 			transactionId1 = Long.parseLong(encryption.decode(key, transactionId));
 			System.out.println("TransactionId After Decode== >> " + transactionId1);
-			
+
 			try {
-				
+
 				///transactionService..writeLog(0L,"Start Citybank",1,"trxId:"+transactionId+",paycitybank RequestMethod.GET");
 				writeLogV2(0L,"Start Citybank",1,"trxId:"+transactionId1+",paycitybank RequestMethod.GET");
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e1.printStackTrace();
 			}
 
@@ -201,19 +201,19 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		data += "<CancelURL>" + basePath + "cancelOrder" + "</CancelURL>";
 		data += "<DeclineURL>" + basePath + "declineOrder" + "</DeclineURL>";
 		data += "</Order></Request></TKKPG>";
-		
+
 		//remove after debugging
 		/*
 		if (logger.isInfoEnabled()) {
 			logger.info("City Bank request data --> "+data);
 		}/**/
-		
-		
+
+
 		try {
-		//	logwrite.writeLog(0L,"Citybank Get REQ",1,"data:"+data);
+			//	logwrite.writeLog(0L,"Citybank Get REQ",1,"data:"+data);
 			writeLogV2(0L,"Citybank CreateOrder Get",1,"trxID:"+transactionModel2.getTxnId()+",data:"+data);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
+			//  Auto-generated catch block
 			e1.printStackTrace();
 		}
 		String Response = null;
@@ -224,7 +224,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				//logwrite.writeLog(0L,"Citybank Get resp",2,"Response:"+Response);
 				writeLogV2(0L,"Citybank CreateOrder Get",2,"trxID:"+transactionModel2.getTxnId()+",Response:"+Response);
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
+				//  Auto-generated catch block
 				e1.printStackTrace();
 			}
 		} catch (IOException e) {
@@ -259,7 +259,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		if (logger.isInfoEnabled()) {
 			logger.info("City Bank Payment xmlDoc response -->"+xmlDoc);		
 		}
-		
+
 
 		NodeList nList = xmlDoc.getElementsByTagName("Order");
 		CityBankUtil.OrderID = nList.item(0).getChildNodes().item(0).getTextContent();
@@ -356,10 +356,10 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			//logwrite.writeLog(0L,"Citybank paycity POST",1,"trxID:"+transactionModel2.getTxnId()+", data:"+data);
 			writeLogV2(0L,"Citybank paycity POST",1,"trxID:"+transactionModel2.getTxnId()+", data:"+data);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
+
 		String Response = null;
 		try {
 			Response = CityBankUtil.PostQW(data);
@@ -370,13 +370,13 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		} catch (SAXException e) {
 			e.printStackTrace();
 		}
-		
+
 		try {
 			//logwrite.writeLog(0L,"Citybank paycity POST",2,"trxID:"+transactionModel2.getTxnId()+", Response:"+Response);
 			writeLogV2(0L,"Citybank paycity POST",2,"trxID:"+transactionModel2.getTxnId()+", Response:"+Response);
-			
+
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
+			//  Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -396,7 +396,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		//TODO remove after debugging
 		if (logger.isInfoEnabled()) {
 			logger.info("City Bank Payment xmlDoc response -->"+xmlDoc);	
@@ -441,7 +441,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			//logwrite.writeLog(0L,"Citybank approveOrder",1, "approveOrder POST start");
 			writeLogV2(0L,"Citybank approveOrder",1, "approveOrder POST start");
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
+			//  Auto-generated catch block
 			e1.printStackTrace();
 		}/**/
 
@@ -515,7 +515,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				System.out.println("City bank resp print:source:  "+source.toString());
 				System.out.println("City bank resp print:xmlDoc:  "+xmlDoc.toString());
 				System.out.println("City bank resp print: "+citiResponse.toString());/**/
-				
+
 				if (logger.isInfoEnabled()) {
 					logger.info("City bank full response"+citiResponse.toString());
 					logger.info("City bank full source response"+source.toString());										
@@ -543,16 +543,16 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				name = xpath.evaluate("Name", citiResponse);
 				threeDSVerificaion = xpath.evaluate("ThreeDSVerificaion", citiResponse);
 				threeDSStatus = xpath.evaluate("ThreeDSStatus", citiResponse);
-                //TODO issue trxid takes from global value
+				//TODO issue trxid takes from global value
 				//String txnId = String.valueOf(transactionModelSaltTracker.getTxnId());
-			    String txnId = orderDescription; //update by Wasif 20190223
-			    
-			    try {
+				String txnId = orderDescription; //update by Wasif 20190223
+
+				try {
 					//logwrite.writeLog(0L,"Citybank approveOrder",2, "approveOrder respCity txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
 					writeLogV2(0L,"Citybank approveOrder",2, "approveOrder respCity txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
-					
-			    } catch (Exception e1) {
-					// TODO Auto-generated catch block
+
+				} catch (Exception e1) {
+					//  Auto-generated catch block
 					e1.printStackTrace();
 				}
 				TransactionModel transactionModel = null;
@@ -584,11 +584,11 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				transactionModel.setDescription(cityOrderID);
 				transactionModel.setNameOnCard(cardHolderName);
 				transactionModel.setCustomer_firstName(name);
-			//	transactionModel.setDevice_ipAddress(device_ipAddress);
+				//	transactionModel.setDevice_ipAddress(device_ipAddress);
 				transactionModel.setProvided_card_number(pan);
-				
-			//	transactionModel.setMerchantId(transactionModel2.getMerchantModel().getCityMerchantId());
-                //TODO  city bank  mid add
+
+				//	transactionModel.setMerchantId(transactionModel2.getMerchantModel().getCityMerchantId());
+				//TODO  city bank  mid add
 				int result = transactionServiceImpl.updateTransactionAfterCityPayment(transactionModel);
 
 				if (result > 0) {
@@ -617,13 +617,13 @@ public class PaymentController extends BaseDao implements SaltTracker {
 					cityTransactionModel.setThreeDsStatus(threeDSStatus);
 					cityTransactionModel.setTransactionMasterId(String.valueOf(transactionId));
 					cityTransactionModel.setCreatedBy(transactionModel.getMerchantModel().getMerchantId());
-					
+
 					try {
 						//logwrite.writeLog(transactionModel.getMerchantModel().getMerchantId(),"Citybank approveOrder",1, "approveOrder cityTrxModelUpd txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
 						writeLogV2(transactionModel.getMerchantModel().getMerchantId(),"Citybank approveOrder",1, "CityTrxModelUpd txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
-						
+
 					} catch (Exception e1) {
-						// TODO Auto-generated catch block
+						//  Auto-generated catch block
 						e1.printStackTrace();
 					}
 
@@ -641,64 +641,69 @@ public class PaymentController extends BaseDao implements SaltTracker {
 							paymentModel = gson.fromJson(transactionModel.getPaymentModel().getCustomerDetails(),
 									PaymentModel.class);
 
+							String sms_notifictaion=paymentModel.getNotification_sms();
+							String email_notification=paymentModel.getNotification_email();
+
 							if (Objects.nonNull(paymentModel.getEmailId()) || !paymentModel.getEmailId().equals("")) {
+								if(email_notification.equals("1")){
+									try {
+										// Send Email
+										String action = "paymentSuccess";
 
-								try {
-									// Send Email
-									String action = "paymentSuccess";
+										String[] retval = spiderEmailSender.fetchTempConfig(action);
 
-									String[] retval = spiderEmailSender.fetchTempConfig(action);
+										String jsonReqName = retval[0];
+										String jsonReqPath = retval[1];
+										String templateID = retval[2];
 
-									String jsonReqName = retval[0];
-									String jsonReqPath = retval[1];
-									String templateID = retval[2];
+										String header = "Payment successful";
+										String emailMessageBody = "<p>Hi there!</p><p>We have successfully received "
+												+ transactionModel.getGrossAmount() + " BDT. </p> <p>Lebupay Team </p>";
+										String subject = messageUtil.getBundle("transaction.email.subject");
 
-									String header = "Payment successful";
-									String emailMessageBody = "<p>Hi there!</p><p>We have successfully received "
-											+ transactionModel.getGrossAmount() + " BDT. </p> <p>Lebupay Team </p>";
-									String subject = messageUtil.getBundle("transaction.email.subject");
+										String jsonReqString = getFileString(jsonReqName, jsonReqPath);
+										jsonReqString = jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
 
-									String jsonReqString = getFileString(jsonReqName, jsonReqPath);
-									jsonReqString = jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+										jsonReqString = jsonReqString.replace("replace_header_here", header);
+										jsonReqString = jsonReqString.replace("replace_amount_here",
+												"" + transactionModel.getGrossAmount());
+										jsonReqString = jsonReqString.replace("replace_emailMessageBody_here",
+												emailMessageBody);
+										jsonReqString = jsonReqString.replace("replace_subject_here", subject);
+										jsonReqString = jsonReqString.replace("replace_to_here", paymentModel.getEmailId());
+										jsonReqString = jsonReqString.replace("replace_cc_here", "");
+										jsonReqString = jsonReqString.replace("replace_bcc_here", "");
+										jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
 
-									jsonReqString = jsonReqString.replace("replace_header_here", header);
-									jsonReqString = jsonReqString.replace("replace_amount_here",
-											"" + transactionModel.getGrossAmount());
-									jsonReqString = jsonReqString.replace("replace_emailMessageBody_here",
-											emailMessageBody);
-									jsonReqString = jsonReqString.replace("replace_subject_here", subject);
-									jsonReqString = jsonReqString.replace("replace_to_here", paymentModel.getEmailId());
-									jsonReqString = jsonReqString.replace("replace_cc_here", "");
-									jsonReqString = jsonReqString.replace("replace_bcc_here", "");
-									jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
+										spiderEmailSender.sendEmail(jsonReqString, true);
 
-									spiderEmailSender.sendEmail(jsonReqString, true);
+										// sendMail.send(paymentModel.getEmailId(), emailMessageBody, subject);
 
-									// sendMail.send(paymentModel.getEmailId(), emailMessageBody, subject);
+									} catch (Exception e) {
 
-								} catch (Exception e) {
-
-									e.printStackTrace();
+										e.printStackTrace();
+									}
 								}
 							}
-
-							if (Objects.nonNull(paymentModel.getMobileNumber())
-									|| !paymentModel.getMobileNumber().equals("")) {
-								//TODO add option to send SMS only if amount more than 100
-								try {
-									/*
+							if(sms_notifictaion.equals("1")){ //SENDs sms if sms is enabled
+								if (Objects.nonNull(paymentModel.getMobileNumber())
+										|| !paymentModel.getMobileNumber().equals("")) {
+									//TODO add option to send SMS only if amount more than 100
+									try {
+										/*
 									sendSMS.smsSend(paymentModel.getMobileNumber(),
 											"Thank you for the payment. We have received "
 													+ transactionModel.getGrossAmount() + " BDT.");/**/
-									
-									sendSMS.smsSend(paymentModel.getMobileNumber(),
-											"We have received "
-													+ transactionModel.getGrossAmount() + " BDT. Thank You for paying with LEBUPAY. Visit www.we-top-up.com form mobile recharge.");
-								} catch (Exception e) {
-									e.printStackTrace();
+
+										sendSMS.smsSend(paymentModel.getMobileNumber(),
+												"We have received "
+														+ transactionModel.getGrossAmount() + " BDT. Thank You for paying with LEBUPAY. Visit www.we-top-up.com form mobile recharge.");
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
+
 								}
-								
-							}							
+							}
 						}
 					} else {
 						redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("something.went.wrong"));
@@ -767,8 +772,8 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		String OrderStatus = "";
 		String cardHolderName = "";
 		String name = "";
-
-		String txnId = String.valueOf(transactionModelSaltTracker.getTxnId());
+//TODO salt
+		//String txnId = String.valueOf(transactionModelSaltTracker.getTxnId());
 
 		if (request.getParameter("xmlmsg") != "") {
 
@@ -803,6 +808,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				name = "";
 				threeDSVerificaion = "";
 				threeDSStatus = "";
+				String txnId=orderDescription; //TODO order description
 
 				if (orderStatus.equals("CANCELED")) {
 
@@ -836,6 +842,15 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 					int result = transactionServiceImpl.updateCalcelledTransactionAfterCityPayment(transactionModel, 3);
 
+					try {
+						//logwrite.writeLog(0L,"Citybank approveOrder",2, "approveOrder respCity txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
+						writeLogV2(0L,"Citybank cancelOrder",2, "cancelOrder respCity txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",pan:"+pan);
+
+					} catch (Exception e1) {
+						//  Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
 					if (result > 0) {
 
 						returnURL = "redirect:/payment_failure?orderId=" + txnId;
@@ -846,44 +861,46 @@ public class PaymentController extends BaseDao implements SaltTracker {
 							// JSON to Java object, read it from a Json String.
 							paymentModel = gson.fromJson(transactionModel.getPaymentModel().getCustomerDetails(),
 									PaymentModel.class);
-
+							String sms_notifictaion=paymentModel.getNotification_sms();
+							String email_notification=paymentModel.getNotification_email();
 							if (Objects.nonNull(paymentModel.getEmailId()) || !paymentModel.getEmailId().equals("")) {
-								try {
-									// Send Email
-									String action = "paymentCancelled";
+								if(email_notification.equals("1")) {
+									try {
+										// Send Email
+										String action = "paymentCancelled";
 
-									String[] retval = spiderEmailSender.fetchTempConfig(action);
+										String[] retval = spiderEmailSender.fetchTempConfig(action);
 
-									String jsonReqName = retval[0];
-									String jsonReqPath = retval[1];
-									String templateID = retval[2];
+										String jsonReqName = retval[0];
+										String jsonReqPath = retval[1];
+										String templateID = retval[2];
 
-									String header = "Payment cancelled";
-									String emailMessageBody = "<p>Hi there!</p><p>You have cancelled your order. Please try again.</p> <p>Lebupay Team </p>";
-									String subject = messageUtil.getBundle("transaction.email.subject.cancelled");
+										String header = "Payment cancelled";
+										String emailMessageBody = "<p>Hi there!</p><p>You have cancelled your order. Please try again.</p> <p>Lebupay Team </p>";
+										String subject = messageUtil.getBundle("transaction.email.subject.cancelled");
 
-									String jsonReqString = getFileString(jsonReqName, jsonReqPath);
-									jsonReqString = jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+										String jsonReqString = getFileString(jsonReqName, jsonReqPath);
+										jsonReqString = jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
 
-									jsonReqString = jsonReqString.replace("replace_header_here", header);
-									jsonReqString = jsonReqString.replace("replace_emailMessageBody_here",
-											emailMessageBody);
-									jsonReqString = jsonReqString.replace("replace_subject_here", subject);
-									jsonReqString = jsonReqString.replace("replace_to_here", paymentModel.getEmailId());
-									jsonReqString = jsonReqString.replace("replace_cc_here", "");
-									jsonReqString = jsonReqString.replace("replace_bcc_here", "");
-									jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
+										jsonReqString = jsonReqString.replace("replace_header_here", header);
+										jsonReqString = jsonReqString.replace("replace_emailMessageBody_here",
+												emailMessageBody);
+										jsonReqString = jsonReqString.replace("replace_subject_here", subject);
+										jsonReqString = jsonReqString.replace("replace_to_here", paymentModel.getEmailId());
+										jsonReqString = jsonReqString.replace("replace_cc_here", "");
+										jsonReqString = jsonReqString.replace("replace_bcc_here", "");
+										jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
 
-									spiderEmailSender.sendEmail(jsonReqString, true);
+										spiderEmailSender.sendEmail(jsonReqString, true);
 
-									// sendMail.send(paymentModel.getEmailId(), messageBody, subject);
-								} catch (Exception e) {
-									System.out.println("Mail Sending Failed");
-								}
-								
+										// sendMail.send(paymentModel.getEmailId(), messageBody, subject);
+									} catch (Exception e) {
+										System.out.println("Mail Sending Failed");
+									}
+								}	
 							}
-							//TODO remove comment tag to enable sms sending when order is cancelled
-/*
+							// remove comment tag to enable sms sending when order is cancelled
+							/*
 							if (Objects.nonNull(paymentModel.getMobileNumber())
 									|| !paymentModel.getMobileNumber().equals("")) {
                             //SMS for cancel order
@@ -965,7 +982,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		String cardHolderName = "";
 		String name = "";
 
-		String txnId = String.valueOf(transactionModelSaltTracker.getTxnId());
+		//String txnId = String.valueOf(transactionModelSaltTracker.getTxnId());
 
 		if (request.getParameter("xmlmsg") != "") {
 
@@ -997,9 +1014,19 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				orderStatusScr = xpath.evaluate("OrderStatusScr", citiResponse);
 				name = xpath.evaluate("Name", citiResponse);
 				threeDSVerificaion = xpath.evaluate("ThreeDSVerificaion", citiResponse);
+				String txnId=orderDescription; //TODO order description
 
 				if (orderStatus.equals("DECLINED")) {
 					TransactionModel transactionModel = null;
+					
+					try {
+						//logwrite.writeLog(0L,"Citybank approveOrder",2, "approveOrder respCity txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
+						writeLogV2(0L,"Citybank declineOrder",2, "declineOrder respCity txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",pan:"+pan+",merchantTransId:"+merchantTransId);
+					} catch (Exception e1) {
+						//  Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
 					try {
 						transactionModel = transactionService.fetchTransactionByTXNId(txnId);
 						if (Objects.isNull(transactionModel)) {
@@ -1034,39 +1061,42 @@ public class PaymentController extends BaseDao implements SaltTracker {
 							paymentModel = gson.fromJson(transactionModel.getPaymentModel().getCustomerDetails(),
 									PaymentModel.class);
 
-							if (Objects.nonNull(paymentModel.getEmailId())) {
-								try {
-									// Send Email
-									String action = "paymentDeclined";
+							String sms_notifictaion=paymentModel.getNotification_sms();
+							String email_notification=paymentModel.getNotification_email();
+							if(email_notification.equals("1")) {
+								if (Objects.nonNull(paymentModel.getEmailId())) {
+									try {
+										// Send Email
+										String action = "paymentDeclined";
 
-									String [] retval = spiderEmailSender.fetchTempConfig(action);
-									
-									String jsonReqName = retval[0];
-									String jsonReqPath = retval[1];
-									String templateID = retval[2];
+										String [] retval = spiderEmailSender.fetchTempConfig(action);
 
-									String header = "Payment declined";
-									String emailMessageBody = "<p>Hi there!</p><p>Your payment has been declined. Please try again.</p> <p>Lebupay Team </p>";
-									String subject = messageUtil.getBundle("transaction.email.subject.declined");
+										String jsonReqName = retval[0];
+										String jsonReqPath = retval[1];
+										String templateID = retval[2];
 
-									String jsonReqString = getFileString(jsonReqName, jsonReqPath);
-									jsonReqString = jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+										String header = "Payment declined";
+										String emailMessageBody = "<p>Hi there!</p><p>Your payment has been declined. Please try again.</p> <p>Lebupay Team </p>";
+										String subject = messageUtil.getBundle("transaction.email.subject.declined");
 
-									jsonReqString = jsonReqString.replace("replace_header_here", header);
-									jsonReqString = jsonReqString.replace("replace_emailMessageBody_here",
-											emailMessageBody);
-									jsonReqString = jsonReqString.replace("replace_subject_here", subject);
-									jsonReqString = jsonReqString.replace("replace_to_here", paymentModel.getEmailId());
-									jsonReqString = jsonReqString.replace("replace_cc_here", "");
-									jsonReqString = jsonReqString.replace("replace_bcc_here", "");
-									jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
+										String jsonReqString = getFileString(jsonReqName, jsonReqPath);
+										jsonReqString = jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
 
-									spiderEmailSender.sendEmail(jsonReqString, true);
+										jsonReqString = jsonReqString.replace("replace_header_here", header);
+										jsonReqString = jsonReqString.replace("replace_emailMessageBody_here",
+												emailMessageBody);
+										jsonReqString = jsonReqString.replace("replace_subject_here", subject);
+										jsonReqString = jsonReqString.replace("replace_to_here", paymentModel.getEmailId());
+										jsonReqString = jsonReqString.replace("replace_cc_here", "");
+										jsonReqString = jsonReqString.replace("replace_bcc_here", "");
+										jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
 
-									// sendMail.send(paymentModel.getEmailId(), messageBody, subject);
-								} catch (Exception e) {
-									e.printStackTrace();
-									System.out.println("Mail Sending Failed");
+										spiderEmailSender.sendEmail(jsonReqString, true);
+										// sendMail.send(paymentModel.getEmailId(), messageBody, subject);
+									} catch (Exception e) {
+										e.printStackTrace();
+										System.out.println("Mail Sending Failed");
+									}
 								}
 							}
 						}
@@ -1202,17 +1232,17 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		try {
 
 			TransactionModel transactionModel = transactionService.fetchTransactionByTXNId(orderId);
-				if (Objects.nonNull(transactionModel)) {
-					if (transactionModel.getTransactionStatus() != 0) {
-						int result = transactionService.updateTransaction(
-								transactionModel.getMerchantModel().getMerchantId(), 5,
-								transactionModel.getTransactionId());
-						System.out.println("Result ==>> " + result);
-						if (Objects.nonNull(transactionModel.getPaymentModel().getFailureURL()))
-							if (!transactionModel.getPaymentModel().getFailureURL().equals("None"))
-								response.sendRedirect(transactionModel.getPaymentModel().getFailureURL());
-					}
+			if (Objects.nonNull(transactionModel)) {
+				if (transactionModel.getTransactionStatus() != 0) {
+					int result = transactionService.updateTransaction(
+							transactionModel.getMerchantModel().getMerchantId(), 5,
+							transactionModel.getTransactionId());
+					System.out.println("Result ==>> " + result);
+					if (Objects.nonNull(transactionModel.getPaymentModel().getFailureURL()))
+						if (!transactionModel.getPaymentModel().getFailureURL().equals("None"))
+							response.sendRedirect(transactionModel.getPaymentModel().getFailureURL());
 				}
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1225,7 +1255,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		return "payment-failure";
 	}
 
-           // EBL STARTS HERE	
+	// EBL STARTS HERE	
 	/**
 	 * This method is used to open payment page for EBL gateway.
 	 * 
@@ -1257,13 +1287,13 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			String key = messageUtil.getBundle("secret.key");
 			transactionId1 = Long.parseLong(encryption.decode(key, transactionId));
 			System.out.println("TransactionId After Decode== >> " + transactionId1);
-			
+
 			try {
 				//TODO
 				//logwrite.writeLog
 				writeLogV2(0L,"EBL GET",1, "trxID:"+transactionId1+",SESSIONKEY:"+transactionId);				
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
+				//  Auto-generated catch block
 				e1.printStackTrace();
 			}
 			transactionModel2 = transactionService.fetchTransactionById(transactionId1);
@@ -1303,7 +1333,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		argsMap.put("interaction.displayControl.billingAddress", "HIDE");
 		argsMap.put("interaction.merchant.name", "Lebupay");
 		argsMap.put("interaction.displayControl.orderSummary", "HIDE");
-	//	argsMap.put("interaction.returnUrl", basePath + "retriveOrder");
+		//	argsMap.put("interaction.returnUrl", basePath + "retriveOrder");
 		argsMap.put("interaction.returnUrl", basePath + "retriveOrder?orderId=" + transactionModel2.getTxnId()); //TODO Wasif 20190223
 		argsMap.put("interaction.cancelUrl", basePath + "failure?orderId=" + transactionModel2.getTxnId());
 
@@ -1313,14 +1343,14 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 		String requestURL = messageUtil.getBundle("ebi.first.url");
 		System.out.println("requestURL ==>> " + requestURL);
-		
-	
+
+
 		try {
 			//TODO
 			//logwrite.writeLog
 			writeLogV2(0L,"EBL CREATE_CHECKOUT_SESSION GET",1, "trxid:"+transactionId1+",CREATE_CHECKOUT_SESSION, REQ MAP :"+argsMap.toString());				
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
+			//  Auto-generated catch block
 			e1.printStackTrace();
 		}
 		try {
@@ -1336,13 +1366,13 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				String[] respPart = line.split("=");
 				respMap.put(respPart[0], respPart[1]);
 			}
-			
+
 			try {
 				//TODO
 				//logwrite.writeLog
 				writeLogV2(0L,"EBL CREATE_CHECKOUT_SESSION GET",2, "trxid:"+transactionId1+",CREATE_CHECKOUT_SESSION, resp Map :"+respMap.toString());				
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
+				//  Auto-generated catch block
 				e1.printStackTrace();
 			}
 
@@ -1352,13 +1382,13 @@ public class PaymentController extends BaseDao implements SaltTracker {
 					System.out.println("SUCCESS");
 					String secondAPI = messageUtil.getBundle("ebi.second.url") + respMap.get("session.id");
 					System.out.println("secondAPI ==>> " + secondAPI);
-					
+
 					try {
 						//TODO
 						//logwrite.writeLog
 						writeLogV2(0L,"EBL 2nd API GET",1, "trxid:"+transactionId1+",secondAPI, request session :"+respMap.get("session.id"));				
 					} catch (Exception e1) {
-						// TODO Auto-generated catch block
+						//  Auto-generated catch block
 						e1.printStackTrace();
 					}
 					response.sendRedirect(secondAPI);
@@ -1402,12 +1432,12 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	@RequestMapping(value = "/retriveOrder", method = RequestMethod.GET)
 	public String retriveOrder(HttpServletRequest request, Model model, HttpServletResponse response,
 			@RequestParam(required = false) String orderId,final RedirectAttributes redirectAttributes) {
-		
-/* 20190223
+
+		/* 20190223
 		public String retriveOrder(HttpServletRequest request, Model model, HttpServletResponse response
 				,final RedirectAttributes redirectAttributes) { /**/
-		
-		
+
+
 
 		if (logger.isInfoEnabled()) {
 			logger.info("retriveOrder -- START");
@@ -1416,17 +1446,17 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		String returnURL = "";
 		String resultIndicator = (String) request.getParameter("resultIndicator");
 		System.out.println("resultIndicator ==>> " + resultIndicator +" orderId: "+orderId);
-		
+
 		try {
 			//TODO
 			//logwrite.writeLog
 			writeLogV2(0L,"EBL RETRIEVE_ORDER GET",1, "orderId:"+orderId+",resultIndicator :"+resultIndicator);				
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
+			//  Auto-generated catch block
 			e1.printStackTrace();
 		}
 		//TODO Wasif 20190223 String orderId = String.valueOf(transactionModelSaltTracker.getTxnId()); 
-		
+
 		TransactionModel transactionModel2 = null;
 		try {
 
@@ -1463,13 +1493,13 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 				respMap.put(respPart[0], respPart[1]);
 			}
-			
+
 			try {
 				//TODO
 				//logwrite.writeLog
 				writeLogV2(0L,"EBL RETRIEVE_ORDER POST",2, "respMap :"+respMap.toString());				
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
+				//  Auto-generated catch block
 				e1.printStackTrace();
 			}
 
@@ -1505,7 +1535,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 						transactionModel.setAuthorizationResponse_time(
 								respMap.get("transaction%5B0%5D.authorizationResponse.time"));
 						transactionModel
-								.setTransaction_currency(respMap.get("transaction%5B0%5D.transaction.currency"));
+						.setTransaction_currency(respMap.get("transaction%5B0%5D.transaction.currency"));
 						transactionModel.setSecureId(respMap.get("transaction%5B0%5D.3DSecureId"));
 						transactionModel.setAcquirerCode(
 								respMap.get("transaction%5B0%5D.response.cardSecurityCode.acquirerCode"));
@@ -1518,17 +1548,17 @@ public class PaymentController extends BaseDao implements SaltTracker {
 						transactionModel.setCardSecurityCode_gatewayCode(
 								respMap.get("transaction%5B0%5D.response.cardSecurityCode.gatewayCode"));
 						transactionModel
-								.setAuthenticationToken(respMap.get("transaction%5B0%5D.3DSecure.authenticationToken"));
+						.setAuthenticationToken(respMap.get("transaction%5B0%5D.3DSecure.authenticationToken"));
 						transactionModel.setTransaction_receipt(respMap.get("transaction%5B0%5D.transaction.receipt"));
 						transactionModel
-								.setResponse_gatewayCode(respMap.get("transaction%5B0%5D.response.gatewayCode"));
+						.setResponse_gatewayCode(respMap.get("transaction%5B0%5D.response.gatewayCode"));
 						transactionModel.setOrder_status(respMap.get("transaction%5B0%5D.order.status"));
 						transactionModel.setAcquirer_date(respMap.get("transaction%5B0%5D.transaction.acquirer.date"));
 						transactionModel.setVersion(respMap.get("transaction%5B0%5D.version"));
 						transactionModel.setCommercialCardIndicator(
 								respMap.get("transaction%5B0%5D.authorizationResponse.commercialCardIndicator"));
 						transactionModel
-								.setCard_brand(respMap.get("transaction%5B0%5D.sourceOfFunds.provided.card.brand"));
+						.setCard_brand(respMap.get("transaction%5B0%5D.sourceOfFunds.provided.card.brand"));
 						transactionModel.setSourceOfFunds_type(respMap.get("sourceOfFunds.type"));
 						transactionModel.setCustomer_firstName(respMap.get("customer.firstName"));
 						transactionModel.setCustomer_lastName(respMap.get("customer.lastName"));
@@ -1542,21 +1572,21 @@ public class PaymentController extends BaseDao implements SaltTracker {
 						transactionModel.setResult(respMap.get("transaction%5B0%5D.result"));
 						transactionModel.setCreationTime(respMap.get("creationTime"));
 						transactionModel
-								.setTotalRefundedAmount(respMap.get("transaction%5B0%5D.order.totalRefundedAmount"));
+						.setTotalRefundedAmount(respMap.get("transaction%5B0%5D.order.totalRefundedAmount"));
 						transactionModel
-								.setAcquirer_batch(respMap.get("transaction%5B0%5D.transaction.acquirer.batch"));
+						.setAcquirer_batch(respMap.get("transaction%5B0%5D.transaction.acquirer.batch"));
 						transactionModel.setDescription(respMap.get("description"));
 						transactionModel.setTransaction_type(respMap.get("transaction%5B0%5D.transaction.type"));
 						transactionModel.setFinancialNetworkDate(
 								respMap.get("transaction%5B0%5D.authorizationResponse.financialNetworkDate"));
 						transactionModel
-								.setResponseCode(respMap.get("transaction%5B0%5D.authorizationResponse.responseCode"));
+						.setResponseCode(respMap.get("transaction%5B0%5D.authorizationResponse.responseCode"));
 						transactionModel
-								.setTransaction_frequency(respMap.get("transaction%5B0%5D.transaction.frequency"));
+						.setTransaction_frequency(respMap.get("transaction%5B0%5D.transaction.frequency"));
 						transactionModel
-								.setTransaction_terminal(respMap.get("transaction%5B0%5D.transaction.terminal"));
+						.setTransaction_terminal(respMap.get("transaction%5B0%5D.transaction.terminal"));
 						transactionModel
-								.setAuthorizationCode(respMap.get("transaction%5B0%5D.transaction.authorizationCode"));
+						.setAuthorizationCode(respMap.get("transaction%5B0%5D.transaction.authorizationCode"));
 						transactionModel.setAuthenticationStatus(
 								respMap.get("transaction%5B0%5D.3DSecure.authenticationStatus"));
 						transactionModel.setProcessingCode(
@@ -1564,7 +1594,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 						transactionModel.setExpiry_month(respMap.get("sourceOfFunds.provided.card.expiry.month"));
 						transactionModel.setSecure_xid(respMap.get("transaction%5B0%5D.3DSecure.xid"));
 						transactionModel
-								.setEnrollmentStatus(respMap.get("transaction%5B0%5D.3DSecure.enrollmentStatus"));
+						.setEnrollmentStatus(respMap.get("transaction%5B0%5D.3DSecure.enrollmentStatus"));
 						transactionModel.setCardSecurityCodeError(
 								respMap.get("transaction%5B0%5D.authorizationResponse.cardSecurityCodeError"));
 						transactionModel.setTimeZone(respMap.get("transaction%5B0%5D.transaction.acquirer.timeZone"));
@@ -1572,12 +1602,12 @@ public class PaymentController extends BaseDao implements SaltTracker {
 						transactionModel.setBank("EBL");
 
 						result = transactionServiceImpl.updateTransactionAfterPayment(transactionModel);
-						int cityUpdateResult = 0;
+						int eblUpdateResult = 0;
 						if (result > 0) {
 
-							cityUpdateResult = transactionServiceImpl
+							eblUpdateResult = transactionServiceImpl
 									.updateEblTransactionAfterPayment(transactionModel);
-							if (cityUpdateResult > 0) {
+							if (eblUpdateResult > 0) {
 								returnURL = "redirect:/success?orderId=" + orderId;
 
 								System.out.println("Success Transaction Model-->" + transactionModel);
@@ -1591,47 +1621,53 @@ public class PaymentController extends BaseDao implements SaltTracker {
 											transactionModel.getPaymentModel().getCustomerDetails(),
 											PaymentModel.class);
 									System.out.println("paymentModel ==>> " + paymentModel);
-									if (Objects.nonNull(paymentModel.getEmailId())) {
 
-										// Send Email
-										String action = "transactionSuccess";
-										String [] retval = spiderEmailSender.fetchTempConfig(action);
-										
-										String jsonReqName = retval[0];
-										String jsonReqPath = retval[1];
-										String templateID = retval[2];
-										
-										String header = "Transaction successful";
-										String emailMessageBody = "<p>Dear Sir/Madam!</p><p>We have successfully received "
-												+ transactionModel.getGrossAmount()
-												+ " BDT. </p> <p>Thank You for paying with LEBUPAY</p>";
-										String subject = messageUtil.getBundle("transaction.email.subject");
+									String sms_notifictaion=paymentModel.getNotification_sms();
+									String email_notification=paymentModel.getNotification_email();
+									if(email_notification.equals("1")) {
+										if (Objects.nonNull(paymentModel.getEmailId())) {
 
-										String jsonReqString = getFileString(jsonReqName, jsonReqPath);
-										jsonReqString = jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+											// Send Email
+											String action = "transactionSuccess";
+											String [] retval = spiderEmailSender.fetchTempConfig(action);
 
-										jsonReqString = jsonReqString.replace("replace_header_here", header);
-										jsonReqString = jsonReqString.replace("replace_amount_here",
-												"" + transactionModel.getGrossAmount());
-										jsonReqString = jsonReqString.replace("replace_emailMessageBody_here",
-												emailMessageBody);
-										jsonReqString = jsonReqString.replace("replace_subject_here", subject);
-										jsonReqString = jsonReqString.replace("replace_to_here",
-												paymentModel.getEmailId());
-										jsonReqString = jsonReqString.replace("replace_cc_here", "");
-										jsonReqString = jsonReqString.replace("replace_bcc_here", "");
-										jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
+											String jsonReqName = retval[0];
+											String jsonReqPath = retval[1];
+											String templateID = retval[2];
 
-										spiderEmailSender.sendEmail(jsonReqString, true);
+											String header = "Transaction successful";
+											String emailMessageBody = "<p>Dear Sir/Madam!</p><p>We have successfully received "
+													+ transactionModel.getGrossAmount()
+													+ " BDT. </p> <p>Thank You for paying with LEBUPAY</p>";
+											String subject = messageUtil.getBundle("transaction.email.subject");
 
-										// sendMail.send(paymentModel.getEmailId(), messageBody, subject);
+											String jsonReqString = getFileString(jsonReqName, jsonReqPath);
+											jsonReqString = jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
 
+											jsonReqString = jsonReqString.replace("replace_header_here", header);
+											jsonReqString = jsonReqString.replace("replace_amount_here",
+													"" + transactionModel.getGrossAmount());
+											jsonReqString = jsonReqString.replace("replace_emailMessageBody_here",
+													emailMessageBody);
+											jsonReqString = jsonReqString.replace("replace_subject_here", subject);
+											jsonReqString = jsonReqString.replace("replace_to_here",
+													paymentModel.getEmailId());
+											jsonReqString = jsonReqString.replace("replace_cc_here", "");
+											jsonReqString = jsonReqString.replace("replace_bcc_here", "");
+											jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
+
+											spiderEmailSender.sendEmail(jsonReqString, true);
+
+											// sendMail.send(paymentModel.getEmailId(), messageBody, subject);
+
+										}
 									}
-
-									if (Objects.nonNull(paymentModel.getMobileNumber())) {
-										sendSMS.smsSend(paymentModel.getMobileNumber(),
-												"We have received " + transactionModel.getGrossAmount()
-														+ " BDT. Thank You for paying with LEBUPAY. Visit www.we-top-up.com form mobile recharge.");
+									if(sms_notifictaion.equals("1")) {
+										if (Objects.nonNull(paymentModel.getMobileNumber())) {
+											sendSMS.smsSend(paymentModel.getMobileNumber(),
+													"We have received " + transactionModel.getGrossAmount()
+													+ " BDT. Thank You for paying with LEBUPAY. Visit www.we-top-up.com form mobile recharge.");
+										}
 									}
 
 								}
@@ -1720,6 +1756,12 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				}
 
 			}
+			try {
+				//TODO
+				writeLogV2(0L,"success",2, "orderId:"+orderId);				
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1732,12 +1774,12 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		return "payment-success";
 	}
 
-	
+
 	//SEBL STARTS HERE 
-	
+
 	/**********************************************************************************************/
 
-	
+
 	/**
 	 * This method is used to open payment page for SEBL gateway.
 	 * 
@@ -1804,7 +1846,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		argsMap.put("interaction.displayControl.billingAddress", "HIDE");
 		argsMap.put("interaction.merchant.name", "Lebupay");
 		argsMap.put("interaction.displayControl.orderSummary", "HIDE");
-		argsMap.put("interaction.returnUrl", basePath + "retriveOrderSEBL");
+		argsMap.put("interaction.returnUrl", basePath + "retriveOrderSEBL?orderId=" + transactionModel2.getTxnId());
 		argsMap.put("interaction.cancelUrl", basePath + "failure?orderId=" + transactionModel2.getTxnId());
 
 		argsMap.put("merchant", transactionModel2.getMerchantModel().getSeblId());
@@ -1831,7 +1873,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 					System.out.println("SEBL first API SUCCESS");
 					String secondAPI = messageUtil.getBundle("sebl.second.url") + respMap.get("session.id");
 					System.out.println("SEBL secondAPI ==>> " + secondAPI);
-				    logger.info("SEBL secondAPI ==>> " + secondAPI);
+					logger.info("SEBL secondAPI ==>> " + secondAPI);
 					response.sendRedirect(secondAPI);
 				} else {
 
@@ -1873,6 +1915,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 	@RequestMapping(value = "/retriveOrderSEBL", method = RequestMethod.GET)
 	public String retriveOrderSEBL(HttpServletRequest request, Model model, HttpServletResponse response,
+			@RequestParam(required = false) String orderId,
 			final RedirectAttributes redirectAttributes) {
 		System.out.println("SEBl retriveOrderSEBL entered");
 		if (logger.isInfoEnabled()) {
@@ -1882,8 +1925,17 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		String returnURL = "";
 		String resultIndicator = (String) request.getParameter("resultIndicator");
 		System.out.println("resultIndicator ==>> " + resultIndicator);
-		String orderId = String.valueOf(transactionModelSaltTracker.getTxnId());
+		/* String orderId = String.valueOf(transactionModelSaltTracker.getTxnId()); */
 
+		try {
+			//TODO
+			//logwrite.writeLog
+			writeLogV2(0L,"SEBL RETRIEVE_ORDER GET",1, "orderId:"+orderId+",resultIndicator :"+resultIndicator);				
+		} catch (Exception e1) {
+			//  Auto-generated catch block
+			e1.printStackTrace();
+		}
+	
 		TransactionModel transactionModel2 = null;
 		try {
 
@@ -1910,9 +1962,9 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		try {
 
 			HTTPConnection.sendPostRequest(requestURL, argsMap);
-		
+
 			String[] resp = HTTPConnection.readMultipleLinesRespone();
-			
+
 			String[] respArr = resp[0].split("&");
 
 			HashMap<String, String> respMap = new HashMap<String, String>();
@@ -1920,6 +1972,14 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				String[] respPart = line.split("=");
 
 				respMap.put(respPart[0], respPart[1]);
+			}
+			try {
+				//TODO
+				//logwrite.writeLog
+				writeLogV2(0L,"SEBL RETRIEVE_ORDER POST",2, "respMap :"+respMap.toString());				
+			} catch (Exception e1) {
+				//  Auto-generated catch block
+				e1.printStackTrace();
 			}
 
 			for (Map.Entry<String, String> entry : respMap.entrySet()) {
@@ -1951,7 +2011,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 						transactionModel.setAuthorizationResponse_time(
 								respMap.get("transaction%5B0%5D.authorizationResponse.time"));
 						transactionModel
-								.setTransaction_currency(respMap.get("transaction%5B0%5D.transaction.currency"));
+						.setTransaction_currency(respMap.get("transaction%5B0%5D.transaction.currency"));
 						transactionModel.setSecureId(respMap.get("transaction%5B0%5D.3DSecureId"));
 						transactionModel.setAcquirerCode(
 								respMap.get("transaction%5B0%5D.response.cardSecurityCode.acquirerCode"));
@@ -1964,17 +2024,17 @@ public class PaymentController extends BaseDao implements SaltTracker {
 						transactionModel.setCardSecurityCode_gatewayCode(
 								respMap.get("transaction%5B0%5D.response.cardSecurityCode.gatewayCode"));
 						transactionModel
-								.setAuthenticationToken(respMap.get("transaction%5B0%5D.3DSecure.authenticationToken"));
+						.setAuthenticationToken(respMap.get("transaction%5B0%5D.3DSecure.authenticationToken"));
 						transactionModel.setTransaction_receipt(respMap.get("transaction%5B0%5D.transaction.receipt"));
 						transactionModel
-								.setResponse_gatewayCode(respMap.get("transaction%5B0%5D.response.gatewayCode"));
+						.setResponse_gatewayCode(respMap.get("transaction%5B0%5D.response.gatewayCode"));
 						transactionModel.setOrder_status(respMap.get("transaction%5B0%5D.order.status"));
 						transactionModel.setAcquirer_date(respMap.get("transaction%5B0%5D.transaction.acquirer.date"));
 						transactionModel.setVersion(respMap.get("transaction%5B0%5D.version"));
 						transactionModel.setCommercialCardIndicator(
 								respMap.get("transaction%5B0%5D.authorizationResponse.commercialCardIndicator"));
 						transactionModel
-								.setCard_brand(respMap.get("transaction%5B0%5D.sourceOfFunds.provided.card.brand"));
+						.setCard_brand(respMap.get("transaction%5B0%5D.sourceOfFunds.provided.card.brand"));
 						transactionModel.setSourceOfFunds_type(respMap.get("sourceOfFunds.type"));
 						transactionModel.setCustomer_firstName(respMap.get("customer.firstName"));
 						transactionModel.setCustomer_lastName(respMap.get("customer.lastName"));
@@ -1988,21 +2048,21 @@ public class PaymentController extends BaseDao implements SaltTracker {
 						transactionModel.setResult(respMap.get("transaction%5B0%5D.result"));
 						transactionModel.setCreationTime(respMap.get("creationTime"));
 						transactionModel
-								.setTotalRefundedAmount(respMap.get("transaction%5B0%5D.order.totalRefundedAmount"));
+						.setTotalRefundedAmount(respMap.get("transaction%5B0%5D.order.totalRefundedAmount"));
 						transactionModel
-								.setAcquirer_batch(respMap.get("transaction%5B0%5D.transaction.acquirer.batch"));
+						.setAcquirer_batch(respMap.get("transaction%5B0%5D.transaction.acquirer.batch"));
 						transactionModel.setDescription(respMap.get("description"));
 						transactionModel.setTransaction_type(respMap.get("transaction%5B0%5D.transaction.type"));
 						transactionModel.setFinancialNetworkDate(
 								respMap.get("transaction%5B0%5D.authorizationResponse.financialNetworkDate"));
 						transactionModel
-								.setResponseCode(respMap.get("transaction%5B0%5D.authorizationResponse.responseCode"));
+						.setResponseCode(respMap.get("transaction%5B0%5D.authorizationResponse.responseCode"));
 						transactionModel
-								.setTransaction_frequency(respMap.get("transaction%5B0%5D.transaction.frequency"));
+						.setTransaction_frequency(respMap.get("transaction%5B0%5D.transaction.frequency"));
 						transactionModel
-								.setTransaction_terminal(respMap.get("transaction%5B0%5D.transaction.terminal"));
+						.setTransaction_terminal(respMap.get("transaction%5B0%5D.transaction.terminal"));
 						transactionModel
-								.setAuthorizationCode(respMap.get("transaction%5B0%5D.transaction.authorizationCode"));
+						.setAuthorizationCode(respMap.get("transaction%5B0%5D.transaction.authorizationCode"));
 						transactionModel.setAuthenticationStatus(
 								respMap.get("transaction%5B0%5D.3DSecure.authenticationStatus"));
 						transactionModel.setProcessingCode(
@@ -2010,7 +2070,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 						transactionModel.setExpiry_month(respMap.get("sourceOfFunds.provided.card.expiry.month"));
 						transactionModel.setSecure_xid(respMap.get("transaction%5B0%5D.3DSecure.xid"));
 						transactionModel
-								.setEnrollmentStatus(respMap.get("transaction%5B0%5D.3DSecure.enrollmentStatus"));
+						.setEnrollmentStatus(respMap.get("transaction%5B0%5D.3DSecure.enrollmentStatus"));
 						transactionModel.setCardSecurityCodeError(
 								respMap.get("transaction%5B0%5D.authorizationResponse.cardSecurityCodeError"));
 						transactionModel.setTimeZone(respMap.get("transaction%5B0%5D.transaction.acquirer.timeZone"));
@@ -2024,7 +2084,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 							seblUpdateResult = transactionServiceImpl
 									.updateSEblTransactionAfterPayment(transactionModel);
 							if (seblUpdateResult > 0) {
-								
+
 								returnURL = "redirect:/success?orderId=" + orderId;
 
 								System.out.println("Success Transaction Model-->" + transactionModel);
@@ -2038,47 +2098,54 @@ public class PaymentController extends BaseDao implements SaltTracker {
 											transactionModel.getPaymentModel().getCustomerDetails(),
 											PaymentModel.class);
 									System.out.println("paymentModel ==>> " + paymentModel);
-									if (Objects.nonNull(paymentModel.getEmailId())) {
 
-										// Send Email
-										String action = "transactionSuccess";
-										String [] retval = spiderEmailSender.fetchTempConfig(action);
-										
-										String jsonReqName = retval[0];
-										String jsonReqPath = retval[1];
-										String templateID = retval[2];
-										
-										String header = "Transaction successful";
-										String emailMessageBody = "<p>Dear Sir/Madam!</p><p>We have successfully received "
-												+ transactionModel.getGrossAmount()
-												+ " BDT. </p> <p>Thank You for paying with LEBUPAY</p>";
-										String subject = messageUtil.getBundle("transaction.email.subject");
+									String sms_notifictaion=paymentModel.getNotification_sms();
+									String email_notification=paymentModel.getNotification_email();
+									if(email_notification.equals("1")) {
+										if (Objects.nonNull(paymentModel.getEmailId())) {
 
-										String jsonReqString = getFileString(jsonReqName, jsonReqPath);
-										jsonReqString = jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+											// Send Email
+											String action = "transactionSuccess";
+											String [] retval = spiderEmailSender.fetchTempConfig(action);
 
-										jsonReqString = jsonReqString.replace("replace_header_here", header);
-										jsonReqString = jsonReqString.replace("replace_amount_here",
-												"" + transactionModel.getGrossAmount());
-										jsonReqString = jsonReqString.replace("replace_emailMessageBody_here",
-												emailMessageBody);
-										jsonReqString = jsonReqString.replace("replace_subject_here", subject);
-										jsonReqString = jsonReqString.replace("replace_to_here",
-												paymentModel.getEmailId());
-										jsonReqString = jsonReqString.replace("replace_cc_here", "");
-										jsonReqString = jsonReqString.replace("replace_bcc_here", "");
-										jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
+											String jsonReqName = retval[0];
+											String jsonReqPath = retval[1];
+											String templateID = retval[2];
 
-										spiderEmailSender.sendEmail(jsonReqString, true);
+											String header = "Transaction successful";
+											String emailMessageBody = "<p>Dear Sir/Madam!</p><p>We have successfully received "
+													+ transactionModel.getGrossAmount()
+													+ " BDT. </p> <p>Thank You for paying with LEBUPAY</p>";
+											String subject = messageUtil.getBundle("transaction.email.subject");
 
-										// sendMail.send(paymentModel.getEmailId(), messageBody, subject);
+											String jsonReqString = getFileString(jsonReqName, jsonReqPath);
+											jsonReqString = jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
 
+											jsonReqString = jsonReqString.replace("replace_header_here", header);
+											jsonReqString = jsonReqString.replace("replace_amount_here",
+													"" + transactionModel.getGrossAmount());
+											jsonReqString = jsonReqString.replace("replace_emailMessageBody_here",
+													emailMessageBody);
+											jsonReqString = jsonReqString.replace("replace_subject_here", subject);
+											jsonReqString = jsonReqString.replace("replace_to_here",
+													paymentModel.getEmailId());
+											jsonReqString = jsonReqString.replace("replace_cc_here", "");
+											jsonReqString = jsonReqString.replace("replace_bcc_here", "");
+											jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
+
+											spiderEmailSender.sendEmail(jsonReqString, true);
+
+											// sendMail.send(paymentModel.getEmailId(), messageBody, subject);
+
+										}
 									}
 
-									if (Objects.nonNull(paymentModel.getMobileNumber())) {
-										sendSMS.smsSend(paymentModel.getMobileNumber(),
-												"We have received " + transactionModel.getGrossAmount()
-														+ " BDT. Thank You for paying with LEBUPAY. Visit www.we-top-up.com form mobile recharge.");
+									if(sms_notifictaion.equals("1")) {
+										if (Objects.nonNull(paymentModel.getMobileNumber())) {
+											sendSMS.smsSend(paymentModel.getMobileNumber(),
+													"We have received " + transactionModel.getGrossAmount()
+													+ " BDT. Thank You for paying with LEBUPAY. Visit www.we-top-up.com form mobile recharge.");
+										}
 									}
 
 								}
@@ -2131,15 +2198,15 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		return returnURL;
 	}
 
-	
+
 	/***********************************************************************************************/
 	// SEBL ENDS
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 	/**
 	 * This method is used to open failure page if payment is failed.
 	 * 
@@ -2163,6 +2230,12 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			TransactionModel transactionModel = transactionService.fetchTransactionByTXNId(orderId);
 
 			if (Objects.nonNull(transactionModel)) {
+				try {
+					//TODO
+					writeLogV2(0L,"failure",1, "orderId:"+orderId);				
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
 				if (transactionModel.getTransactionStatus() != 0) {
 					int result = transactionService.updateTransaction(
 							transactionModel.getMerchantModel().getMerchantId(), 3,
@@ -2200,15 +2273,15 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			//logger.info("checkPayment -- START");
 			//TODO 20190220
 			logger.info("checkPayment -- START for "+paymentModel.getOrderTransactionID() +" Amount: "+(paymentModel.getAmount()!=null ? paymentModel.getAmount():null ));	
-			
+
 		}
-		
+
 		try {
 			//logwrite.writeLog
-			writeLogV2(0L,"check-payment",1, "Start order txnId:"+paymentModel.getOrderTransactionID()+",Amount:"+paymentModel.getAmount());
-			
+			writeLogV2(0L,"check-payment",1, "Start orderTxnId:"+paymentModel.getOrderTransactionID()+",Amount:"+paymentModel.getAmount());
+
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
+			//  Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -2230,16 +2303,16 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			System.out.println("Check Payment-->" + paymentModel);
 			String token = UUID.randomUUID().toString();
 			paymentModel.setToken(token);
-			
+
 			try {
 				//logwrite.writeLog
-				writeLogV2(0L,"check-payment",1, "order txnId:"+paymentModel.getOrderTransactionID()+",Amount:"+paymentModel.getAmount()+",token:"+token);
-				
+				writeLogV2(0L,"check-payment",1, "orderTxnId:"+paymentModel.getOrderTransactionID()+",Amount:"+paymentModel.getAmount()+",token:"+token);
+
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
+				//  Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
+
 			long result = transactionService.insertOrder(paymentModel);
 			System.out.println("paymentModel.getMerchantModel().getCompanyModel().getIp() ==>> "
 					+ paymentModel.getMerchantModel().getCompanyModel().getIp());
@@ -2255,9 +2328,9 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			try {
 				//logwrite.writeLog
 				writeLogV2(0L,"check-payment",1, "order txnId:"+paymentModel.getOrderTransactionID()+",Amount:"+paymentModel.getAmount()+",token:"+token);
-				
+
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
+				//  Auto-generated catch block
 				e1.printStackTrace();
 			}
 			if (result > 0) {
@@ -2332,14 +2405,14 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		}
 
 		PaymentModel paymentModel = null;
-		
+
 		try {
 
 			paymentModel = transactionService.fetchOrderByToken(token);
 			if (Objects.nonNull(paymentModel)) {
 				//TOOD WASIF 20190217 block unidentified block seems like no use currently may be used for test purpose
 				// so that only 
-/*
+				/*
 				CompanyModel companyModel = merchantService
 						.fetchCompanyByMerchantId(paymentModel.getMerchantModel().getMerchantId());
 				if (Objects.nonNull(companyModel))
@@ -2369,16 +2442,16 @@ public class PaymentController extends BaseDao implements SaltTracker {
 					sessionKey = encryption.encode(key, String.valueOf(transactionId)); // Modified
 
 					model.addAttribute("SESSIONKEY", sessionKey); // Modified
-					
+
 					try {
 						//logwrite.writeLog
 						writeLogV2(0L,"execute-payment",1, "trxId:"+transactionId+",token:"+token+",sessionKey:"+sessionKey);
-						
+
 					} catch (Exception e1) {
-						// TODO Auto-generated catch block
+						//  Auto-generated catch block
 						e1.printStackTrace();
 					}
-					
+
 					try {
 						CheckoutModel checkoutModel = checkOutService
 								.fetchCheckoutById(paymentModel.getMerchantModel().getMerchantId());
@@ -2474,11 +2547,11 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			paymentModel.setCsrfPreventionSalt((String) httpServletRequest.getAttribute("csrfPreventionSalt"));
 		}
 		//TODO didnt understand
-		
+
 		String sessionId = httpServletRequest.getSession().getId();
 		List<String> activeSalts = SALT_TRACKER.get(sessionId);
 		String salt = "";
-		
+
 		try {
 
 			salt = paymentModel.getCsrfPreventionSalt();
@@ -2489,16 +2562,16 @@ public class PaymentController extends BaseDao implements SaltTracker {
 					String key = messageUtil.getBundle("secret.key");
 					Long transactionId = Long.parseLong(encryption.decode(key, paymentModel.getSESSIONKEY()));
 					TransactionModel transactionModel = transactionService.fetchTransactionById(transactionId);
-					
+
 					try {
 						//logwrite.writeLog
 						writeLogV2(0L,"checkout-payment",1, "trxID:"+transactionId+",sessionId:"+sessionId+",SESSIONKEY:"+(String) httpServletRequest.getAttribute("SESSIONKEY"));
-						
+
 					} catch (Exception e1) {
-						// TODO Auto-generated catch block
+						//  Auto-generated catch block
 						e1.printStackTrace();
 					}
-					
+
 					if (Objects.isNull(transactionModel))
 						redirectAttributes.addFlashAttribute("transactionidInvalid",
 								messageUtil.getBundle("transactionid.invalid"));
@@ -2511,7 +2584,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 							int result = transactionService.updateOrderCustomerDetails(paymentModel);
 							if (result > 0)
 								return "redirect:/link-pay?SESSIONKEY="
-										+ URLEncoder.encode(paymentModel.getSESSIONKEY(), "UTF-8");
+								+ URLEncoder.encode(paymentModel.getSESSIONKEY(), "UTF-8");
 						}
 					}
 				} catch (Exception e) {
@@ -2537,7 +2610,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 		return "redirect:/execute-payment";
 	}
-	
+
 
 
 	/**
@@ -2573,10 +2646,10 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				//logwrite.writeLog
 				writeLogV2(0L,"bkash GET",1, "trxID:"+transactionId1+",sessionId:"+transactionId);				
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
+				//  Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
+
 		} catch (Exception e) {
 
 			redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transactionid.invalid"));
@@ -2616,6 +2689,8 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			logger.info("bkash -- END");
 		}
 
+	//	return "bkash?orderId="+transactionModel2.getTxnId();
+
 		return "bkash";
 	}
 
@@ -2632,24 +2707,40 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	@SuppressWarnings("unused")
 	@RequestMapping(value = "/bkash", method = RequestMethod.POST)
 	public String bkashCheck(HttpServletRequest request, Model model, @ModelAttribute BKashModel bKashModel,
+		//	@RequestParam String orderId,
 			HttpServletResponse response, final RedirectAttributes redirectAttributes) {
 
 		if (logger.isInfoEnabled()) {
 			logger.info("bkashCheck -- START");
 		}
-//TODO needs to look closely
-		String orderId = String.valueOf(transactionModelSaltTracker.getTxnId());
+		//TODO needs to look closely
+		//fetchTransactionByTXNId
+	//	String orderId = String.valueOf(transactionModelSaltTracker.getTxnId());//LEBUPAY22844
+
 		String returnURL = "";
+		try {
+			Long transactionId_w = 0L;
+			TransactionModel transactionModel_w = null;
+			String key = messageUtil.getBundle("secret.key");
+			transactionId_w = Long.parseLong(encryption.decode(key, bKashModel.getTransactionId1()));
+			transactionModel_w = transactionService.fetchTransactionById(transactionId_w);
+			String orderId=transactionModel_w.getTxnId();
+			System.out.println("bKashModel.getTransactionId1():"+bKashModel.getTransactionId1()+" -> decoded bKashModel.getTransactionId1():"+transactionId_w+" -> bKashModel.getTrx_id():"+bKashModel.getTrx_id()+ " ->orderId:"+orderId);			
+		
+		
+		
+
+	//TODO	String returnURL = "";
 		String sessionId = request.getSession().getId();
 		List<String> activeSalts = SALT_TRACKER.get(sessionId);
 		String salt = "";
-		
+
 		try {
 			//TODO
 			//logwrite.writeLog
-			writeLogV2(0L,"bkash POST",1, "orderId:"+orderId+",sessionId:"+sessionId);				
+			writeLogV2(0L,"bkash POST",1, "orderId:"+orderId+",sessionId:"+sessionId+"trx_id:"+transactionId_w);				
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
+			//  Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -2662,11 +2753,14 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				TransactionModel transactionModel2 = null;
 				try {
 
-					System.out.println("SESSIONKEY Before Decode== >> " + bKashModel.getTransactionId1());
-					String key = messageUtil.getBundle("secret.key");
+					System.out.println("Bkash Post SESSIONKEY Before Decode== >> " + bKashModel.getTransactionId1());
+				//	String key = messageUtil.getBundle("secret.key"); //TODO wasif 20190304
+					
 					transactionId1 = Long.parseLong(encryption.decode(key, bKashModel.getTransactionId1()));
 
-					transactionModel2 = transactionService.fetchTransactionById(transactionId1);
+					System.out.println("Bkash Post SESSIONKEY After Decode== >> " + transactionId1);
+
+					transactionModel2 = transactionService.fetchTransactionById(transactionId1); //TODO
 
 				} catch (Exception e) {
 
@@ -2691,12 +2785,13 @@ public class PaymentController extends BaseDao implements SaltTracker {
 								redirectAttributes.addFlashAttribute("failure",
 										messageUtil.getBundle("duplicate.bkash.id"));
 								returnURL = "redirect:/bkash?transactionId=" + bKashModel.getTransactionId1();
+								//returns to same page prompting input again
 
 							} else {
 								String inputJsonString = "{\"user\":\"" + messageUtil.getBundle("bKash.username")
-										+ "\", \"pass\":\"" + messageUtil.getBundle("bKash.password")
-										+ "\", \"msisdn\":\"" + messageUtil.getBundle("bKash.wallet")
-										+ "\", \"trxid\":\"" + bKashModel.getTrx_id() + "\"}";
+								+ "\", \"pass\":\"" + messageUtil.getBundle("bKash.password")
+								+ "\", \"msisdn\":\"" + messageUtil.getBundle("bKash.wallet")
+								+ "\", \"trxid\":\"" + bKashModel.getTrx_id() + "\"}";
 								System.out.println("inputJsonString ==>> " + inputJsonString);
 								ClientResponse client_response = payconnectApiAcess(messageUtil.getBundle("bKash.url"),
 										inputJsonString, "post");
@@ -2704,7 +2799,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 								System.out.println("outputJsonString ==>> " + outputJsonString);
 								Gson gson = new Gson();
 								TransactionModel transactionModel3 = gson.fromJson(outputJsonString,
-										TransactionModel.class);
+										TransactionModel.class);//TODO How it works ? needs to check the flow
 								if (Objects.nonNull(transactionModel3)) {
 
 									BKashModel bKashModel2 = transactionModel3.getTransaction();
@@ -2716,8 +2811,8 @@ public class PaymentController extends BaseDao implements SaltTracker {
 											transactionModel.setResponseCode(bKashModel2.getTrxStatus());
 											transactionModel.setSecureId(bKashModel2.getTrx_id());
 											transactionModel.setBkashTrxId(bKashModel.getTrx_id());
-											//TODO
 											
+
 											if (bKashModel2.getTrxStatus().equals("0000") && (bKashModel2.getAmount()
 													.equals(transactionModel.getPaymentModel().getAmount()))) {
 
@@ -2733,47 +2828,80 @@ public class PaymentController extends BaseDao implements SaltTracker {
 												transactionModel.setSourceOfFunds_type("CASH");
 												transactionModel.setCard_brand("bkash");
 												transactionModel.setBank("BKASH");
-												
+
 												//send email
-												
-												String action = "transactionSuccess";
-												String [] retval = spiderEmailSender.fetchTempConfig(action);
-												
-												String jsonReqName = retval[0];
-												String jsonReqPath = retval[1];
-												String templateID = retval[2];
-												
+
 												PaymentModel paymentModel = transactionModel.getPaymentModel();
+												String sms_notifictaion=paymentModel.getNotification_sms();
+												String email_notification=paymentModel.getNotification_email();
+												
 												String customerDetails = paymentModel.getCustomerDetails();
 												String to = decode(customerDetails, "email");
 												String firstName = decode(customerDetails, "firstName");
 												String lastName = decode(customerDetails, "lastName");
 
-//												if (logger.isInfoEnabled()) {
-//													logger.info("customerDetails : " + customerDetails);
-//													logger.info("customerEmail : " + customerEmail);
-//												}
-												String header = "Transaction successful";
-												String emailMessageBody = "<p>Dear "+firstName+" "+lastName+",</p><p>We have successfully received "
-														+ transactionModel.getGrossAmount()
-														+ " BDT. </p> <p>Thank You for paying with LEBUPAY</p>";
-												String subject = messageUtil.getBundle("transaction.email.subject");
+												String action = "transactionSuccess";
+												
+												//TODO
+												if (logger.isInfoEnabled()) {
+													logger.info("Bkash  email_notification : "+email_notification);
+													logger.info("Bkash  sms_notifictaion : "+sms_notifictaion);
+												}
 
-												String jsonReqString = getFileString(jsonReqName, jsonReqPath);
-												jsonReqString = jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+												
+												if(email_notification.equals("1")) {
+													//TODO
+													if (logger.isInfoEnabled()) {
+														logger.info("Bkash inside email_notification : "+email_notification);
+													}
+													//TODO make email sender unified 
+													String [] retval = spiderEmailSender.fetchTempConfig(action);
 
-												jsonReqString = jsonReqString.replace("replace_header_here", header);
-												jsonReqString = jsonReqString.replace("replace_amount_here",
-														"" + transactionModel.getGrossAmount());
-												jsonReqString = jsonReqString.replace("replace_emailMessageBody_here",
-														emailMessageBody);
-												jsonReqString = jsonReqString.replace("replace_subject_here", subject);
-												jsonReqString = jsonReqString.replace("replace_to_here",to);
-												jsonReqString = jsonReqString.replace("replace_cc_here", "");
-												jsonReqString = jsonReqString.replace("replace_bcc_here", "");
-												jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
+													String jsonReqName = retval[0];
+													String jsonReqPath = retval[1];
+													String templateID = retval[2];
 
-												spiderEmailSender.sendEmail(jsonReqString, true);
+
+
+													//	if (logger.isInfoEnabled()) {
+													//	logger.info("customerDetails : " + customerDetails);
+													//	logger.info("customerEmail : " + customerEmail);
+													//	}
+													String header = "Transaction successful";
+													String emailMessageBody = "<p>Dear "+firstName+" "+lastName+",</p><p>We have successfully received "
+															+ transactionModel.getGrossAmount()
+															+ " BDT. </p> <p>Thank You for paying with LEBUPAY</p>";
+													String subject = messageUtil.getBundle("transaction.email.subject");
+
+													String jsonReqString = getFileString(jsonReqName, jsonReqPath);
+													jsonReqString = jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+
+													jsonReqString = jsonReqString.replace("replace_header_here", header);
+													jsonReqString = jsonReqString.replace("replace_amount_here",
+															"" + transactionModel.getGrossAmount());
+													jsonReqString = jsonReqString.replace("replace_emailMessageBody_here",
+															emailMessageBody);
+													jsonReqString = jsonReqString.replace("replace_subject_here", subject);
+													jsonReqString = jsonReqString.replace("replace_to_here",to);
+													jsonReqString = jsonReqString.replace("replace_cc_here", "");
+													jsonReqString = jsonReqString.replace("replace_bcc_here", "");
+													jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
+
+													spiderEmailSender.sendEmail(jsonReqString, true);
+												}
+												
+												if(sms_notifictaion.equals("1")) {
+													//TODO
+													if (logger.isInfoEnabled()) {
+														logger.info("Bkash inside sms_notifictaion : "+sms_notifictaion);
+													}
+													if (Objects.nonNull(paymentModel.getMobileNumber())) {
+														sendSMS.smsSend(paymentModel.getMobileNumber(),
+																"We have received " + transactionModel.getGrossAmount()
+																+ " BDT. Thank You for paying with LEBUPAY. Visit www.we-top-up.com form mobile recharge.");
+													}
+												}
+
 												//TODO
 												result = transactionServiceImpl.updateTransactionAfterPayment(transactionModel);
 												//TODO added by wasif 20190122
@@ -2788,7 +2916,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 											}
 											System.out.println("transactionModel -----> "
 													+ new ObjectMapper().writeValueAsString(transactionModel));
-											
+
 											//TODO comment added by Wasif 20190122
 											//result = transactionServiceImpl.updateTransactionAfterPayment(transactionModel);
 
@@ -2800,7 +2928,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 										}
 									}
 								}							
-						}
+							}
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -2821,7 +2949,9 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			String newSalt = (String) request.getAttribute("csrfPreventionSaltPage");
 			activeSalts.add(newSalt);
 		}
-
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 		if (logger.isInfoEnabled()) {
 			logger.info("bkashCheck -- END");
 		}
@@ -2870,7 +3000,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	@RequestMapping(value = "/get-order-trx-status", method = RequestMethod.POST)
 	public @ResponseBody PaymentModel checkOrderStatus(@RequestBody PaymentModel paymentModel,
 			HttpServletRequest request) {
-//TODO need to work here
+		//TODO need to work here
 		if (logger.isInfoEnabled()) {
 			logger.info("Get Order -- START");
 		}
@@ -2913,8 +3043,8 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		return paymentModel3;
 
 	}
-	
-	
+
+
 	/**
 	 * Hit from API to get order details. new 3rd API
 	 * 
@@ -2925,7 +3055,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	@RequestMapping(value = "/get-order-trx-status-v2", method = RequestMethod.POST)
 	public @ResponseBody PaymentModel checkOrderStatus_v2(@RequestBody PaymentModel paymentModel,
 			HttpServletRequest request) {
-//TODO need to work here
+		//TODO need to work here
 		System.out.println("print get-order-trx-status-v2 -- START");
 		if (logger.isInfoEnabled()) {
 			logger.info("get-order-trx-status-v2 -- START");
@@ -2967,8 +3097,8 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 		return paymentModel3;
 	}
-	
-	
+
+
 
 	public String getFileString(String filename, String path) throws IOException {
 		File fl = new File(path + "/" + filename);
@@ -2984,79 +3114,79 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		String keyMessage = mb.containsKey(key) ? (String) mb.get(key) : "";
 		return keyMessage;
 	}
-	//TODO remove
-	//TODO remove belwo block it is for testing only
+
+	//TODO remove below block it is for testing only
 	public void writeLogV2(Long merchant_id,String action,int action_type,String log) throws Exception {
 
-		
+
 		System.out.println("logwriter.writeLog -- START");
 		System.out.println("logwriter.writeLog -log ===>"+log);
 		if(log.length()>1000)
 			log=log.substring(0,999);
-		
+
 		if(action.length()>100)
 			action=action.substring(0,99);
-		
 
 
 
-	Connection connection = oracleConnection.Connect();
-	OraclePreparedStatement pst = null;
-	try {
-		String sql = "insert into APPLICATION_LOG (merchant_id,action,action_type,log) values("
-				+ ":merchant_id,:action,:action_type,:log)";
 
-		String pk[] = {"ID"};
-		pst = (OraclePreparedStatement) connection.prepareStatement(sql, pk);
+		Connection connection = oracleConnection.Connect();
+		OraclePreparedStatement pst = null;
+		try {
+			String sql = "insert into APPLICATION_LOG (merchant_id,action,action_type,log) values("
+					+ ":merchant_id,:action,:action_type,:log)";
 
-		pst.setLongAtName("merchant_id", merchant_id); 
-		pst.setStringAtName("action", action); 
-		pst.setIntAtName("action_type", action_type); 
-		pst.setStringAtName("log", log); 
-		
+			String pk[] = {"ID"};
+			pst = (OraclePreparedStatement) connection.prepareStatement(sql, pk);
 
-		//System.out.println("logwriter.writeLog==>> "+sql);
+			pst.setLongAtName("merchant_id", merchant_id); 
+			pst.setStringAtName("action", action); 
+			pst.setIntAtName("action_type", action_type); 
+			pst.setStringAtName("log", log); 
 
-		boolean result1 = pst.execute();
-		if (!result1) {
 
-			ResultSet rs = pst.getGeneratedKeys();
-			rs.next();
-		}
-		connection.commit();
+			//System.out.println("logwriter.writeLog==>> "+sql);
 
-	} finally {
+			boolean result1 = pst.execute();
+			if (!result1) {
 
-		try{
-
-			if(pst != null)
-				if(!pst.isClosed())
-					pst.close();
-
-		} catch(Exception e){
-			e.printStackTrace();
-		}
-
-		try { // Closing Connection Object
-			if (connection != null) {
-
-				if (!connection.isClosed())
-					connection.close();
+				ResultSet rs = pst.getGeneratedKeys();
+				rs.next();
 			}
-		} catch (Exception e) {
-			System.out.println("Connection not closed for logwriter.writeLog ");
-			/*
+			connection.commit();
+
+		} finally {
+
+			try{
+
+				if(pst != null)
+					if(!pst.isClosed())
+						pst.close();
+
+			} catch(Exception e){
+				e.printStackTrace();
+			}
+
+			try { // Closing Connection Object
+				if (connection != null) {
+
+					if (!connection.isClosed())
+						connection.close();
+				}
+			} catch (Exception e) {
+				System.out.println("Connection not closed for logwriter.writeLog ");
+				/*
 			if (logger.isDebugEnabled()) {
 				logger.debug("Connection not closed for updateTransaction"+ e.getMessage());
 			}/**/
 
+			}
 		}
-	}
-/*
+		/*
 	if (logger.isInfoEnabled()) {
 		logger.info("updateOrderCustomerDetails -- END");
 	}/**/
 
 
-}
+	}
 }
