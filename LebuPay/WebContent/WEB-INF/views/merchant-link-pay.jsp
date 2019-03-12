@@ -175,6 +175,71 @@ $(document).ready(function(){
                     <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="paymentMethod">
                    	  <h3>Select Payment Method</h3>
+                   	  
+                   	  
+                   	  <div class="contSec">                       
+                        <ul class="nav nav-tabs" id="myTab">
+                       
+	                       <li class="active" id="secA"><a href="#sectionA">Payment Options</a></li>	                           		
+
+	                       <li  id="secD"><a href="#sectionD">Payment Options</a></li>
+	                        
+						   <li id ="secC"><a href="#sectionC">Payment Options</a></li>
+							
+							<!--  Changed by Wasif Ahmed -->
+						
+							<li id="secB"><a href="#sectionB">bKash</a></li>
+                            
+   						 </ul>
+                         
+   						 <div class="tab-content"> 
+			      						<div id="sectionA" class="tab-pane fade in active">
+			                             	<div class="eachBox">
+				                                <ul>
+				                                	<li class="card_logos"><a href="ebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/visa.png" alt="visa card"></a></li>
+				                                    <li class="card_logos"><a href="ebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/mastercard.png" alt="master card"></a></li>
+				                                    <li class="card_logos diner"><a href="ebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/diners_club.png" alt="diners club"></a></li>
+				                                    <li id="bkash_hov" class="card_logos"><a href="bkash?transactionId=${transactionId1 }"><img src="resources/images/bkash_v2.png" style= "width: 25px" alt="bkash"></a></li>
+				                                </ul>
+			                                </div>
+			                            </div>                   
+                            
+			      						<div id="sectionD" class="tab-pane fade ">
+			                             	<div class="eachBox">
+				                                <ul>
+				                                	<li class="card_logos"><a href="sebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/visa.png" alt="visa card"></a></li>
+				                                    <li class="card_logos"><a href="sebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/mastercard.png" alt="master card"></a></li>
+				                                    <li class="card_logos"><a href="bkash?transactionId=${transactionId1 }"><img src="resources/images/bkash_v2.png" style= "width: 25px" alt="bkash"></a></li>
+				                                </ul>
+			                                </div>
+			                            </div>
+                           
+    						 <div id="sectionC"  class="tab-pane fade">
+	                               <div class="eachBox">
+		                                <ul ><!-- onclick="return clickOnEMI()" --> 
+		                                	<li class="card_logos"><a href="paycitybank?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/visa.png" alt="visa card"></a></li>
+		                                    <li class="card_logos"><a href="paycitybank?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/mastercard.png" alt="master card"></a></li>
+		                                    <li class="card_logos diner"><a href="paycitybank?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/amex.png" alt="diners club"></a></li>
+		                                    <li class="card_logos"><a href="bkash?transactionId=${transactionId1 }"><img src="resources/images/bkash_v2.png" style= "width: 25px" alt="bkash"></a></li>
+		                                </ul>
+	                             	</div>
+	                          </div>
+	                          
+        					<div id="sectionB" class="tab-pane fade">
+                               <div class="eachBox bkashl">
+	                                <ul>
+	                                	<li class="card_logos"><a href="bkash?transactionId=${transactionId1 }"><img src="resources/images/bkash_v2.png" style= "width: 25px"  alt="bkash"></a></li>
+	                                </ul>
+                                </div>
+                            </div>                        
+				 	</div>
+                </div>
+                   	  
+                   	  
+                   	  
+                   	  
+                   	  <!-- Removed By Wasif 20190312 -->
+                   	  <!--  
                         <div class="contSec">
                         
                         <ul class="nav nav-tabs" id="myTab">
@@ -199,6 +264,7 @@ $(document).ready(function(){
 						    	 <li id ="secC"><a href="#sectionC">Payment Options</a></li>
 							</c:if>
 							<!--  Changed by Wasif Ahmed -->
+							<!-- 
 							<c:if test="${empty eBLUserName}">
 						   	  <c:if test="${empty sEBLUserName}">
 								<c:if test="${empty citybankMerchantId}">
@@ -247,6 +313,7 @@ $(document).ready(function(){
     						 <div id="sectionC"  class="tab-pane fade">
 	                               <div class="eachBox">
 		                                <ul ><!-- onclick="return clickOnEMI()" -->
+		                                <!-- 
 		                                	<li class="card_logos"><a href="paycitybank?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/visa.png" alt="visa card"></a></li>
 		                                    <li class="card_logos"><a href="paycitybank?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/mastercard.png" alt="master card"></a></li>
 		                                    <li class="card_logos diner"><a href="paycitybank?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/amex.png" alt="diners club"></a></li>
@@ -264,6 +331,13 @@ $(document).ready(function(){
                             </div>                        
 				 	</div>
                 </div>
+                -->
+ <!-- Removed above block Wasif 20190312 -->               
+                
+                
+                
+                
+                
             </div>
          </div>
      </div>
@@ -315,6 +389,7 @@ String message = (String) request.getAttribute("transactionidInvalid");
 			</script>
 <% } %>
 <script type="text/javascript">
+/*
 var eBLUserName = '${eBLUserName}';
 var eBLUserPassword = '${eBLUserPassword}';
 var eBLUserId = '${eBLUserId}';
@@ -322,8 +397,14 @@ var eBLUserId = '${eBLUserId}';
 var sEBLUserName = '${sEBLUserName}';
 var sEBLUserPassword = '${sEBLUserPassword}';
 var sEBLUserId = '${sEBLUserId}';
-var cITYMid = '${citybankMerchantId}';
+var cITYMid = '${citybankMerchantId}';/**/
+var ebl ='${EBL}';
+var sebl ='${SEBL}';
+var city ='${CITY}';
 
+
+
+/*
 if(eBLUserName == "" || eBLUserPassword == "" || eBLUserId==""){
 	$("#sectionA").removeClass("in active");
 	$("#secA").removeClass("active");
@@ -343,6 +424,38 @@ if(eBLUserName == "" || eBLUserPassword == "" || eBLUserId==""){
 		$("#sectionD").addClass("in active");//SEBL
 		$("#secD").addClass("active");//SEBL
 	}
- }
+ }/**/
+ 
+ if(ebl == "N"){		
+		$("#sectionA").removeClass("in active");
+		$("#secA").removeClass("active");
+		 $("#secA").remove();
+		if(SEBL == "N"){
+			$("#sectionD").removeClass("in active");
+			$("#secD").removeClass("active");
+			if(CITY == "N"){
+				$("#sectionC").removeClass("in active");//CITY
+				$("#secC").removeClass("active");//CITY
+				$("#sectionB").addClass("in active");//bkash
+				$("#secB").addClass("active");//bkash
+				$("#secB").show();
+				 $("#sectionB").show();
+			}else{				
+				$("#secC").show();//CITY
+				 $("#sectionC").show();
+				$("#sectionC").addClass("in active");//CITY
+				$("#secC").addClass("active");//CITY
+			}
+		}else{
+			$("#secD").show();
+			 $("#sectionD").show();
+			$("#sectionD").addClass("in active");//SEBL
+			$("#secD").addClass("active");//SEBL
+		}
+	 }else{
+		 $("#secA").show();
+		 $("#sectionA").show();
+		 
+	 }
 
 </script>

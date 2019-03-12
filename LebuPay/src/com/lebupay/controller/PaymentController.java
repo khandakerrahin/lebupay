@@ -256,9 +256,10 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		xmlDoc.getDocumentElement().normalize();
 
 		//remove after debugging
+		/*
 		if (logger.isInfoEnabled()) {
 			logger.info("City Bank Payment xmlDoc response -->"+xmlDoc);		
-		}
+		}/**/
 
 
 		NodeList nList = xmlDoc.getElementsByTagName("Order");
@@ -478,33 +479,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 				xmlDoc = CityBankUtil.RequestHandler(request);
 
-				// For getting the required values
-				/*
-				 * xmlDoc.getDocumentElement().normalize(); NodeList nList =
-				 * xmlDoc.getElementsByTagName("Message"); cityOrderID =
-				 * nList.item(0).getChildNodes().item(1).getTextContent(); transactionType =
-				 * nList.item(0).getChildNodes().item(2).getTextContent(); pan =
-				 * nList.item(0).getChildNodes().item(4).getTextContent(); purchaseAmount =
-				 * nList.item(0).getChildNodes().item(5).getTextContent(); currency =
-				 * nList.item(0).getChildNodes().item(6).getTextContent(); transDateTime =
-				 * nList.item(0).getChildNodes().item(7).getTextContent(); responseCode =
-				 * nList.item(0).getChildNodes().item(8).getTextContent(); responseDescription =
-				 * nList.item(0).getChildNodes().item(9).getTextContent(); cardHolderName =
-				 * nList.item(0).getChildNodes().item(10).getTextContent(); brand =
-				 * nList.item(0).getChildNodes().item(11).getTextContent(); orderStatus =
-				 * nList.item(0).getChildNodes().item(12).getTextContent(); approvalCode =
-				 * nList.item(0).getChildNodes().item(13).getTextContent(); acqFee =
-				 * nList.item(0).getChildNodes().item(14).getTextContent(); merchantTransId =
-				 * nList.item(0).getChildNodes().item(15).getTextContent(); orderDescription =
-				 * nList.item(0).getChildNodes().item(16).getTextContent(); approvalCodeScr =
-				 * nList.item(0).getChildNodes().item(17).getTextContent(); purchaseAmountScr =
-				 * nList.item(0).getChildNodes().item(18).getTextContent(); currencyScr =
-				 * nList.item(0).getChildNodes().item(19).getTextContent(); orderStatusScr =
-				 * nList.item(0).getChildNodes().item(20).getTextContent(); name =
-				 * nList.item(0).getChildNodes().item(21).getTextContent(); threeDSVerificaion =
-				 * nList.item(0).getChildNodes().item(22).getTextContent(); threeDSStatus =
-				 * nList.item(0).getChildNodes().item(23).getTextContent();
-				 */
+				
 
 				InputSource source = new InputSource(new StringReader(Util.convertDocumentToString(xmlDoc)));
 				XPath xpath = XPathFactory.newInstance().newXPath();
@@ -555,6 +530,14 @@ public class PaymentController extends BaseDao implements SaltTracker {
 					//  Auto-generated catch block
 					e1.printStackTrace();
 				}
+				
+				//TODO
+				/*
+				if(pan.contains("530772")) {
+				  int trx_status=6;
+				 // fdsgdf
+				}/**/
+				
 				TransactionModel transactionModel = null;
 
 				try {
@@ -586,7 +569,11 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				transactionModel.setCustomer_firstName(name);
 				//	transactionModel.setDevice_ipAddress(device_ipAddress);
 				transactionModel.setProvided_card_number(pan);
-
+//Set the status
+				/*
+				if(false) {
+					transactionModel.setTransactionStatus(6);
+				}/**/
 				//	transactionModel.setMerchantId(transactionModel2.getMerchantModel().getCityMerchantId());
 				//TODO  city bank  mid add
 				int result = transactionServiceImpl.updateTransactionAfterCityPayment(transactionModel);
@@ -630,19 +617,24 @@ public class PaymentController extends BaseDao implements SaltTracker {
 					int cityResult = transactionServiceImpl.saveCityBankTransaction(cityTransactionModel);
 
 					if (cityResult > 0) {
-
+//TODO need to check here 
 						returnURL = "redirect:/payment_success?orderId=" + txnId;
 
 						if (Objects.nonNull(transactionModel)) {
 
 							PaymentModel paymentModel = new PaymentModel();
 							Gson gson = new Gson();
-							// JSON to Java object, read it from a Json String.
-							paymentModel = gson.fromJson(transactionModel.getPaymentModel().getCustomerDetails(),
-									PaymentModel.class);
+							//TODO Added by Wasif 20190312
+							paymentModel=transactionModel.getPaymentModel();
 
 							String sms_notifictaion=paymentModel.getNotification_sms();
 							String email_notification=paymentModel.getNotification_email();
+							paymentModel = gson.fromJson(paymentModel.getCustomerDetails(),
+									PaymentModel.class);//Wasif 20190312
+							// JSON to Java object, read it from a Json String.
+						/*	paymentModel = gson.fromJson(transactionModel.getPaymentModel().getCustomerDetails(),
+									PaymentModel.class);/**/
+							
 
 							if (Objects.nonNull(paymentModel.getEmailId()) || !paymentModel.getEmailId().equals("")) {
 								if(email_notification.equals("1")){
@@ -857,12 +849,25 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 						if (Objects.nonNull(transactionModel)) {
 							PaymentModel paymentModel = new PaymentModel();
+
 							Gson gson = new Gson();
-							// JSON to Java object, read it from a Json String.
-							paymentModel = gson.fromJson(transactionModel.getPaymentModel().getCustomerDetails(),
-									PaymentModel.class);
+							//WASIF 20190312
+							paymentModel=transactionModel.getPaymentModel();
+
 							String sms_notifictaion=paymentModel.getNotification_sms();
 							String email_notification=paymentModel.getNotification_email();
+							paymentModel = gson.fromJson(paymentModel.getCustomerDetails(),
+									PaymentModel.class);//Wasif 20190312
+							// JSON to Java object, read it from a Json String.
+						/*	paymentModel = gson.fromJson(transactionModel.getPaymentModel().getCustomerDetails(),
+									PaymentModel.class);/**/
+							
+							
+							
+							// JSON to Java object, read it from a Json String.
+							/*paymentModel = gson.fromJson(transactionModel.getPaymentModel().getCustomerDetails(),
+									PaymentModel.class);/**/
+						
 							if (Objects.nonNull(paymentModel.getEmailId()) || !paymentModel.getEmailId().equals("")) {
 								if(email_notification.equals("1")) {
 									try {
@@ -1056,13 +1061,21 @@ public class PaymentController extends BaseDao implements SaltTracker {
 						returnURL = "redirect:/payment_failure_declined?orderId=" + txnId;
 						if (Objects.nonNull(transactionModel)) {
 							PaymentModel paymentModel = new PaymentModel();
+							paymentModel=transactionModel.getPaymentModel();
+							String sms_notifictaion=paymentModel.getNotification_sms();
+							String email_notification=paymentModel.getNotification_email();
 							Gson gson = new Gson();
+							paymentModel = gson.fromJson(paymentModel.getCustomerDetails(),
+									PaymentModel.class);
+							
 							// JSON to Java object, read it from a Json String.
-							paymentModel = gson.fromJson(transactionModel.getPaymentModel().getCustomerDetails(),
+							/*paymentModel = gson.fromJson(transactionModel.getPaymentModel().getCustomerDetails(),
 									PaymentModel.class);
 
 							String sms_notifictaion=paymentModel.getNotification_sms();
-							String email_notification=paymentModel.getNotification_email();
+							String email_notification=paymentModel.getNotification_email();/**/
+							
+							
 							if(email_notification.equals("1")) {
 								if (Objects.nonNull(paymentModel.getEmailId())) {
 									try {
@@ -1419,6 +1432,19 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 		return null;
 	}
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
+	
 
 	/**
 	 * This method is used to get Response from EBL gateway after Payment.
@@ -1510,6 +1536,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 			if (respMap.containsKey("result")) {
 				if (respMap.get("result").equals("SUCCESS")) {
+			
 
 					System.out.println("SUCCESS");
 
@@ -1616,14 +1643,23 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 									PaymentModel paymentModel = new PaymentModel();
 									Gson gson = new Gson();
-									// JSON to Java object, read it from a Json String.
-									paymentModel = gson.fromJson(
-											transactionModel.getPaymentModel().getCustomerDetails(),
-											PaymentModel.class);
-									System.out.println("paymentModel ==>> " + paymentModel);
+									
+									//WASIF 20190312
+									paymentModel=transactionModel.getPaymentModel();
 
 									String sms_notifictaion=paymentModel.getNotification_sms();
 									String email_notification=paymentModel.getNotification_email();
+									paymentModel = gson.fromJson(paymentModel.getCustomerDetails(),
+											PaymentModel.class);//Wasif 20190312
+									
+									
+									
+									// JSON to Java object, read it from a Json String.
+								/*	paymentModel = gson.fromJson(
+											transactionModel.getPaymentModel().getCustomerDetails(),
+											PaymentModel.class);/**/
+									System.out.println("paymentModel ==>> " + paymentModel);
+
 									if(email_notification.equals("1")) {
 										if (Objects.nonNull(paymentModel.getEmailId())) {
 
@@ -1718,6 +1754,191 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 		return returnURL;
 	}
+	
+	
+	
+	//TODO WASIF 20190305
+	/*************************************************************************************************************************************************/
+	
+
+	
+	/**
+	 * This method is used to open payment page for EBL gateway.
+	 * 
+	 * @param request
+	 * @param model
+	 * @param transactionId
+	 * @param response
+	 * @param redirectAttributes
+	 * @return String
+	 */
+	@RequestMapping(value = "/ebl_void", method = RequestMethod.GET)
+	public String eblVoid(HttpServletRequest request, Model model, @RequestParam String transactionId,
+			HttpServletResponse response, final RedirectAttributes redirectAttributes) {
+
+		if (logger.isInfoEnabled()) {
+			logger.info("ebl void -- START");
+		}
+
+		String path = request.getContextPath();
+		String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path
+				+ "/";
+		Map<String, String> argsMap = new HashMap<String, String>();
+		Long transactionId1 = 0L;
+		TransactionModel transactionModel2 = null;
+
+		try {
+
+			String key = messageUtil.getBundle("secret.key");
+			transactionId1 = Long.parseLong(encryption.decode(key, transactionId));
+			System.out.println("TransactionId After Decode== >> " + transactionId1);
+
+			try {
+				//TODO
+				//logwrite.writeLog
+				writeLogV2(0L,"EBL void GET",1, "trxID:"+transactionId1+",SESSIONKEY:"+transactionId);				
+			} catch (Exception e1) {
+				//  Auto-generated catch block
+				e1.printStackTrace();
+			}
+			transactionModel2 = transactionService.fetchTransactionById(transactionId1);
+
+		} catch (Exception e) {
+
+			model.addAttribute("transactionidInvalid", messageUtil.getBundle("transactionid.invalid"));
+			return "redirect:/link-pay?SESSIONKEY=" + transactionId;
+		}
+
+		if (Objects.isNull(transactionModel2)) {
+			model.addAttribute("transactionidInvalid", messageUtil.getBundle("transactionid.invalid"));
+			return "redirect:/link-pay?SESSIONKEY=" + transactionId;
+
+		} else {
+
+			if (transactionModel2.getTransactionStatus() == 0 || transactionModel2.getTransactionStatus() == 1
+					|| transactionModel2.getTransactionStatus() == 2) { // Already Paid
+
+				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("already.paid"));
+				return "redirect:/failure?orderId=" + transactionModel2.getTxnId();
+				//TODO change here 
+
+			} else if (transactionModel2.getTransactionStatus() == 3) { // Failed
+
+				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
+				return "redirect:/failure?orderId=" + transactionModel2.getTxnId();
+
+			}
+		}
+//TODO need to change here
+		transactionModelSaltTracker.setTxnId(transactionModel2.getTxnId());
+		argsMap.put("apiOperation", "VOID");
+		argsMap.put("order.id", transactionModel2.getTxnId());
+		argsMap.put("order.currency", "BDT");
+		argsMap.put("order.amount", String.valueOf(transactionModel2.getAmount()));
+		argsMap.put("order.description", "Order%20from%20LebuPay");
+		argsMap.put("interaction.displayControl.billingAddress", "HIDE");
+		argsMap.put("interaction.merchant.name", "Lebupay");
+		argsMap.put("interaction.displayControl.orderSummary", "HIDE");
+		argsMap.put("transaction.targetTransactionId","");
+		//argsMap.put("interaction.returnUrl", basePath + "retriveOrder");
+		//argsMap.put("interaction.returnUrl", basePath + "retriveOrder?orderId=" + transactionModel2.getTxnId()); 
+	    //argsMap.put("interaction.cancelUrl", basePath + "failure?orderId=" + transactionModel2.getTxnId());
+
+		argsMap.put("merchant", transactionModel2.getMerchantModel().getEblId());
+		argsMap.put("apiPassword", transactionModel2.getMerchantModel().getEblPassword());
+		argsMap.put("apiUsername", transactionModel2.getMerchantModel().getEblUserName());
+
+		String requestURL = messageUtil.getBundle("ebi.first.url");
+		System.out.println("requestURL ==>> " + requestURL);
+
+
+		try {
+			//TODO
+			//logwrite.writeLog
+			writeLogV2(0L,"EBL CREATE_CHECKOUT_SESSION GET",1, "trxid:"+transactionId1+",CREATE_CHECKOUT_SESSION, REQ MAP :"+argsMap.toString());				
+		} catch (Exception e1) {
+			//  Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+
+			HTTPConnection.sendPostRequest(requestURL, argsMap);
+			String[] resp = HTTPConnection.readMultipleLinesRespone();
+
+			String[] respArr = resp[0].split("&");
+
+			HashMap<String, String> respMap = new HashMap<String, String>();
+			for (String line : respArr) {
+
+				String[] respPart = line.split("=");
+				respMap.put(respPart[0], respPart[1]);
+			}
+
+			try {
+				//TODO
+				//logwrite.writeLog
+				writeLogV2(0L,"EBL CREATE_CHECKOUT_SESSION GET",2, "trxid:"+transactionId1+",CREATE_CHECKOUT_SESSION, resp Map :"+respMap.toString());				
+			} catch (Exception e1) {
+				//  Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			if (respMap.containsKey("result")) {
+				if (respMap.get("result").equals("SUCCESS")) {
+
+					System.out.println("SUCCESS");
+					String secondAPI = messageUtil.getBundle("ebi.second.url") + respMap.get("session.id");
+					System.out.println("secondAPI ==>> " + secondAPI);
+
+					try {
+						//TODO
+						//logwrite.writeLog
+						writeLogV2(0L,"EBL 2nd API GET",1, "trxid:"+transactionId1+",secondAPI, request session :"+respMap.get("session.id"));				
+					} catch (Exception e1) {
+						//  Auto-generated catch block
+						e1.printStackTrace();
+					}
+					response.sendRedirect(secondAPI);
+				} else {
+
+					System.out.println("Failure");
+					redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
+					return "redirect:/failure?orderId=" + transactionModel2.getTxnId();
+				}
+			} else {
+
+				System.out.println("No Response");
+				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
+				return "redirect:/failure?orderId=" + transactionModel2.getTxnId();
+			}
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+			redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
+			return "redirect:/failure?orderId=" + transactionModel2.getTxnId();
+		}
+
+		HTTPConnection.disconnect();
+
+		if (logger.isInfoEnabled()) {
+			logger.info("ebl -- END");
+		}
+
+		return null;
+	}
+	
+	
+	/*************************************************************************************************************************************************/
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	/**
 	 * This method is used to open success page after completion of EBL payment.
@@ -2093,14 +2314,22 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 									PaymentModel paymentModel = new PaymentModel();
 									Gson gson = new Gson();
+								
+									
+									paymentModel=transactionModel.getPaymentModel();
+									String sms_notifictaion=paymentModel.getNotification_sms();
+									String email_notification=paymentModel.getNotification_email();
+									paymentModel = gson.fromJson(paymentModel.getCustomerDetails(),
+											PaymentModel.class);
 									// JSON to Java object, read it from a Json String.
+									/*
 									paymentModel = gson.fromJson(
 											transactionModel.getPaymentModel().getCustomerDetails(),
 											PaymentModel.class);
 									System.out.println("paymentModel ==>> " + paymentModel);
 
 									String sms_notifictaion=paymentModel.getNotification_sms();
-									String email_notification=paymentModel.getNotification_email();
+									String email_notification=paymentModel.getNotification_email();/**/
 									if(email_notification.equals("1")) {
 										if (Objects.nonNull(paymentModel.getEmailId())) {
 
@@ -2307,15 +2536,13 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			try {
 				//logwrite.writeLog
 				writeLogV2(0L,"check-payment",1, "orderTxnId:"+paymentModel.getOrderTransactionID()+",Amount:"+paymentModel.getAmount()+",token:"+token);
-
 			} catch (Exception e1) {
-				//  Auto-generated catch block
 				e1.printStackTrace();
 			}
 
 			long result = transactionService.insertOrder(paymentModel);
 			System.out.println("paymentModel.getMerchantModel().getCompanyModel().getIp() ==>> "
-					+ paymentModel.getMerchantModel().getCompanyModel().getIp());
+					+ paymentModel.getMerchantModel().getCompanyModel().getIp());//TODO dont find any necessity 
 			if (Objects.nonNull(paymentModel))
 				if (Objects.nonNull(paymentModel.getMerchantModel()))
 					if (Objects.nonNull(paymentModel.getMerchantModel().getCompanyModel()))
@@ -2736,7 +2963,6 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		String salt = "";
 
 		try {
-			//TODO
 			//logwrite.writeLog
 			writeLogV2(0L,"bkash POST",1, "orderId:"+orderId+",sessionId:"+sessionId+"trx_id:"+transactionId_w);				
 		} catch (Exception e1) {
@@ -2781,13 +3007,31 @@ public class PaymentController extends BaseDao implements SaltTracker {
 						if (Objects.nonNull(transactionModels)) {
 
 							if (transactionModels.size() > 0) {
+								
+								try {
+									//logwrite.writeLog
+									writeLogV2(0L,"Bkash Attempt",1, "OrderId:"+orderId+" ,Duplicate bkashID:"+bKashModel.getTrx_id()+" ,trx_id:"+transactionId1);				
+								} catch (Exception e1) {
+									//  Auto-generated catch block
+									e1.printStackTrace();
+								}
 
 								redirectAttributes.addFlashAttribute("failure",
 										messageUtil.getBundle("duplicate.bkash.id"));
+								//TODO
 								returnURL = "redirect:/bkash?transactionId=" + bKashModel.getTransactionId1();
 								//returns to same page prompting input again
 
 							} else {
+								
+								try {
+									//TODO logwrite.writeLog
+									writeLogV2(0L,"Bkash Attempt",1, "OrderId:"+orderId+" , bkashID:"+bKashModel.getTrx_id()+" ,trx_id:"+transactionId1);				
+								} catch (Exception e1) {
+									//  Auto-generated catch block
+									e1.printStackTrace();
+								}
+								
 								String inputJsonString = "{\"user\":\"" + messageUtil.getBundle("bKash.username")
 								+ "\", \"pass\":\"" + messageUtil.getBundle("bKash.password")
 								+ "\", \"msisdn\":\"" + messageUtil.getBundle("bKash.wallet")
@@ -2799,7 +3043,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 								System.out.println("outputJsonString ==>> " + outputJsonString);
 								Gson gson = new Gson();
 								TransactionModel transactionModel3 = gson.fromJson(outputJsonString,
-										TransactionModel.class);//TODO How it works ? needs to check the flow
+										TransactionModel.class);
 								if (Objects.nonNull(transactionModel3)) {
 
 									BKashModel bKashModel2 = transactionModel3.getTransaction();
@@ -3083,8 +3327,8 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			}
 
 		} catch (Exception e) {
-			//TODO remove later
-			System.out.println("get-order-trx-status-v2 exception print -->" + e);
+			// remove later
+			//System.out.println("get-order-trx-status-v2 exception print -->" + e);
 			e.printStackTrace();
 			//logger.info("Exception caught: "+e);
 			paymentModel3.setResponseCode("203");

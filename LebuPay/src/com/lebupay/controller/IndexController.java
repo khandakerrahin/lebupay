@@ -422,18 +422,19 @@ public class IndexController extends BaseDao implements SaltTracker {
 			model.addAttribute("merchantName", transactionModel.getMerchantModel().getFirstName()+ " "+transactionModel.getMerchantModel().getLastName());
 			model.addAttribute("amount", transactionModel.getAmount());
 			model.addAttribute("grossAmount", transactionModel.getGrossAmount());
-			model.addAttribute("transactionId1", transactionId1);
+			model.addAttribute("transactionId1", transactionId1); //encoded
 			model.addAttribute("transactionId", transactionModel.getTxnId());
 			
 			try {
 				//logwrite.writeLog(0L,"Citybank approveOrder",2, "approveOrder respCity txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
-				writeLogV2(0L,"IndexController/link-pay",1, "initial txnId:"+transactionId+",SESSIONKEY:"+SESSIONKEY+",transactionId1 "+transactionId1+",transactionId"+transactionId);
+				writeLogV2(0L,"IndexController/link-pay",1, "initial txnId:"+transactionId+",SESSIONKEY:"+SESSIONKEY+",transactionId1: "+transactionId1+",transactionId:"+transactionId);
 				
 		    } catch (Exception e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			
+			//TODO Removed by 
+			/*
 			model.addAttribute("citybankMerchantId", transactionModel.getMerchantModel().getCityMerchantId());
 			
 			model.addAttribute("eBLUserName", transactionModel.getMerchantModel().getEblUserName());
@@ -442,7 +443,24 @@ public class IndexController extends BaseDao implements SaltTracker {
 			//WASIF 20181115			
 			model.addAttribute("sEBLUserName", transactionModel.getMerchantModel().getSeblUserName());
 			model.addAttribute("sEBLUserPassword", transactionModel.getMerchantModel().getSeblPassword());
-			model.addAttribute("sEBLUserId", transactionModel.getMerchantModel().getSeblId());
+			model.addAttribute("sEBLUserId", transactionModel.getMerchantModel().getSeblId());/**/
+			
+			if(transactionModel.getMerchantModel().getCityMerchantId() != null && !transactionModel.getMerchantModel().getCityMerchantId().isEmpty() ) {
+				model.addAttribute("CITY", "Y");
+			}else {
+				model.addAttribute("CITY", "N");
+			}
+			if(transactionModel.getMerchantModel().getEblUserName() !=null && !transactionModel.getMerchantModel().getEblUserName().isEmpty()) {
+				model.addAttribute("EBL", "Y");
+			}else {
+				model.addAttribute("EBL", "N");
+			}
+			if(transactionModel.getMerchantModel().getSeblUserName() !=null && !transactionModel.getMerchantModel().getSeblUserName().isEmpty()) {
+				model.addAttribute("SEBL", "Y");
+			}else {
+				model.addAttribute("SEBL", "N");
+			}
+			
 			
 			TransactionModel transactionModel1 = transactionService.fetchTransactionByTXNId(transactionModel.getTxnId());
 			

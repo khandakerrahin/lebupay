@@ -673,7 +673,12 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 
 			pst = (OraclePreparedStatement) connection.prepareStatement(sql);
 			pst.setLongAtName("MERCHANT_ID", merchantId); // merchantId
+			//Wasif 20190310 changed due to wrong percentage calculation for Card brand 'MC' from CITY BANK
+			if(cardType.equalsIgnoreCase("MC")) {
+				cardType="MASTERCARD";
+			}
 			pst.setStringAtName("CARD_TYPE", cardType.toUpperCase()); // cardType
+			
 			//				pst.setStringAtName("CARD_TYPE", cardType==null?"NULL":cardType.toUpperCase()); // cardType
 			ResultSet rs =  pst.executeQuery();
 			if(rs.next()){
@@ -2980,7 +2985,8 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 			pst.setStringAtName("TXN_ID", transactionModel.getTxnId()); // TXN_ID
 			pst.setDoubleAtName("BALANCE", transactionModel.getBalance()); // BALANCE
 			pst.setDoubleAtName("LOYALTY_POINT", transactionModel.getLoyaltyPoint()); // LOYALTY_POINT
-			pst.setLongAtName("STATUS", 0); // STATUS
+			pst.setLongAtName("STATUS", 0); // STATUS 
+			//TODO update status
 			pst.setStringAtName("AUTHORIZATION_RESPONSE_DATE", transactionModel.getAuthorizationResponse_date());
 			pst.setStringAtName("ACQUIRER_MESSAGE", transactionModel.getAcquirerMessage());
 			pst.setStringAtName("BANK_MERCHANT_ID", transactionModel.getMerchantId());
