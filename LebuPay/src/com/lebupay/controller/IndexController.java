@@ -446,19 +446,19 @@ public class IndexController extends BaseDao implements SaltTracker {
 			model.addAttribute("sEBLUserId", transactionModel.getMerchantModel().getSeblId());/**/
 			
 			if(transactionModel.getMerchantModel().getCityMerchantId() != null && !transactionModel.getMerchantModel().getCityMerchantId().isEmpty() ) {
-				model.addAttribute("CITY", "Y");
+				model.addAttribute("CITY", true);
 			}else {
-				model.addAttribute("CITY", "N");
+				model.addAttribute("CITY", false);
 			}
 			if(transactionModel.getMerchantModel().getEblUserName() !=null && !transactionModel.getMerchantModel().getEblUserName().isEmpty()) {
-				model.addAttribute("EBL", "Y");
+				model.addAttribute("EBL", true);
 			}else {
-				model.addAttribute("EBL", "N");
+				model.addAttribute("EBL", false);
 			}
 			if(transactionModel.getMerchantModel().getSeblUserName() !=null && !transactionModel.getMerchantModel().getSeblUserName().isEmpty()) {
-				model.addAttribute("SEBL", "Y");
+				model.addAttribute("SEBL", true);
 			}else {
-				model.addAttribute("SEBL", "N");
+				model.addAttribute("SEBL", false);
 			}
 			
 			

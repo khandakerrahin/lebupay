@@ -75,6 +75,8 @@ public class TransactionModel extends CommonModel {
 	private Double grossAmount;
 	private String bkashTrxId;
 	private String bank;
+	//TODO
+	private String issuer_bank;
 
 	public Long getTransactionId() {
 		return transactionId;
@@ -661,6 +663,14 @@ public class TransactionModel extends CommonModel {
 		this.bank = bank;
 	}
 
+	public String getIssuer_bank() {
+		return issuer_bank;
+	}
+
+	public void setIssuer_bank(String issuer_bank) {
+		this.issuer_bank = issuer_bank;
+	}
+
 	@Override
 	public String toString() {
 		return "TransactionModel [transactionId=" + transactionId + ", amount="
@@ -708,6 +718,7 @@ public class TransactionModel extends CommonModel {
 				+ transaction_terminal + ", authorizationCode="
 				+ authorizationCode + ", authenticationStatus="
 				+ authenticationStatus + ", processingCode=" + processingCode
+				+ ",issuer_bank="+issuer_bank //TODO Added By Wasif
 				+ ", expiry_month=" + expiry_month + ", secure_xid="
 				+ secure_xid + ", enrollmentStatus=" + enrollmentStatus
 				+ ", cardSecurityCodeError=" + cardSecurityCodeError

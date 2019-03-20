@@ -1856,8 +1856,10 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					//WASIF 20181114
 					//WASIF 20190304 
 					+ "om.NOTIFICATION_EMAIL," // 31
-					+ "om.NOTIFICATION_SMS" // 32
-					
+					+ "om.NOTIFICATION_SMS," // 32
+					+ "om.SERVER_SUCCESS_URL," // 33
+					+ "om.SERVER_FAILURE_URL" // 34 //WASIF 20190319 
+										
 					+ " from TRANSACTION_MASTER tm, MERCHANT_MASTER m, ORDER_MASTER om "
 					+ "where tm.MERCHANT_ID = m.MERCHANT_ID and tm.TXN_ID =:TXN_ID and tm.ORDER_ID = om.ORDER_ID order by tm.CREATED_DATE desc";
 
@@ -1903,10 +1905,12 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 				paymentModel.setFailureURL(rs.getString(20));
 				paymentModel.setCustomerDetails(rs.getString(21));
 				paymentModel.setAmount(rs.getDouble(22));
-				//TODO Wasif 20190304
+				// Wasif 20190304
 				paymentModel.setNotification_email(rs.getString(31));
 				paymentModel.setNotification_sms(rs.getString(32));
 				/**/
+				paymentModel.setServerSuccessURL(rs.getString(33));
+				paymentModel.setServerFailureURL(rs.getString(34)); //20190319
 
 
 				merchantModel.setEblUserName(rs.getString(23));
@@ -2181,7 +2185,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ ") ";/**/
 			//TODO 20190220
 		
-			String sql = "insert into ORDER_MASTER (ORDER_ID,AMOUNT,MERCHANT_ID,SUCCESS_URL,FAILURE_URL,ORDER_TRANSACTION_ID,CUTOMER_DETAILS,TOKEN,STATUS,CREATED_BY,CREATED_DATE,NOTIFICATION_SMS,NOTIFICATION_EMAIL) values(ORDER_MASTER_SEQ.nextval,"
+			String sql = "insert into ORDER_MASTER (ORDER_ID,AMOUNT,MERCHANT_ID,SUCCESS_URL,FAILURE_URL,ORDER_TRANSACTION_ID,CUTOMER_DETAILS,TOKEN,STATUS,CREATED_BY,CREATED_DATE,NOTIFICATION_SMS,NOTIFICATION_EMAIL,SERVER_SUCCESS_URL,SERVER_FAILURE_URL) values(ORDER_MASTER_SEQ.nextval,"
 					+ ":AMOUNT,"
 					+ ":MERCHANT_ID,"
 					+ ":SUCCESS_URL,"
@@ -2193,8 +2197,11 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ ":CREATED_BY,"
 					+ "localtimestamp(0),"
 					+ ":NOTIFICATION_SMS,"
-					+ ":NOTIFICATION_EMAIL"
+					+ ":NOTIFICATION_EMAIL,"
+					+ ":SERVER_SUCCESS_URL,"
+					+ ":SERVER_FAILURE_URL"
 					+ ") "; /**/
+		
 
 			String pk[] = {"ORDER_ID"};
 			pst = (OraclePreparedStatement) connection.prepareStatement(sql, pk);
@@ -2210,6 +2217,8 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
        //TODO 20190220
 		    pst.setStringAtName("NOTIFICATION_SMS",paymentModel.getNotification_sms());
             pst.setStringAtName("NOTIFICATION_EMAIL",paymentModel.getNotification_email());/**/
+            pst.setStringAtName("SERVER_SUCCESS_URL",paymentModel.getServerSuccessURL());
+            pst.setStringAtName("SERVER_FAILURE_URL",paymentModel.getServerFailureURL());
 			System.out.println("Insert Order By Merchant==>> "+sql);
 
 
@@ -2780,11 +2789,11 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 						paymentModel.setBilling_name(rs.getString(14)+" "+rs.getString(15));
 						paymentModel.setDevice_ipaddress(rs.getString(16));						
 						if(rs.getString(18)!=null && !rs.getString(18).isEmpty()) {//CITYBANK
-							System.out.println("CITYBANK Card found");	
+							
 							//TODO
 							tmpCardNumber=rs.getString(18);
 							tmpCardNumber = tmpCardNumber.substring(0,4)+'x'+'x'+tmpCardNumber.substring(6);
-							paymentModel.setProvided_card_number(tmpCardNumber);
+							paymentModel.setProvided_card_number(tmpCardNumber); //TODO need to remove it since both can be found on trx_master now
 							paymentModel.setTransaction_type(rs.getString(17));
 						}else {
 							tmpCardNumber=rs.getString(10);
@@ -3321,7 +3330,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ "TRANSACTION_TYPE,FINANCIAL_NETWORK_DATE,RESPONSE_CODE,TRANSACTION_FREQUENCY,TRANSACTION_TERMINAL,AUTHORIZATION_CODE,"
 					+ "AUTHENTICATION_STATUS,PROCESSING_CODE,EXPIRY_MONTH,SECURE_XID,ENROLLMENT_STATUS,CARD_SECURITY_CODE_ERROR,"
 					+ "TIME_ZONE,GATEWAY_ENTRY_POINT,STATUS,CREATED_DATE,CREATED_BY,"
-					+ "TRANSACTION_MASTER_ID) values("
+					+ "TRANSACTION_MASTER_ID,ISSUER_BANK) values("
 					+ "EBL_TRANSACTION_MASTER_SEQ.nextval,"
 					+ ":AMOUNT,:BALANCE,:RESPONSE_MESSAGE, :AUTHORIZATION_RESPONSE_DATE, :FUNDING_METHOD,"
 					+ ":ACQUIRER_MESSAGE, :FINANCIAL_NETWORK_CODE, :TRANSACTION_IDENTIFIER, :NAME_ON_CARD, :CARD_EXPIRY_YEAR,"
@@ -3332,7 +3341,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ ":RESULT,:CREATION_TIME,:CUSTOMER_LASTNAME,:TOTAL_REFUNDED_AMOUNT,:ACQUIRER_BATCH,:DESCRIPTION,:TRANSACTION_TYPE,"
 					+ ":FINANCIAL_NETWORK_DATE,:RESPONSE_CODE,:TRANSACTION_FREQUENCY,:TRANSACTION_TERMINAL,:AUTHORIZATION_CODE,"
 					+ ":AUTHENTICATION_STATUS,:PROCESSING_CODE,:EXPIRY_MONTH,:SECURE_XID,:ENROLLMENT_STATUS,:CARD_SECURITY_CODE_ERROR,"
-					+ ":TIME_ZONE,:GATEWAY_ENTRY_POINT,:STATUS,systimestamp(0),:CREATED_BY,:TRANSACTION_MASTER_ID)";
+					+ ":TIME_ZONE,:GATEWAY_ENTRY_POINT,:STATUS,systimestamp(0),:CREATED_BY,:TRANSACTION_MASTER_ID,:ISSUER_BANK)";
 
 			String pk[] = {"EBL_TRANSACTION_ID"};
 			pst = (OraclePreparedStatement) connection.prepareStatement(sql, pk);
@@ -3385,6 +3394,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 			pst.setStringAtName("AUTHENTICATION_STATUS", transactionModel.getAuthenticationStatus());
 			pst.setStringAtName("PROCESSING_CODE", transactionModel.getProcessingCode());
 			pst.setStringAtName("EXPIRY_MONTH", transactionModel.getExpiry_month());
+			pst.setStringAtName("ISSUER_BANK", transactionModel.getIssuer_bank());
 			pst.setStringAtName("SECURE_XID", transactionModel.getSecure_xid());
 			pst.setStringAtName("ENROLLMENT_STATUS", transactionModel.getEnrollmentStatus());
 			pst.setStringAtName("CARD_SECURITY_CODE_ERROR", transactionModel.getCardSecurityCodeError());

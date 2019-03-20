@@ -69,6 +69,7 @@ import com.lebupay.model.MerchantModel;
 import com.lebupay.model.ParameterModel;
 import com.lebupay.model.PaymentModel;
 import com.lebupay.model.TransactionModel;
+import com.lebupay.model.CardIssuerModel; //TODO added By Wasif 20190318
 import com.lebupay.service.CheckOutService;
 import com.lebupay.service.MerchantService;
 import com.lebupay.service.TransactionService;
@@ -398,11 +399,12 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			e.printStackTrace();
 		}
 
-		//TODO remove after debugging
+		// remove after debugging
+		/*
 		if (logger.isInfoEnabled()) {
 			logger.info("City Bank Payment xmlDoc response -->"+xmlDoc);	
 			System.out.println("City Bank Payment xmlDoc response print -->"+xmlDoc);	
-		}
+		}/**/
 
 		// For getting the required values
 		xmlDoc.getDocumentElement().normalize();
@@ -485,11 +487,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				XPath xpath = XPathFactory.newInstance().newXPath();
 
 				Object citiResponse = xpath.evaluate("/Message", source, XPathConstants.NODE);
-				//TODO needs to remove later
-				/*
-				System.out.println("City bank resp print:source:  "+source.toString());
-				System.out.println("City bank resp print:xmlDoc:  "+xmlDoc.toString());
-				System.out.println("City bank resp print: "+citiResponse.toString());/**/
+				
 
 				if (logger.isInfoEnabled()) {
 					logger.info("City bank full response"+citiResponse.toString());
@@ -518,7 +516,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				name = xpath.evaluate("Name", citiResponse);
 				threeDSVerificaion = xpath.evaluate("ThreeDSVerificaion", citiResponse);
 				threeDSStatus = xpath.evaluate("ThreeDSStatus", citiResponse);
-				//TODO issue trxid takes from global value
+				// issue trxid takes from global value
 				//String txnId = String.valueOf(transactionModelSaltTracker.getTxnId());
 				String txnId = orderDescription; //update by Wasif 20190223
 
@@ -575,7 +573,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 					transactionModel.setTransactionStatus(6);
 				}/**/
 				//	transactionModel.setMerchantId(transactionModel2.getMerchantModel().getCityMerchantId());
-				//TODO  city bank  mid add
+				//  city bank  mid add
 				int result = transactionServiceImpl.updateTransactionAfterCityPayment(transactionModel);
 
 				if (result > 0) {
@@ -608,7 +606,6 @@ public class PaymentController extends BaseDao implements SaltTracker {
 					try {
 						//logwrite.writeLog(transactionModel.getMerchantModel().getMerchantId(),"Citybank approveOrder",1, "approveOrder cityTrxModelUpd txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
 						writeLogV2(transactionModel.getMerchantModel().getMerchantId(),"Citybank approveOrder",1, "CityTrxModelUpd txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
-
 					} catch (Exception e1) {
 						//  Auto-generated catch block
 						e1.printStackTrace();
@@ -617,7 +614,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 					int cityResult = transactionServiceImpl.saveCityBankTransaction(cityTransactionModel);
 
 					if (cityResult > 0) {
-//TODO need to check here 
+                        //TODO need to check here 
 						returnURL = "redirect:/payment_success?orderId=" + txnId;
 
 						if (Objects.nonNull(transactionModel)) {
@@ -764,7 +761,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		String OrderStatus = "";
 		String cardHolderName = "";
 		String name = "";
-//TODO salt
+
 		//String txnId = String.valueOf(transactionModelSaltTracker.getTxnId());
 
 		if (request.getParameter("xmlmsg") != "") {
@@ -1019,7 +1016,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				orderStatusScr = xpath.evaluate("OrderStatusScr", citiResponse);
 				name = xpath.evaluate("Name", citiResponse);
 				threeDSVerificaion = xpath.evaluate("ThreeDSVerificaion", citiResponse);
-				String txnId=orderDescription; //TODO order description
+				String txnId=orderDescription; //TODO order description need to change when CITYbank EMI will be included
 
 				if (orderStatus.equals("DECLINED")) {
 					TransactionModel transactionModel = null;
@@ -1169,6 +1166,42 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				if (Objects.nonNull(transactionModel.getPaymentModel().getSuccessURL()))
 					if (!transactionModel.getPaymentModel().getSuccessURL().equals("None"))
 						response.sendRedirect(transactionModel.getPaymentModel().getSuccessURL());
+				//TODO Added By Wasif 20190314
+				if (!transactionModel.getPaymentModel().getServerSuccessURL().equals("NotSet")) {
+				//	response.sendRedirect(transactionModel.getPaymentModel().getServerSuccessURL());
+					
+				
+				String inputJsonString = "{\"email\":\"" + transactionModel.getPaymentModel().getEmailId() 
+				+ "\", \"mobileNumber\":\"" + transactionModel.getPaymentModel().getMobileNumber()
+				+ "\", \"amount\":\"" + transactionModel.getPaymentModel().getAmount()
+				+ "\", \"orderTransactionID\":\"" + transactionModel.getPaymentModel().getOrderTransactionID()
+				+ "\", \"responseCode\":\"" + transactionModel.getPaymentModel().getResponseCode()
+				+ "\", \"transactionStatus\":\"" + transactionModel.getPaymentModel().getTransactionStatus()
+				+ "\", \"transactionDate\":\"" + transactionModel.getPaymentModel().getTransactionDate() 
+				+ "\", \"card_brand\":\"" + transactionModel.getPaymentModel().getCard_brand()
+				+ "\", \"provided_card_number\":\"" + transactionModel.getPaymentModel().getProvided_card_number()
+				+ "\", \"bank_merchant_id\":\"" + transactionModel.getPaymentModel().getBank_merchant_id() 
+				+ "\", \"transaction_type\":\"" + transactionModel.getPaymentModel().getTransaction_type()
+				+ "\", \"billing_name\":\"" + transactionModel.getPaymentModel().getBilling_name()
+				+ "\", \"bank\":\"" + transactionModel.getPaymentModel().getBank() + "\"}";
+			
+							
+				System.out.println("inputJsonString ==>> " + inputJsonString);
+				ClientResponse client_response = payconnectApiAcess(transactionModel.getPaymentModel().getServerSuccessURL(),
+						inputJsonString, "post");
+				
+				try {
+					//logwrite.writeLog(transactionModel.getMerchantModel().getMerchantId(),"Citybank approveOrder",1, "approveOrder cityTrxModelUpd txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
+					writeLogV2(transactionModel.getMerchantModel().getMerchantId(),"server-server API",2, "on success order trx ID:"+transactionModel.getPaymentModel().getOrderTransactionID()+",response:"+client_response);
+
+				} catch (Exception e1) {
+					//  Auto-generated catch block
+					e1.printStackTrace();
+				}
+				/***/
+				}
+				
+				
 			}
 
 		} catch (Exception e) {
@@ -1211,6 +1244,36 @@ public class PaymentController extends BaseDao implements SaltTracker {
 					if (Objects.nonNull(transactionModel.getPaymentModel().getFailureURL()))
 						if (!transactionModel.getPaymentModel().getFailureURL().equals("None"))
 							response.sendRedirect(transactionModel.getPaymentModel().getFailureURL());
+					
+					//TODO Added By Wasif 20190314
+					if (!transactionModel.getPaymentModel().getServerFailureURL().equals("NotSet")) {
+					//	response.sendRedirect(transactionModel.getPaymentModel().getServerFailureURL());
+						
+					
+					String inputJsonString = "{\"email\":\"" + transactionModel.getPaymentModel().getEmailId() 
+					+ "\", \"mobileNumber\":\"" + transactionModel.getPaymentModel().getMobileNumber()
+					+ "\", \"amount\":\"" + transactionModel.getPaymentModel().getAmount()
+					+ "\", \"orderTransactionID\":\"" + transactionModel.getPaymentModel().getOrderTransactionID()
+					+ "\", \"responseCode\":\"" + transactionModel.getPaymentModel().getResponseCode()
+					+ "\", \"transactionStatus\":\"" + "Failure"+ "\"}";
+				
+								
+					System.out.println("inputJsonString ==>> " + inputJsonString);
+					ClientResponse client_response = payconnectApiAcess(transactionModel.getPaymentModel().getServerFailureURL(),
+							inputJsonString, "post");
+					
+					try {
+						//logwrite.writeLog(transactionModel.getMerchantModel().getMerchantId(),"Citybank approveOrder",1, "approveOrder cityTrxModelUpd txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
+						writeLogV2(transactionModel.getMerchantModel().getMerchantId(),"server-server API",2, "on failure order trx ID:"+transactionModel.getPaymentModel().getOrderTransactionID()+",response:"+client_response);
+
+					} catch (Exception e1) {
+						//  Auto-generated catch block
+						e1.printStackTrace();
+					}
+					/***/
+					}
+					
+					
 				}
 			}
 
@@ -1254,6 +1317,10 @@ public class PaymentController extends BaseDao implements SaltTracker {
 					if (Objects.nonNull(transactionModel.getPaymentModel().getFailureURL()))
 						if (!transactionModel.getPaymentModel().getFailureURL().equals("None"))
 							response.sendRedirect(transactionModel.getPaymentModel().getFailureURL());
+					//TODO Added By Wasif 20190314
+					if (!transactionModel.getPaymentModel().getServerFailureURL().equals("NotSet"))
+						response.sendRedirect(transactionModel.getPaymentModel().getServerFailureURL());
+				
 				}
 			}
 
@@ -1359,7 +1426,6 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 
 		try {
-			//TODO
 			//logwrite.writeLog
 			writeLogV2(0L,"EBL CREATE_CHECKOUT_SESSION GET",1, "trxid:"+transactionId1+",CREATE_CHECKOUT_SESSION, REQ MAP :"+argsMap.toString());				
 		} catch (Exception e1) {
@@ -1474,14 +1540,13 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		System.out.println("resultIndicator ==>> " + resultIndicator +" orderId: "+orderId);
 
 		try {
-			//TODO
 			//logwrite.writeLog
 			writeLogV2(0L,"EBL RETRIEVE_ORDER GET",1, "orderId:"+orderId+",resultIndicator :"+resultIndicator);				
 		} catch (Exception e1) {
 			//  Auto-generated catch block
 			e1.printStackTrace();
 		}
-		//TODO Wasif 20190223 String orderId = String.valueOf(transactionModelSaltTracker.getTxnId()); 
+		// Wasif 20190223 String orderId = String.valueOf(transactionModelSaltTracker.getTxnId()); 
 
 		TransactionModel transactionModel2 = null;
 		try {
@@ -1521,7 +1586,6 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			}
 
 			try {
-				//TODO
 				//logwrite.writeLog
 				writeLogV2(0L,"EBL RETRIEVE_ORDER POST",2, "respMap :"+respMap.toString());				
 			} catch (Exception e1) {
@@ -1627,7 +1691,12 @@ public class PaymentController extends BaseDao implements SaltTracker {
 						transactionModel.setTimeZone(respMap.get("transaction%5B0%5D.transaction.acquirer.timeZone"));
 						transactionModel.setGatewayEntryPoint(respMap.get("transaction%5B0%5D.gatewayEntryPoint"));
 						transactionModel.setBank("EBL");
-
+                        //TODO need to add EBl logic Here can redirect to void request .
+						String ECI_value=transactionModel.getAcsEci_value(); //Local:allow Int:block(ECI: Visa 6, MC 1) 
+						//both block (ECI: Visa 7, MC 0)
+						//TODO
+						transactionModel.setIssuer_bank(respMap.get("sourceOfFunds.provided.card.issuer"));
+						
 						result = transactionServiceImpl.updateTransactionAfterPayment(transactionModel);
 						int eblUpdateResult = 0;
 						if (result > 0) {
@@ -1757,7 +1826,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	
 	
 	
-	//TODO WASIF 20190305
+	// WASIF 20190305
 	/*************************************************************************************************************************************************/
 	
 
@@ -1772,6 +1841,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	 * @param redirectAttributes
 	 * @return String
 	 */
+	/*
 	@RequestMapping(value = "/ebl_void", method = RequestMethod.GET)
 	public String eblVoid(HttpServletRequest request, Model model, @RequestParam String transactionId,
 			HttpServletResponse response, final RedirectAttributes redirectAttributes) {
@@ -1926,7 +1996,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 		return null;
 	}
-	
+	*/
 	
 	/*************************************************************************************************************************************************/
 
@@ -1964,21 +2034,89 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			if (Objects.nonNull(transactionModel)) {
 
 				PaymentModel paymentModel = new PaymentModel();
+			//	PaymentModel paymentModel2 = new PaymentModel();
 				Gson gson = new Gson();
 				// JSON to Java object, read it from a Json String.
 				paymentModel = gson.fromJson(transactionModel.getPaymentModel().getCustomerDetails(),
 						PaymentModel.class);
+			//	paymentModel2=transactionModel.getPaymentModel(); //TODO 20190319
+				//TODO  need to change here 
+				
 				System.out.println("paymentModel success ==>> " + paymentModel);
+				
 				if (Objects.nonNull(transactionModel.getPaymentModel().getSuccessURL()))
 					System.out.println("Success URL:" + transactionModel.getPaymentModel().getSuccessURL());
 				if (!transactionModel.getPaymentModel().getSuccessURL().equals("None")) {
 					response.sendRedirect(transactionModel.getPaymentModel().getSuccessURL());
+			
+					// Added By Wasif 20190314
+					if (!transactionModel.getPaymentModel().getServerSuccessURL().equals("NotSet")) {
+					//	response.sendRedirect(transactionModel.getPaymentModel().getServerSuccessURL());
+						
+					
+					String inputJsonString = "{\"email\":\"" + transactionModel.getPaymentModel().getEmailId() 
+					+ "\", \"mobileNumber\":\"" + transactionModel.getPaymentModel().getMobileNumber()
+					+ "\", \"amount\":\"" + transactionModel.getPaymentModel().getAmount()
+					+ "\", \"orderTransactionID\":\"" + transactionModel.getPaymentModel().getOrderTransactionID()
+					+ "\", \"responseCode\":\"" + transactionModel.getPaymentModel().getResponseCode()
+					+ "\", \"transactionStatus\":\"" + transactionModel.getPaymentModel().getTransactionStatus()
+					+ "\", \"transactionDate\":\"" + transactionModel.getPaymentModel().getTransactionDate() 
+					+ "\", \"card_brand\":\"" + transactionModel.getPaymentModel().getCard_brand()
+					+ "\", \"provided_card_number\":\"" + transactionModel.getPaymentModel().getProvided_card_number()
+					+ "\", \"bank_merchant_id\":\"" + transactionModel.getPaymentModel().getBank_merchant_id() 
+					+ "\", \"transaction_type\":\"" + transactionModel.getPaymentModel().getTransaction_type()
+					+ "\", \"billing_name\":\"" + transactionModel.getPaymentModel().getBilling_name()
+					+ "\", \"bank\":\"" + transactionModel.getPaymentModel().getBank() + "\"}";
+					
+				//TODO Check card location
+					
+					System.out.println("inputJsonString ==>> " + inputJsonString);
+					ClientResponse client_response = payconnectApiAcess(transactionModel.getPaymentModel().getServerSuccessURL(),
+							inputJsonString, "post");
+					
+					try {
+						//logwrite.writeLog(transactionModel.getMerchantModel().getMerchantId(),"Citybank approveOrder",1, "approveOrder cityTrxModelUpd txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
+						writeLogV2(transactionModel.getMerchantModel().getMerchantId(),"server-server API",2, "on success ebl order trx ID:"+transactionModel.getPaymentModel().getOrderTransactionID()+",response:"+client_response);
+					} catch (Exception e1) {
+						//  Auto-generated catch block
+						e1.printStackTrace();
+					}
+				
+				String issuer_check_url="https://lookup.binlist.net/"; //TO CHECK CARD issuer  detail TPS 10 per min
+				String full_url=issuer_check_url+transactionModel.getPaymentModel().getProvided_card_number().substring(0,6);
+				ClientResponse card_issuer_detail = payconnectApiAcess(full_url,"", "GET");
+				
+				try{
+					System.out.println("card_issuer_detail resp: "+card_issuer_detail.toString());  //TODO testing					
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+				//TODO
+				String outputJsonString2 = card_issuer_detail.getEntity(String.class);
+				System.out.println("outputJsonString card issuer url check ==>> " + outputJsonString2);
+				Gson gson2 = new Gson();
+				
+				CardIssuerModel cardIssuerModel = gson2.fromJson(outputJsonString2,CardIssuerModel.class);
+				
+				if(cardIssuerModel.getAlpha2()!="BD") {
+					cardIssuerModel.setOriginType(0);					
+				}else {
+					cardIssuerModel.setOriginType(1);
+				}
+				
+								
+					
+					/***/
+					}else {
+						
+						System.out.println("Server Side URL not set" );
+						
+					}
 
 				}
 
 			}
 			try {
-				//TODO
 				writeLogV2(0L,"success",2, "orderId:"+orderId);				
 			} catch (Exception e1) {
 				e1.printStackTrace();
@@ -2149,7 +2287,6 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		/* String orderId = String.valueOf(transactionModelSaltTracker.getTxnId()); */
 
 		try {
-			//TODO
 			//logwrite.writeLog
 			writeLogV2(0L,"SEBL RETRIEVE_ORDER GET",1, "orderId:"+orderId+",resultIndicator :"+resultIndicator);				
 		} catch (Exception e1) {
@@ -2194,8 +2331,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 				respMap.put(respPart[0], respPart[1]);
 			}
-			try {
-				//TODO
+			try {				
 				//logwrite.writeLog
 				writeLogV2(0L,"SEBL RETRIEVE_ORDER POST",2, "respMap :"+respMap.toString());				
 			} catch (Exception e1) {
@@ -2460,7 +2596,6 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 			if (Objects.nonNull(transactionModel)) {
 				try {
-					//TODO
 					writeLogV2(0L,"failure",1, "orderId:"+orderId);				
 				} catch (Exception e1) {
 					e1.printStackTrace();
@@ -2473,6 +2608,31 @@ public class PaymentController extends BaseDao implements SaltTracker {
 					if (Objects.nonNull(transactionModel.getPaymentModel().getFailureURL()))
 						if (!transactionModel.getPaymentModel().getFailureURL().equals("None")) {
 							response.sendRedirect(transactionModel.getPaymentModel().getFailureURL());
+							//TODO Added By Wasif 20190314
+							if (!transactionModel.getPaymentModel().getServerFailureURL().equals("NotSet")) {
+							//	response.sendRedirect(transactionModel.getPaymentModel().getServerSuccessURL());
+								
+							
+							String inputJsonString = "{\"email\":\"" + transactionModel.getPaymentModel().getEmailId() 
+							+ "\", \"mobileNumber\":\"" + transactionModel.getPaymentModel().getMobileNumber()
+							+ "\", \"amount\":\"" + transactionModel.getPaymentModel().getAmount()
+							+ "\", \"orderTransactionID\":\"" + transactionModel.getPaymentModel().getOrderTransactionID()+ "\", \"transactionStatus\":\"" + "Failure"+"\"}";
+						
+										
+							System.out.println("inputJsonString ==>> " + inputJsonString);
+							ClientResponse client_response = payconnectApiAcess(transactionModel.getPaymentModel().getServerFailureURL(),
+									inputJsonString, "post");
+							
+							try {
+								//logwrite.writeLog(transactionModel.getMerchantModel().getMerchantId(),"Citybank approveOrder",1, "approveOrder cityTrxModelUpd txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
+								writeLogV2(transactionModel.getMerchantModel().getMerchantId(),"server-server API",2, "on failure order trx ID:"+transactionModel.getPaymentModel().getOrderTransactionID()+",response:"+client_response);
+
+							} catch (Exception e1) {
+								//  Auto-generated catch block
+								e1.printStackTrace();
+							}
+							/***/
+							}
 						}
 				}
 			}
@@ -2489,7 +2649,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	}
 
 	/**
-	 * This method is used for Hit from API.
+	 * This method is used for Hit from API. Initail Call 
 	 * 
 	 * @param paymentModel
 	 * @param request
@@ -2773,7 +2933,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			paymentModel.setSESSIONKEY((String) httpServletRequest.getAttribute("SESSIONKEY"));
 			paymentModel.setCsrfPreventionSalt((String) httpServletRequest.getAttribute("csrfPreventionSalt"));
 		}
-		//TODO didnt understand
+		
 
 		String sessionId = httpServletRequest.getSession().getId();
 		List<String> activeSalts = SALT_TRACKER.get(sessionId);
@@ -3244,14 +3404,20 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	@RequestMapping(value = "/get-order-trx-status", method = RequestMethod.POST)
 	public @ResponseBody PaymentModel checkOrderStatus(@RequestBody PaymentModel paymentModel,
 			HttpServletRequest request) {
-		//TODO need to work here
+		// need to work here
 		if (logger.isInfoEnabled()) {
 			logger.info("Get Order -- START");
 		}
 
 		System.out.println("Order Transaction ID-->" + paymentModel.getOrderTransactionID());
 		System.out.println("Access Key -->" + paymentModel.getAccessKey());
-
+		try {
+			//logwrite.writeLog
+			writeLogV2(0L,"get-order-trx-status",1, "order txnId:"+paymentModel.getOrderTransactionID());
+		} catch (Exception e1) {
+			//  Auto-generated catch block
+			e1.printStackTrace();
+		}
 		PaymentModel paymentModel2 = null;
 		PaymentModel paymentModel3 = new PaymentModel();
 		try {
@@ -3263,6 +3429,13 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 				if (Objects.nonNull(paymentModel2)) {
 					paymentModel2.setResponseCode("200");
+					try {
+						//logwrite.writeLog
+						writeLogV2(0L,"get-order-trx-status",2, "order txnId (reqParam):"+paymentModel.getOrderTransactionID()+",order txnId (respParam):"+paymentModel2.getOrderTransactionID()+",transactionStatus:"+paymentModel2.getTransactionStatus());
+					} catch (Exception e1) {
+						//  Auto-generated catch block
+						e1.printStackTrace();
+					}
 					return paymentModel2;
 				} else {
 					paymentModel3.setResponseCode("202");
@@ -3300,9 +3473,17 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	public @ResponseBody PaymentModel checkOrderStatus_v2(@RequestBody PaymentModel paymentModel,
 			HttpServletRequest request) {
 		//TODO need to work here
+		
 		System.out.println("print get-order-trx-status-v2 -- START");
 		if (logger.isInfoEnabled()) {
 			logger.info("get-order-trx-status-v2 -- START");
+		}
+		try {
+			//logwrite.writeLog
+			writeLogV2(0L,"get-order-trx-status-v2",1, "order txnId:"+paymentModel.getOrderTransactionID());
+		} catch (Exception e1) {
+			//  Auto-generated catch block
+			e1.printStackTrace();
 		}
 
 		PaymentModel paymentModel2 = null;
@@ -3316,6 +3497,15 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 				if (Objects.nonNull(paymentModel2)) {
 					paymentModel2.setResponseCode("200");
+					
+					try {
+						//logwrite.writeLog
+						writeLogV2(0L,"get-order-trx-status-v2",2, "order txnId:"+paymentModel.getOrderTransactionID()+",order txnId (respParam):"+paymentModel2.getOrderTransactionID()+",transactionStatus:"+paymentModel2.getTransactionStatus());
+					} catch (Exception e1) {
+						//  Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
 					return paymentModel2;
 				} else {
 					paymentModel3.setResponseCode("202");
@@ -3343,6 +3533,82 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	}
 
 
+	/** Added by Wasif ***/
+            //TODO Wasif 20190314
+	/**
+	 * Hit from API to get order details. new SERVER To Server API
+	 * 
+	 * @param paymentModel
+	 * @param request
+	 * @return paymentModel
+	 */
+	/*
+	@RequestMapping(value = "/server_API", method = RequestMethod.POST)
+	public @ResponseBody PaymentModel checkOrderStatus_server_to_Server(@RequestBody PaymentModel paymentModel,
+			HttpServletRequest request) {
+		//TODO need to work here
+		
+		System.out.println("print get-order-trx-status-v2 -- START");
+		if (logger.isInfoEnabled()) {
+			logger.info("get-order-trx-status-v2 -- START");
+		}
+		try {
+			//logwrite.writeLog
+			writeLogV2(0L,"get-order-trx-status-v2",1, "order txnId:"+paymentModel.getOrderTransactionID());
+		} catch (Exception e1) {
+			//  Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		PaymentModel paymentModel2 = null;
+		PaymentModel paymentModel3 = new PaymentModel();
+		try {
+
+			MerchantModel merchantModel = merchantService.fetchMerchantByAccessKey(paymentModel.getAccessKey());
+			if (Objects.nonNull(merchantModel)) {
+				paymentModel2 = transactionService.fetchTransactionByAccessKey_V2(paymentModel.getAccessKey(),
+						paymentModel.getOrderTransactionID());
+
+				if (Objects.nonNull(paymentModel2)) {
+					paymentModel2.setResponseCode("200");
+					
+					try {
+						//logwrite.writeLog
+						writeLogV2(0L,"get-order-trx-status-v2",2, "order txnId:"+paymentModel.getOrderTransactionID()+",order txnId (respParam):"+paymentModel2.getOrderTransactionID()+",transactionStatus:"+paymentModel2.getTransactionStatus());
+					} catch (Exception e1) {
+						//  Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
+					return paymentModel2;
+				} else {
+					paymentModel3.setResponseCode("202");
+					paymentModel3.setResponseMessage(messageUtil.getBundle("wrong.order.id"));
+				}
+			} else {
+				paymentModel3.setResponseCode("201");
+				paymentModel3.setResponseMessage(messageUtil.getBundle("wrong.access.key"));
+			}
+
+		} catch (Exception e) {
+			// remove later
+			//System.out.println("get-order-trx-status-v2 exception print -->" + e);
+			e.printStackTrace();
+			//logger.info("Exception caught: "+e);
+			paymentModel3.setResponseCode("203");
+			paymentModel3.setResponseMessage(messageUtil.getBundle("someting.went.wrong"));
+		}
+
+		if (logger.isInfoEnabled()) {
+			logger.info("get-order-trx-status-v2 -- END");
+		}
+
+		return paymentModel3;
+	}
+	/**/
+
+/** Added by Wasif ***/
+	
 
 	public String getFileString(String filename, String path) throws IOException {
 		File fl = new File(path + "/" + filename);

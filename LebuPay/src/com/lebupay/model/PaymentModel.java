@@ -35,6 +35,9 @@ public class PaymentModel extends CommonModel {
 
 	private String notification_email;
 	private String notification_sms;
+	
+	private String serverSuccessURL;
+	private String serverFailureURL;
 
 
 
@@ -71,6 +74,11 @@ public class PaymentModel extends CommonModel {
 	}
 
 	public String getEmailId() {
+		if(email != null && !email.isEmpty()) {
+			email=email; //TODO added by Wasif
+		}else {
+			email="EmailNotSet"; //TODO added by Wasif
+		}
 		return email;
 	}
 
@@ -303,6 +311,32 @@ public class PaymentModel extends CommonModel {
 		this.notification_sms = notification_sms;
 	}/**/
 
+	public String getServerSuccessURL() {
+		if(serverSuccessURL != null && !serverSuccessURL.isEmpty()) {
+			//serverSuccessURL=serverSuccessURL;
+		}else {
+			serverSuccessURL="NotSet";
+		}
+		return serverSuccessURL;
+	}
+
+	public void setServerSuccessURL(String serverSuccessURL) {
+		this.serverSuccessURL = serverSuccessURL;
+	}
+
+	public String getServerFailureURL() {
+		if(serverFailureURL != null && !serverFailureURL.isEmpty()) {
+		//	serverFailureURL=serverFailureURL;
+		}else {
+			serverFailureURL="NotSet";
+		}
+		return serverFailureURL;
+	}
+
+	public void setServerFailureURL(String serverFailureURL) {
+		this.serverFailureURL = serverFailureURL;
+	}
+
 	@Override
 
 	public String toString() {
@@ -317,7 +351,8 @@ public class PaymentModel extends CommonModel {
 				+ ", bank_merchant_id=" + bank_merchant_id + ", transaction_type="+transaction_type
 				+ ", bkash_payment_number=" + bkash_payment_number + ", billing_name="+billing_name
 				+ ", device_ipaddress=" + device_ipaddress 
-
+				
+                +",serverFailureURL="+serverFailureURL+",serverSuccessURL="+serverSuccessURL
 				+ ", notification_sms=" +notification_sms
 				+ ", notification_email=" +notification_email
 				+ ", merchantModel=" + merchantModel + ", customerDetails="
