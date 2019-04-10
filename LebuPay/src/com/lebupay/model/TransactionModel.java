@@ -77,6 +77,10 @@ public class TransactionModel extends CommonModel {
 	private String bank;
 	//TODO
 	private String issuer_bank;
+	
+	private String transaction_Id_bankresp;
+	private String targetTransactionId_bankresp;
+	private String trx_transactionId_bankresp;
 
 	public Long getTransactionId() {
 		return transactionId;
@@ -669,6 +673,30 @@ public class TransactionModel extends CommonModel {
 
 	public void setIssuer_bank(String issuer_bank) {
 		this.issuer_bank = issuer_bank;
+	}
+
+	public String getTransaction_Id_bankresp() {
+		return transaction_Id_bankresp;
+	}
+
+	public void setTransaction_Id_bankresp(String transaction_Id_bankresp) {
+		this.transaction_Id_bankresp = transaction_Id_bankresp;
+	}
+
+	public String getTargetTransactionId_bankresp() {
+		return targetTransactionId_bankresp;
+	}
+
+	public void setTargetTransactionId_bankresp(String targetTransactionId_bankresp) {
+		this.targetTransactionId_bankresp = targetTransactionId_bankresp;
+	}
+
+	public String getTrx_transactionId_bankresp() {
+		return trx_transactionId_bankresp;
+	}
+
+	public void setTrx_transactionId_bankresp(String trx_transactionId_bankresp) {
+		this.trx_transactionId_bankresp = trx_transactionId_bankresp;
 	}
 
 	@Override

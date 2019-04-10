@@ -138,6 +138,14 @@ public interface TransactionService {
 	public TransactionModel fetchTransactionByTXNId (String txnID) throws Exception ;
 	
 	/**
+	 * This method is used for fetching the Transactions w.r.t txnID.
+	 * @param txnID
+	 * @return PaymentModel
+	 * @throws Exception
+	 */
+	public PaymentModel fetchTransactionByTXNId_detail (String txnID) throws Exception ;
+	
+	/**
 	 * This method is used for fetching the Transactions w.r.t ORDER_ID.
 	 * @param txnID
 	 * @return TransactionModel

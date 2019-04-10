@@ -1488,6 +1488,9 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 			pst.setDoubleAtName("GROSS_AMOUNT", transactionModel.getGrossAmount());
 			pst.setDoubleAtName("AMOUNT", transactionModel.getAmount());
 			pst.setStringAtName("BANK", transactionModel.getBank());
+			
+			
+			
 			if(transactionModel.getCard_brand().equals("bkash"))
 				pst.setStringAtName("BKASHID", transactionModel.getBkashTrxId());
 			else
@@ -1856,10 +1859,11 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					//WASIF 20181114
 					//WASIF 20190304 
 					+ "om.NOTIFICATION_EMAIL," // 31
-					+ "om.NOTIFICATION_SMS," // 32
+					+ "om.NOTIFICATION_SMS" // 32
+					/*
 					+ "om.SERVER_SUCCESS_URL," // 33
 					+ "om.SERVER_FAILURE_URL" // 34 //WASIF 20190319 
-										
+							/**/			
 					+ " from TRANSACTION_MASTER tm, MERCHANT_MASTER m, ORDER_MASTER om "
 					+ "where tm.MERCHANT_ID = m.MERCHANT_ID and tm.TXN_ID =:TXN_ID and tm.ORDER_ID = om.ORDER_ID order by tm.CREATED_DATE desc";
 
@@ -1901,6 +1905,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 
 
 				PaymentModel paymentModel = new PaymentModel();
+				
 				paymentModel.setSuccessURL(rs.getString(19));
 				paymentModel.setFailureURL(rs.getString(20));
 				paymentModel.setCustomerDetails(rs.getString(21));
@@ -1909,9 +1914,10 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 				paymentModel.setNotification_email(rs.getString(31));
 				paymentModel.setNotification_sms(rs.getString(32));
 				/**/
+				/*
 				paymentModel.setServerSuccessURL(rs.getString(33));
 				paymentModel.setServerFailureURL(rs.getString(34)); //20190319
-
+                /**/
 
 				merchantModel.setEblUserName(rs.getString(23));
 				merchantModel.setEblPassword(rs.getString(24));
@@ -1956,6 +1962,156 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 		}
 
 		return transactionModel;
+	}
+	
+	
+	/**
+	 * This method is used for fetching Transaction by TXNID. Wasif 20190320
+	 * @param txnID
+	 * @return PaymentModel
+	 * @throws Exception
+	 */
+	public PaymentModel fetchTransactionByTXNId_detail (String txnID) throws Exception {
+		
+
+		if (logger.isInfoEnabled()) {
+			logger.info("fetchTransactionByTXNId_detail -- START");
+		}
+
+		Connection connection = oracleConnection.Connect();
+		OraclePreparedStatement  pst = null;
+		TransactionModel transactionModel = null;
+		PaymentModel paymentModel = null;
+		try {
+			String sql = "select " 
+					+ "NVL(tm.GROSS_AMOUNT,tm.AMOUNT) AS AMOUNT," // 1
+					+ "tm.TXN_ID," // 2
+					+ "tm.RESPONSE_MESSAGE," // 3
+					+ "tm.RESPONSE_CODE," // 4
+					+ "tm.STATUS," // 5
+					+ "TO_CHAR(tm.CREATED_DATE,'YYYY-MM-DD HH24:MI:SS')," // 6
+					+ "om.ORDER_TRANSACTION_ID," // 7
+					+ "om.CUTOMER_DETAILS," // 8
+					//new fields
+					+ "tm.card_brand," //9
+					+ "tm.provided_card_number," //10
+					+ "tm.bank_merchant_id," //11
+					+ "tm.transaction_type," //12
+					+ "tm.enrollment_status," //13 bkash sender
+					+ "tm.customer_firstname," //14 
+					+ "tm.customer_lastname," //15
+					+ "tm.device_ipaddress," //16
+					+ "tm.bank, " //17 name of Bank
+					+ "om.SERVER_SUCCESS_URL," // 18
+					+ "om.SERVER_FAILURE_URL," // 19 //WASIF 20190319 
+					+ "om.SUCCESS_URL," // 20
+				    + "om.FAILURE_URL " // 21				
+				
+				
+					+ "from MERCHANT_MASTER m, ORDER_MASTER om,TRANSACTION_MASTER tm "
+					+ "where tm.ORDER_ID = om.ORDER_ID and om.MERCHANT_ID = m.MERCHANT_ID and tm.TXN_ID=:TXN_ID ";
+
+
+			pst = (OraclePreparedStatement) connection.prepareStatement(sql);
+			pst.setStringAtName("TXN_ID", txnID);
+
+			ResultSet rs =  pst.executeQuery();
+			while(rs.next()){
+				
+				transactionModel = new TransactionModel();
+				paymentModel = new PaymentModel();
+
+				int status = rs.getInt(5);
+				paymentModel.setServerSuccessURL(rs.getString(18)); //20190320
+				paymentModel.setServerFailureURL(rs.getString(19)); //20190320
+				paymentModel.setSuccessURL(rs.getString(20));
+				paymentModel.setFailureURL(rs.getString(21));
+              
+
+				if(status == 0 || status == 1 || status == 2) {
+					paymentModel.setTransactionStatus("Success");
+				}
+				else if(status == 3 || status == 5) {
+					paymentModel.setTransactionStatus("Cancelled");
+				}
+				else if(status == 4) {
+					paymentModel.setTransactionStatus("Incomplete");
+				}
+				
+				paymentModel.setAmount(rs.getDouble(1));
+				transactionModel.setTxnId(rs.getString(2));
+				paymentModel.setResponseMessage(rs.getString(3));
+				paymentModel.setResponseCode(rs.getString(4));
+				paymentModel.setTransactionDate(rs.getString(6));
+				paymentModel.setOrderTransactionID(rs.getString(7));
+				paymentModel.setCustomerDetails(rs.getString(8));					
+				if(status == 0 || status == 1 || status == 2) {
+					paymentModel.setBank(rs.getString(17));
+					if(rs.getString(13)== null || rs.getString(13).contains("ENROLLED")  ) {
+						paymentModel.setCard_brand(rs.getString(9));
+						paymentModel.setBank_merchant_id(rs.getString(11));
+						paymentModel.setBilling_name(rs.getString(14)+" "+rs.getString(15));
+						paymentModel.setDevice_ipaddress(rs.getString(16));	
+						paymentModel.setProvided_card_number(rs.getString(10));
+						paymentModel.setTransaction_type(rs.getString(12));
+						
+					}else{ //If bkash respond this //TODO needs to change 
+						paymentModel.setBkash_customer(rs.getString(13));
+					}
+
+				}
+
+				//TODO
+				if (logger.isInfoEnabled()) { 
+					logger.info("fetchTransactionByTXNId_detail 0,1,2 -S, 3,5-cancel, 4 incomplete status: "+rs.getString(5));
+				}
+
+				PaymentModel paymentModel3 = new PaymentModel();
+				Gson gson = new Gson();
+				paymentModel3 = gson.fromJson(paymentModel.getCustomerDetails(),PaymentModel.class);
+
+				if(Objects.nonNull(paymentModel3)) {
+					paymentModel.setName(paymentModel3.getName());
+					paymentModel.setEmailId(paymentModel3.getEmailId());
+					paymentModel.setMobileNumber(paymentModel3.getMobileNumber());
+				}
+
+				paymentModel.setCustomerDetails(null);
+
+			}				
+		} 
+		catch(Exception e) {
+			if (logger.isInfoEnabled()) { 
+				logger.info(" transactionDaoImpl -fetchTransactionByTXNId_detail responseCode: "+ e+"\n"+e.getStackTrace());			
+			}
+			e.printStackTrace();
+		} 
+		finally {
+			try{
+				if(pst != null)
+					if(!pst.isClosed())
+						pst.close();
+
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+
+			try{
+				if(connection != null)
+					if(!connection.isClosed())
+						connection.close();
+
+			}catch(Exception e){
+				e.printStackTrace();
+			}      
+		}
+
+		if (logger.isInfoEnabled()) {
+			logger.info("fetchTransactionByTXNId_detail -- END");
+		}
+
+		return paymentModel;
+	
 	}
 
 
@@ -2792,13 +2948,13 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 							
 							//TODO
 							tmpCardNumber=rs.getString(18);
-							tmpCardNumber = tmpCardNumber.substring(0,4)+'x'+'x'+tmpCardNumber.substring(6);
+							//tmpCardNumber = tmpCardNumber.substring(0,4)+'x'+'x'+tmpCardNumber.substring(6);
 							paymentModel.setProvided_card_number(tmpCardNumber); //TODO need to remove it since both can be found on trx_master now
 							paymentModel.setTransaction_type(rs.getString(17));
 						}else {
 							tmpCardNumber=rs.getString(10);
 							//TODO String purse
-							tmpCardNumber = tmpCardNumber.substring(0,4)+'x'+'x'+tmpCardNumber.substring(6);
+							//tmpCardNumber = tmpCardNumber.substring(0,4)+'x'+'x'+tmpCardNumber.substring(6);
 							paymentModel.setProvided_card_number(tmpCardNumber);						
 							paymentModel.setTransaction_type(rs.getString(12));
 						}
@@ -3400,6 +3556,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 			pst.setStringAtName("CARD_SECURITY_CODE_ERROR", transactionModel.getCardSecurityCodeError());
 			pst.setStringAtName("TIME_ZONE", transactionModel.getTimeZone());
 			pst.setStringAtName("GATEWAY_ENTRY_POINT", transactionModel.getGatewayEntryPoint());
+			
 
 
 

@@ -446,19 +446,31 @@ public class IndexController extends BaseDao implements SaltTracker {
 			model.addAttribute("sEBLUserId", transactionModel.getMerchantModel().getSeblId());/**/
 			
 			if(transactionModel.getMerchantModel().getCityMerchantId() != null && !transactionModel.getMerchantModel().getCityMerchantId().isEmpty() ) {
-				model.addAttribute("CITY", true);
+				//model.addAttribute("CITY", true);
+				model.addAttribute("CITY", "Y");
+				System.out.println("--=== City true");
 			}else {
-				model.addAttribute("CITY", false);
+				//model.addAttribute("CITY", false);
+				model.addAttribute("CITY", "N");
+				System.out.println("--=== City false");
 			}
 			if(transactionModel.getMerchantModel().getEblUserName() !=null && !transactionModel.getMerchantModel().getEblUserName().isEmpty()) {
-				model.addAttribute("EBL", true);
+				//model.addAttribute("EBL", true);
+				model.addAttribute("EBL", "Y");
+				System.out.println("--=== EBL true");
 			}else {
-				model.addAttribute("EBL", false);
+				//model.addAttribute("EBL", false);
+				model.addAttribute("EBL", "N");
+				System.out.println("--=== EBL false");
 			}
 			if(transactionModel.getMerchantModel().getSeblUserName() !=null && !transactionModel.getMerchantModel().getSeblUserName().isEmpty()) {
-				model.addAttribute("SEBL", true);
+				//model.addAttribute("SEBL", true);
+				model.addAttribute("SEBL", "Y");
+				System.out.println("--=== SEBL true");
 			}else {
-				model.addAttribute("SEBL", false);
+				//model.addAttribute("SEBL", false);
+				model.addAttribute("SEBL", "N");
+				System.out.println("--=== SEBL true");
 			}
 			
 			

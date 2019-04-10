@@ -514,6 +514,27 @@ public Object[][] exportAllTransactionsForExcelByMerchantId(DataTableModel dataT
 	}
 	
 	/**
+	 * This method is used for fetching the Transactions w.r.t txnID.
+	 * @param txnID
+	 * @return TransactionModel
+	 * @throws Exception
+	 */
+	public PaymentModel fetchTransactionByTXNId_detail (String txnID) throws Exception {
+		
+		if (logger.isInfoEnabled()) {
+			logger.info("fetchTransactionByTXNId_detail -- START");
+		}
+		
+		PaymentModel paymentModel = transactionDao.fetchTransactionByTXNId_detail(txnID);
+		
+		if (logger.isInfoEnabled()) {
+			logger.info("fetchTransactionByTXNId_detail -- END");
+	   }
+		
+		return paymentModel;
+	}
+	
+	/**
 	 * This method is used for fetching the Transactions w.r.t OREDR_ID.
 	 * @param txnID
 	 * @return TransactionModel
