@@ -199,7 +199,7 @@ $(document).ready(function(){
 				                                	<li class="card_logos"><a href="ebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/visa.png" alt="visa card"></a></li>
 				                                    <li class="card_logos"><a href="ebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/mastercard.png" alt="master card"></a></li>
 				                                    <li class="card_logos diner"><a href="ebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/diners_club.png" alt="diners club"></a></li>
-				                                    <li id="bkash_hov" class="card_logos"><a href="bkash?transactionId=${transactionId1 }"><img src="resources/images/bkash_v2.png" style= "width: 25px" alt="bkash"></a></li>
+				                                    <li id="bkash_hov" class="card_logos"><a href="bkash?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/bkash.png" style= "width: 25px" alt="bkash"></a></li>
 				                                </ul>
 			                                </div>
 			                            </div>                   

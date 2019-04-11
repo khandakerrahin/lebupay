@@ -13,15 +13,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
-import oracle.jdbc.OraclePreparedStatement;
-
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import com.google.gson.Gson;
 import com.lebupay.common.Util;
 import com.lebupay.dao.TransactionDAO;
-import com.lebupay.logwriter.Logwriter;
 import com.lebupay.model.CardTypePercentageModel;
 import com.lebupay.model.CityBankTransactionModel;
 import com.lebupay.model.DataTableModel;
@@ -29,6 +26,8 @@ import com.lebupay.model.MerchantModel;
 import com.lebupay.model.PaymentModel;
 import com.lebupay.model.Status;
 import com.lebupay.model.TransactionModel;
+
+import oracle.jdbc.OraclePreparedStatement;
  
 /**
  * This is TransactionDaoImpl extends BaseDao and Implements TransactionDAO Interface used to perform operation on Transaction.
