@@ -1057,6 +1057,9 @@ public class PaymentController extends BaseDao implements SaltTracker {
 					transactionModel.setDescription(cityOrderID);
 					transactionModel.setNameOnCard(cardHolderName);
 					transactionModel.setCustomer_firstName(name);
+				
+					
+									
 
 					int result = transactionServiceImpl.updateCalcelledTransactionAfterCityPayment(transactionModel, 5);
 
