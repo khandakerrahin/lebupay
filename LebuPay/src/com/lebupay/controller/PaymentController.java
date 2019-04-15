@@ -1869,6 +1869,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			while ((inputLine = in.readLine()) != null) {
 				response2.append(inputLine);
 			}
+			//write json log here
 			System.out.println("3rd json response: " + response2);
 			in.close();
 			
@@ -1877,7 +1878,9 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			
 			Map<String, Object> respMap = toMap(json2);
 			
+			
 			String successJsonStr = successJsonEbl(response2.toString());
+			//write success transaction log here
 			JsonObject successJson = (JsonObject) parser.parse(successJsonStr);
 			Map<String, Object> successJsonMap = toMap(successJson);
 
@@ -1916,10 +1919,6 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 			JsonObject sourceOfFunds1 = json2.getAsJsonObject("sourceOfFunds");
 			JsonObject provided = sourceOfFunds1.getAsJsonObject("provided");
-			
-			
-
-
 			JsonObject cardData = provided.getAsJsonObject("card");
 			String fundingMethod = "";
 			if(cardData.has("fundingMethod")) {
@@ -1932,12 +1931,13 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			
 			String issuer = cardData.get("issuer").getAsString() != null ? cardData.get("issuer").getAsString() : "";
 
-			JsonObject device = json2.getAsJsonObject("device");
+			
+			
+			JsonObject device = successJson.getAsJsonObject("device");
 			String browser = device.get("browser").getAsString() != null ? device.get("browser").getAsString() : "";
-			String ipAddress = device.get("ipAddress").getAsString() != null ? device.get("ipAddress").getAsString() : "";
+			JsonObject device1 = json2.getAsJsonObject("device");
+			String ipAddress = device1.get("ipAddress").getAsString() != null ? device.get("ipAddress").getAsString() : "";
 
-
-			JsonObject responseJson = json2.getAsJsonObject("response");
 
 			JsonObject sourceOfFundSuccess = successJson.getAsJsonObject("sourceOfFunds");
 			JsonObject providedSuccess = sourceOfFundSuccess.getAsJsonObject("provided");
@@ -2016,7 +2016,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			String acquirerMessage = responseJson1.get("acquirerMessage").getAsString();
 			String totalAuthorizedAmount = json2.get("totalAuthorizedAmount").getAsString() != null ? json2.get("totalAuthorizedAmount").getAsString() : "";
 			
-			String resulting = json2.get("totalAuthorizedAmount").getAsString();
+			String resultJson = json2.get("result").getAsString();
 
 			try {
 				// logwrite.writeLog
@@ -2034,7 +2034,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			// TODO
 
 			if (json2.has("result")) {
-				if (json2.get("result").getAsString().equals("SUCCESS")) {
+				if (resultJson.equals("SUCCESS")) {
 
 					System.out.println("SUCCESS");
 
@@ -2110,10 +2110,10 @@ public class PaymentController extends BaseDao implements SaltTracker {
 						transactionModel.setProcessingCode(processingCode);
 						transactionModel.setExpiry_month(expiryMonth);
 						transactionModel.setSecure_xid(xid);
-						System.out.println("xid: " + transactionModel.getSecure_xid());
+//						System.out.println("xid: " + transactionModel.getSecure_xid());
 						transactionModel
 								.setEnrollmentStatus(enrollmentStatus);
-						System.out.println("setEnrollmentStatus: " + transactionModel.getEnrollmentStatus());
+//						System.out.println("setEnrollmentStatus: " + transactionModel.getEnrollmentStatus());
 						transactionModel.setCardSecurityCodeError(cardSecurityCodeError);
 						transactionModel.setTimeZone(timeZone);
 						transactionModel.setGatewayEntryPoint(gatewayEntryPoint);
