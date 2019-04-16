@@ -75,12 +75,14 @@ public class TransactionModel extends CommonModel {
 	private Double grossAmount;
 	private String bkashTrxId;
 	private String bank;
-	//TODO
+	// TODO
 	private String issuer_bank;
-	
+
 	private String transaction_Id_bankresp;
 	private String targetTransactionId_bankresp;
 	private String trx_transactionId_bankresp;
+
+	private String logo = "wetopup.png"; // changed by ajmain
 
 	public Long getTransactionId() {
 		return transactionId;
@@ -121,7 +123,7 @@ public class TransactionModel extends CommonModel {
 	public void setTxnId(String txnId) {
 		this.txnId = txnId;
 	}
-	
+
 	public String getResponseMessage() {
 		return responseMessage;
 	}
@@ -286,8 +288,7 @@ public class TransactionModel extends CommonModel {
 		return cardSecurityCode_gatewayCode;
 	}
 
-	public void setCardSecurityCode_gatewayCode(
-			String cardSecurityCode_gatewayCode) {
+	public void setCardSecurityCode_gatewayCode(String cardSecurityCode_gatewayCode) {
 		this.cardSecurityCode_gatewayCode = cardSecurityCode_gatewayCode;
 	}
 
@@ -370,7 +371,7 @@ public class TransactionModel extends CommonModel {
 	public void setSourceOfFunds_type(String sourceOfFunds_type) {
 		this.sourceOfFunds_type = sourceOfFunds_type;
 	}
-	
+
 	public String getDevice_browser() {
 		return device_browser;
 	}
@@ -456,17 +457,17 @@ public class TransactionModel extends CommonModel {
 	}
 
 	public void setCustomer_email(String customer_email) {
-		this.customer_email= customer_email;
+		this.customer_email = customer_email;
 	}
-	
+
 	public String getCustomerDetails() {
-		 return customer_details;
+		return customer_details;
 	}
-	
+
 	public void setCustomerDetails(String customer_details) {
-		this.customer_details= customer_details;
+		this.customer_details = customer_details;
 	}
-	
+
 	public String getTotalRefundedAmount() {
 		return totalRefundedAmount;
 	}
@@ -699,63 +700,48 @@ public class TransactionModel extends CommonModel {
 		this.trx_transactionId_bankresp = trx_transactionId_bankresp;
 	}
 
+	public String getLogo() { // added by ajmain
+		return logo;
+	}
+
+	public void setLogo(String logo) { // added by ajmain
+		this.logo = logo;
+	}
+
 	@Override
 	public String toString() {
-		return "TransactionModel [transactionId=" + transactionId + ", amount="
-				+ amount + ", balance=" + balance + ", merchantModel="
-				+ merchantModel + ", txnId=" + txnId + ", responseMessage="
-				+ responseMessage + ", loyaltyPoint=" + loyaltyPoint
-				+ ", transactionStatus=" + transactionStatus + ", order_id="
-				+ order_id + ", authorizationResponse_date="
-				+ authorizationResponse_date + ", totalCapturedAmount="
-				+ totalCapturedAmount + ", fundingMethod=" + fundingMethod
-				+ ", acquirerMessage=" + acquirerMessage
-				+ ", financialNetworkCode=" + financialNetworkCode
-				+ ", transactionIdentifier=" + transactionIdentifier
-				+ ", nameOnCard=" + nameOnCard + ", card_expiry_year="
-				+ card_expiry_year + ", authorizationResponse_time="
-				+ authorizationResponse_time + ", transaction_currency="
-				+ transaction_currency + ", SecureId=" + SecureId
-				+ ", acquirerCode=" + acquirerCode
-				+ ", authorizationResponse_stan=" + authorizationResponse_stan
-				+ ", merchantId=" + merchantId + ", totalAuthorizedAmount="
-				+ totalAuthorizedAmount + ", provided_card_number="
-				+ provided_card_number + ", cardSecurityCode_gatewayCode="
-				+ cardSecurityCode_gatewayCode + ", authenticationToken="
-				+ authenticationToken + ", transaction_receipt="
-				+ transaction_receipt + ", response_gatewayCode="
-				+ response_gatewayCode + ", order_status=" + order_status
-				+ ", acquirer_date=" + acquirer_date + ", transaction_id="
-				+ transaction_id + ", version=" + version
-				+ ", commercialCardIndicator=" + commercialCardIndicator
-				+ ", card_brand=" + card_brand + ", sourceOfFunds_type="
-				+ sourceOfFunds_type + ", customer_firstName="
-				+ customer_firstName + ", device_browser=" + device_browser
-				+ ", device_ipAddress=" + device_ipAddress + ", acsEci_value="
-				+ acsEci_value + ", acquirer_id=" + acquirer_id
-				+ ", settlementDate=" + settlementDate
-				+ ", transaction_source=" + transaction_source + ", result="
-				+ result + ", creationTime=" + creationTime
-				+ ", customer_lastName=" + customer_lastName
-				+ ", totalRefundedAmount=" + totalRefundedAmount
-				+ ", acquirer_batch=" + acquirer_batch + ", description="
-				+ description + ", transaction_type=" + transaction_type
-				+ ", financialNetworkDate=" + financialNetworkDate
-				+ ", responseCode=" + responseCode + ", transaction_frequency="
-				+ transaction_frequency + ", transaction_terminal="
-				+ transaction_terminal + ", authorizationCode="
-				+ authorizationCode + ", authenticationStatus="
-				+ authenticationStatus + ", processingCode=" + processingCode
-				+ ",issuer_bank="+issuer_bank //TODO Added By Wasif
-				+ ", expiry_month=" + expiry_month + ", secure_xid="
-				+ secure_xid + ", enrollmentStatus=" + enrollmentStatus
-				+ ", cardSecurityCodeError=" + cardSecurityCodeError
-				+ ", timeZone=" + timeZone + ", gatewayEntryPoint="
-				+ gatewayEntryPoint + ", successIndicator=" + successIndicator
-				+ ", paymentModel=" + paymentModel + ", transaction="
-				+ transaction + ", cardPercentage=" + cardPercentage
-				+ ", type=" + type + ", grossAmount=" + grossAmount
-				+ ", bkashTrxId=" + bkashTrxId + ", bank=" + bank + "]";
+		return "TransactionModel [transactionId=" + transactionId + ", amount=" + amount + ", balance=" + balance
+				+ ", merchantModel=" + merchantModel + ", txnId=" + txnId + ", responseMessage=" + responseMessage
+				+ ", loyaltyPoint=" + loyaltyPoint + ", transactionStatus=" + transactionStatus + ", order_id="
+				+ order_id + ", authorizationResponse_date=" + authorizationResponse_date + ", totalCapturedAmount="
+				+ totalCapturedAmount + ", fundingMethod=" + fundingMethod + ", acquirerMessage=" + acquirerMessage
+				+ ", financialNetworkCode=" + financialNetworkCode + ", transactionIdentifier=" + transactionIdentifier
+				+ ", nameOnCard=" + nameOnCard + ", card_expiry_year=" + card_expiry_year
+				+ ", authorizationResponse_time=" + authorizationResponse_time + ", transaction_currency="
+				+ transaction_currency + ", SecureId=" + SecureId + ", acquirerCode=" + acquirerCode
+				+ ", authorizationResponse_stan=" + authorizationResponse_stan + ", merchantId=" + merchantId
+				+ ", totalAuthorizedAmount=" + totalAuthorizedAmount + ", provided_card_number=" + provided_card_number
+				+ ", cardSecurityCode_gatewayCode=" + cardSecurityCode_gatewayCode + ", authenticationToken="
+				+ authenticationToken + ", transaction_receipt=" + transaction_receipt + ", response_gatewayCode="
+				+ response_gatewayCode + ", order_status=" + order_status + ", acquirer_date=" + acquirer_date
+				+ ", transaction_id=" + transaction_id + ", version=" + version + ", commercialCardIndicator="
+				+ commercialCardIndicator + ", card_brand=" + card_brand + ", sourceOfFunds_type=" + sourceOfFunds_type
+				+ ", customer_firstName=" + customer_firstName + ", device_browser=" + device_browser
+				+ ", device_ipAddress=" + device_ipAddress + ", acsEci_value=" + acsEci_value + ", acquirer_id="
+				+ acquirer_id + ", settlementDate=" + settlementDate + ", transaction_source=" + transaction_source
+				+ ", result=" + result + ", creationTime=" + creationTime + ", customer_lastName=" + customer_lastName
+				+ ", totalRefundedAmount=" + totalRefundedAmount + ", acquirer_batch=" + acquirer_batch
+				+ ", description=" + description + ", transaction_type=" + transaction_type + ", financialNetworkDate="
+				+ financialNetworkDate + ", responseCode=" + responseCode + ", transaction_frequency="
+				+ transaction_frequency + ", transaction_terminal=" + transaction_terminal + ", authorizationCode="
+				+ authorizationCode + ", authenticationStatus=" + authenticationStatus + ", processingCode="
+				+ processingCode + ",issuer_bank=" + issuer_bank // TODO Added By Wasif
+				+ ", expiry_month=" + expiry_month + ", secure_xid=" + secure_xid + ", enrollmentStatus="
+				+ enrollmentStatus + ", cardSecurityCodeError=" + cardSecurityCodeError + ", timeZone=" + timeZone
+				+ ", gatewayEntryPoint=" + gatewayEntryPoint + ", successIndicator=" + successIndicator
+				+ ", paymentModel=" + paymentModel + ", transaction=" + transaction + ", cardPercentage="
+				+ cardPercentage + ", type=" + type + ", grossAmount=" + grossAmount + ", bkashTrxId=" + bkashTrxId
+				+ ", bank=" + bank + ", logo=" + logo + "]";
 	}
 
 }

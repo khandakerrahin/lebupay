@@ -9,8 +9,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -1610,189 +1612,189 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	}
 
 	/*
-	  public String ebl(HttpServletRequest request, Model model, @RequestParam
-	  String transactionId, HttpServletResponse response, final RedirectAttributes
-	  redirectAttributes) {
-	  
-	  if (logger.isInfoEnabled()) { logger.info("ebl -- START"); }
-	  
-	  String path = request.getContextPath(); String basePath = request.getScheme()
-	  + "://" + request.getServerName() + ":" + request.getServerPort() + path +
-	  "/"; Map<String, String> argsMap = new HashMap<String, String>(); Long
-	  transactionId1 = 0L; TransactionModel transactionModel2 = null;
-	  
-	  try {
-	  
-	  System.out.println("SESSIONKEY Before Decode== >> " + transactionId); String
-	  key = messageUtil.getBundle("secret.key"); transactionId1 =
-	  Long.parseLong(encryption.decode(key, transactionId));
-	  System.out.println("TransactionId After Decode== >> " + transactionId1);
-	  
-	  try { //TODO //logwrite.writeLog writeLogV2(0L,"EBL GET",1,
-	  "trxID:"+transactionId1+",SESSIONKEY:"+transactionId); } catch (Exception e1)
-	  { // Auto-generated catch block e1.printStackTrace(); } transactionModel2 =
-	  transactionService.fetchTransactionById(transactionId1);
-	  
-	  } catch (Exception e) {
-	  
-	  model.addAttribute("transactionidInvalid",
-	 messageUtil.getBundle("transactionid.invalid")); return
-	  "redirect:/link-pay?SESSIONKEY=" + transactionId; }
-	  
-	  if (Objects.isNull(transactionModel2)) {
-	  model.addAttribute("transactionidInvalid",
-	  messageUtil.getBundle("transactionid.invalid")); return
-	  "redirect:/link-pay?SESSIONKEY=" + transactionId;
-	  
-	  } else {
-	  
-	  if (transactionModel2.getTransactionStatus() == 0 ||
-	  transactionModel2.getTransactionStatus() == 1 ||
-	  transactionModel2.getTransactionStatus() == 2) { // Already Paid
-	  
-	  redirectAttributes.addFlashAttribute("failure",
-	  messageUtil.getBundle("already.paid")); return "redirect:/failure?orderId=" +
-	  transactionModel2.getTxnId();
-	  
-	  } else if (transactionModel2.getTransactionStatus() == 3) { // Failed
-	  
-	  redirectAttributes.addFlashAttribute("failure",
-	  messageUtil.getBundle("transaction.failed")); return
-	  "redirect:/failure?orderId=" + transactionModel2.getTxnId();
-	  
-	  } }
-	  
-	  transactionModelSaltTracker.setTxnId(transactionModel2.getTxnId());
-	  argsMap.put("apiOperation", "CREATE_CHECKOUT_SESSION");
-	  argsMap.put("order.id", transactionModel2.getTxnId());
-	  argsMap.put("order.currency", "BDT"); argsMap.put("order.amount",
-	  String.valueOf(transactionModel2.getAmount()));
-	  //argsMap.put("order.description", "Order%20from%20LebuPay");
-	  argsMap.put("order.description", "OrderFromLebuPay");// Change by Wasif
-	  20190402 argsMap.put("interaction.displayControl.billingAddress", "HIDE");
-	  argsMap.put("interaction.merchant.name", "Lebupay");
-	  argsMap.put("interaction.displayControl.orderSummary", "HIDE"); //
-	  argsMap.put("interaction.returnUrl", basePath + "retriveOrder");
-	  argsMap.put("interaction.returnUrl", basePath + "retriveOrder?orderId=" +
-	  transactionModel2.getTxnId()); //TODO Wasif 20190223
-	  argsMap.put("interaction.cancelUrl", basePath + "failure?orderId=" +
-	  transactionModel2.getTxnId());
-	  
-	  argsMap.put("merchant", transactionModel2.getMerchantModel().getEblId());
-	  argsMap.put("apiPassword",
-	  transactionModel2.getMerchantModel().getEblPassword());
-	  argsMap.put("apiUsername",
-	  transactionModel2.getMerchantModel().getEblUserName());
-	  
-	  String requestURL = messageUtil.getBundle("ebi.first.url");
-	  System.out.println("requestURL ==>> " + requestURL);
-	  
-	  
-	  try { //logwrite.writeLog writeLogV2(0L,"EBL CREATE_CHECKOUT_SESSION GET",1,
-	  "trxid:"+transactionId1+",CREATE_CHECKOUT_SESSION, REQ MAP :"+argsMap.
-	  toString()); } catch (Exception e1) { // Auto-generated catch block
-	  e1.printStackTrace(); } try {
-	  
-	  HTTPConnection.sendPostRequest(requestURL, argsMap); String[] resp =
-	  HTTPConnection.readMultipleLinesRespone();
-	  
-	  
-	  URL url = new URL(
-	  "https://easternbank.test.gateway.mastercard.com/api/rest/version/43/merchant/"
-	  +transactionModel2.getMerchantModel().getEblId()+"/session");
-	  
-	  String authStr = transactionModel2.getMerchantModel().getEblUserName() + ":"
-	  + transactionModel2.getMerchantModel().getEblPassword(); String authEncoded =
-	  Base64.encode(authStr); HttpURLConnection http = (HttpURLConnection)
-	  url.openConnection(); http.setRequestMethod("POST");
-	  http.setRequestProperty("Authorization", "Basic " + authEncoded);
-	  http.setDoOutput(true);
-	  
-	  
-	  JsonObject mainJson = new JsonObject(); JsonObject orderJson = new
-	  JsonObject(); JsonObject interaction = new JsonObject(); JsonObject
-	  displayControl = new JsonObject(); JsonObject merchant = new JsonObject();
-	  
-	  mainJson.addProperty("apiOperation", "CREATE_CHECKOUT_SESSION");
-	  
-	  orderJson.addProperty("id", transactionModel2.getTxnId()+"fsdf");
-	  orderJson.addProperty("currency", "BDT"); orderJson.addProperty("amount",
-	  String.valueOf(transactionModel2.getAmount()));
-	  orderJson.addProperty("description", "OrderFromLebuPay");
-	  
-	  displayControl.addProperty("billingAddress", "HIDE");
-	  displayControl.addProperty("orderSummary", "HIDE");
-	 
-	  merchant.addProperty("name", "Lebupay");
-	  
-	  interaction.add("displayControl", displayControl);
-	  interaction.add("merchant", merchant); interaction.addProperty("returnUrl",
-	 basePath + "retriveOrder?orderId=" + transactionModel2.getTxnId());
-	  interaction.addProperty("cancelUrl", basePath + "failure?orderId=" +
-	  transactionModel2.getTxnId());
-	  
-	  
-	  mainJson.add("order", orderJson); mainJson.add("interaction", interaction);
-	  
-	  
-	  String data1 = mainJson.toString(); DataOutputStream dos = new
-	  DataOutputStream(http.getOutputStream()); dos.writeBytes(data1); dos.flush();
-	  dos.close(); System.out.println("Json data: " + data1);
-	  
-	  
-	  String res_status = http.getResponseMessage(); BufferedReader in = new
-	  BufferedReader(new InputStreamReader(http.getInputStream())); String
-	  inputLine; StringBuffer response1 = new StringBuffer(); while ((inputLine =
-	  in.readLine()) != null) { response1.append(inputLine); }
-	  System.out.println("Json resp: " + response1); in.close();
-	 
-	  
-	  
-	  String[] respArr = resp[0].split("&");
-	  
-	  HashMap<String, String> respMap = new HashMap<String, String>(); for (String
-	  line : respArr) {
-	  
-	  String[] respPart = line.split("="); respMap.put(respPart[0], respPart[1]); }
-	  
-	  try { //TODO //logwrite.writeLog
-	  writeLogV2(0L,"EBL CREATE_CHECKOUT_SESSION GET",2,
-	  "trxid:"+transactionId1+",CREATE_CHECKOUT_SESSION, resp Map :"+respMap.
-	  toString()); } catch (Exception e1) { // Auto-generated catch block
-	  e1.printStackTrace(); }
-	  
-	  if (respMap.containsKey("result")) { if
-	  (respMap.get("result").equals("SUCCESS")) {
-	  
-	  System.out.println("SUCCESS"); String secondAPI =
-	  messageUtil.getBundle("ebi.second.url") + respMap.get("session.id");
-	  System.out.println("secondAPI ==>> " + secondAPI);
-	  
-	  try { //TODO //logwrite.writeLog writeLogV2(0L,"EBL 2nd API GET",1,
-	  "trxid:"+transactionId1+",secondAPI, request session :"+respMap.get(
-	  "session.id")); } catch (Exception e1) { // Auto-generated catch block
-	  e1.printStackTrace(); } response.sendRedirect(secondAPI); } else {
-	  
-	  System.out.println("Failure");
-	  redirectAttributes.addFlashAttribute("failure",
-	  messageUtil.getBundle("transaction.failed")); return
-	  "redirect:/failure?orderId=" + transactionModel2.getTxnId(); } } else {
-	  
-	  System.out.println("No Response");
-	 redirectAttributes.addFlashAttribute("failure",
-	  messageUtil.getBundle("transaction.failed")); return
-	  "redirect:/failure?orderId=" + transactionModel2.getTxnId(); }
-	  
-	  } catch (IOException ex) { ex.printStackTrace();
-	  redirectAttributes.addFlashAttribute("failure",
-	  messageUtil.getBundle("transaction.failed")); return
-	  "redirect:/failure?orderId=" + transactionModel2.getTxnId(); }
-	  
-	  HTTPConnection.disconnect();
-	  
-	  if (logger.isInfoEnabled()) { logger.info("ebl -- END"); }
-	  
-	  return null; }
+	 * public String ebl(HttpServletRequest request, Model model, @RequestParam
+	 * String transactionId, HttpServletResponse response, final RedirectAttributes
+	 * redirectAttributes) {
+	 * 
+	 * if (logger.isInfoEnabled()) { logger.info("ebl -- START"); }
+	 * 
+	 * String path = request.getContextPath(); String basePath = request.getScheme()
+	 * + "://" + request.getServerName() + ":" + request.getServerPort() + path +
+	 * "/"; Map<String, String> argsMap = new HashMap<String, String>(); Long
+	 * transactionId1 = 0L; TransactionModel transactionModel2 = null;
+	 * 
+	 * try {
+	 * 
+	 * System.out.println("SESSIONKEY Before Decode== >> " + transactionId); String
+	 * key = messageUtil.getBundle("secret.key"); transactionId1 =
+	 * Long.parseLong(encryption.decode(key, transactionId));
+	 * System.out.println("TransactionId After Decode== >> " + transactionId1);
+	 * 
+	 * try { //TODO //logwrite.writeLog writeLogV2(0L,"EBL GET",1,
+	 * "trxID:"+transactionId1+",SESSIONKEY:"+transactionId); } catch (Exception e1)
+	 * { // Auto-generated catch block e1.printStackTrace(); } transactionModel2 =
+	 * transactionService.fetchTransactionById(transactionId1);
+	 * 
+	 * } catch (Exception e) {
+	 * 
+	 * model.addAttribute("transactionidInvalid",
+	 * messageUtil.getBundle("transactionid.invalid")); return
+	 * "redirect:/link-pay?SESSIONKEY=" + transactionId; }
+	 * 
+	 * if (Objects.isNull(transactionModel2)) {
+	 * model.addAttribute("transactionidInvalid",
+	 * messageUtil.getBundle("transactionid.invalid")); return
+	 * "redirect:/link-pay?SESSIONKEY=" + transactionId;
+	 * 
+	 * } else {
+	 * 
+	 * if (transactionModel2.getTransactionStatus() == 0 ||
+	 * transactionModel2.getTransactionStatus() == 1 ||
+	 * transactionModel2.getTransactionStatus() == 2) { // Already Paid
+	 * 
+	 * redirectAttributes.addFlashAttribute("failure",
+	 * messageUtil.getBundle("already.paid")); return "redirect:/failure?orderId=" +
+	 * transactionModel2.getTxnId();
+	 * 
+	 * } else if (transactionModel2.getTransactionStatus() == 3) { // Failed
+	 * 
+	 * redirectAttributes.addFlashAttribute("failure",
+	 * messageUtil.getBundle("transaction.failed")); return
+	 * "redirect:/failure?orderId=" + transactionModel2.getTxnId();
+	 * 
+	 * } }
+	 * 
+	 * transactionModelSaltTracker.setTxnId(transactionModel2.getTxnId());
+	 * argsMap.put("apiOperation", "CREATE_CHECKOUT_SESSION");
+	 * argsMap.put("order.id", transactionModel2.getTxnId());
+	 * argsMap.put("order.currency", "BDT"); argsMap.put("order.amount",
+	 * String.valueOf(transactionModel2.getAmount()));
+	 * //argsMap.put("order.description", "Order%20from%20LebuPay");
+	 * argsMap.put("order.description", "OrderFromLebuPay");// Change by Wasif
+	 * 20190402 argsMap.put("interaction.displayControl.billingAddress", "HIDE");
+	 * argsMap.put("interaction.merchant.name", "Lebupay");
+	 * argsMap.put("interaction.displayControl.orderSummary", "HIDE"); //
+	 * argsMap.put("interaction.returnUrl", basePath + "retriveOrder");
+	 * argsMap.put("interaction.returnUrl", basePath + "retriveOrder?orderId=" +
+	 * transactionModel2.getTxnId()); //TODO Wasif 20190223
+	 * argsMap.put("interaction.cancelUrl", basePath + "failure?orderId=" +
+	 * transactionModel2.getTxnId());
+	 * 
+	 * argsMap.put("merchant", transactionModel2.getMerchantModel().getEblId());
+	 * argsMap.put("apiPassword",
+	 * transactionModel2.getMerchantModel().getEblPassword());
+	 * argsMap.put("apiUsername",
+	 * transactionModel2.getMerchantModel().getEblUserName());
+	 * 
+	 * String requestURL = messageUtil.getBundle("ebi.first.url");
+	 * System.out.println("requestURL ==>> " + requestURL);
+	 * 
+	 * 
+	 * try { //logwrite.writeLog writeLogV2(0L,"EBL CREATE_CHECKOUT_SESSION GET",1,
+	 * "trxid:"+transactionId1+",CREATE_CHECKOUT_SESSION, REQ MAP :"+argsMap.
+	 * toString()); } catch (Exception e1) { // Auto-generated catch block
+	 * e1.printStackTrace(); } try {
+	 * 
+	 * HTTPConnection.sendPostRequest(requestURL, argsMap); String[] resp =
+	 * HTTPConnection.readMultipleLinesRespone();
+	 * 
+	 * 
+	 * URL url = new URL(
+	 * "https://easternbank.test.gateway.mastercard.com/api/rest/version/43/merchant/"
+	 * +transactionModel2.getMerchantModel().getEblId()+"/session");
+	 * 
+	 * String authStr = transactionModel2.getMerchantModel().getEblUserName() + ":"
+	 * + transactionModel2.getMerchantModel().getEblPassword(); String authEncoded =
+	 * Base64.encode(authStr); HttpURLConnection http = (HttpURLConnection)
+	 * url.openConnection(); http.setRequestMethod("POST");
+	 * http.setRequestProperty("Authorization", "Basic " + authEncoded);
+	 * http.setDoOutput(true);
+	 * 
+	 * 
+	 * JsonObject mainJson = new JsonObject(); JsonObject orderJson = new
+	 * JsonObject(); JsonObject interaction = new JsonObject(); JsonObject
+	 * displayControl = new JsonObject(); JsonObject merchant = new JsonObject();
+	 * 
+	 * mainJson.addProperty("apiOperation", "CREATE_CHECKOUT_SESSION");
+	 * 
+	 * orderJson.addProperty("id", transactionModel2.getTxnId()+"fsdf");
+	 * orderJson.addProperty("currency", "BDT"); orderJson.addProperty("amount",
+	 * String.valueOf(transactionModel2.getAmount()));
+	 * orderJson.addProperty("description", "OrderFromLebuPay");
+	 * 
+	 * displayControl.addProperty("billingAddress", "HIDE");
+	 * displayControl.addProperty("orderSummary", "HIDE");
+	 * 
+	 * merchant.addProperty("name", "Lebupay");
+	 * 
+	 * interaction.add("displayControl", displayControl);
+	 * interaction.add("merchant", merchant); interaction.addProperty("returnUrl",
+	 * basePath + "retriveOrder?orderId=" + transactionModel2.getTxnId());
+	 * interaction.addProperty("cancelUrl", basePath + "failure?orderId=" +
+	 * transactionModel2.getTxnId());
+	 * 
+	 * 
+	 * mainJson.add("order", orderJson); mainJson.add("interaction", interaction);
+	 * 
+	 * 
+	 * String data1 = mainJson.toString(); DataOutputStream dos = new
+	 * DataOutputStream(http.getOutputStream()); dos.writeBytes(data1); dos.flush();
+	 * dos.close(); System.out.println("Json data: " + data1);
+	 * 
+	 * 
+	 * String res_status = http.getResponseMessage(); BufferedReader in = new
+	 * BufferedReader(new InputStreamReader(http.getInputStream())); String
+	 * inputLine; StringBuffer response1 = new StringBuffer(); while ((inputLine =
+	 * in.readLine()) != null) { response1.append(inputLine); }
+	 * System.out.println("Json resp: " + response1); in.close();
+	 * 
+	 * 
+	 * 
+	 * String[] respArr = resp[0].split("&");
+	 * 
+	 * HashMap<String, String> respMap = new HashMap<String, String>(); for (String
+	 * line : respArr) {
+	 * 
+	 * String[] respPart = line.split("="); respMap.put(respPart[0], respPart[1]); }
+	 * 
+	 * try { //TODO //logwrite.writeLog
+	 * writeLogV2(0L,"EBL CREATE_CHECKOUT_SESSION GET",2,
+	 * "trxid:"+transactionId1+",CREATE_CHECKOUT_SESSION, resp Map :"+respMap.
+	 * toString()); } catch (Exception e1) { // Auto-generated catch block
+	 * e1.printStackTrace(); }
+	 * 
+	 * if (respMap.containsKey("result")) { if
+	 * (respMap.get("result").equals("SUCCESS")) {
+	 * 
+	 * System.out.println("SUCCESS"); String secondAPI =
+	 * messageUtil.getBundle("ebi.second.url") + respMap.get("session.id");
+	 * System.out.println("secondAPI ==>> " + secondAPI);
+	 * 
+	 * try { //TODO //logwrite.writeLog writeLogV2(0L,"EBL 2nd API GET",1,
+	 * "trxid:"+transactionId1+",secondAPI, request session :"+respMap.get(
+	 * "session.id")); } catch (Exception e1) { // Auto-generated catch block
+	 * e1.printStackTrace(); } response.sendRedirect(secondAPI); } else {
+	 * 
+	 * System.out.println("Failure");
+	 * redirectAttributes.addFlashAttribute("failure",
+	 * messageUtil.getBundle("transaction.failed")); return
+	 * "redirect:/failure?orderId=" + transactionModel2.getTxnId(); } } else {
+	 * 
+	 * System.out.println("No Response");
+	 * redirectAttributes.addFlashAttribute("failure",
+	 * messageUtil.getBundle("transaction.failed")); return
+	 * "redirect:/failure?orderId=" + transactionModel2.getTxnId(); }
+	 * 
+	 * } catch (IOException ex) { ex.printStackTrace();
+	 * redirectAttributes.addFlashAttribute("failure",
+	 * messageUtil.getBundle("transaction.failed")); return
+	 * "redirect:/failure?orderId=" + transactionModel2.getTxnId(); }
+	 * 
+	 * HTTPConnection.disconnect();
+	 * 
+	 * if (logger.isInfoEnabled()) { logger.info("ebl -- END"); }
+	 * 
+	 * return null; }
 	 * 
 	 */
 
@@ -1806,7 +1808,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	 * @return String
 	 */
 	@RequestMapping(value = "/retriveOrder", method = RequestMethod.GET)
-	
+
 	public String retriveOrder(HttpServletRequest request, Model model, HttpServletResponse response,
 			@RequestParam(required = false) String orderId, final RedirectAttributes redirectAttributes) {
 
@@ -1848,7 +1850,6 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			returnURL = "redirect:/failure?orderId=" + orderId;
 		}
 
-
 		try {
 
 			URL url = new URL("https://easternbank.test.gateway.mastercard.com/api/rest/version/43/merchant/"
@@ -1869,153 +1870,218 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			while ((inputLine = in.readLine()) != null) {
 				response2.append(inputLine);
 			}
-			//write json log here
+			// TODO write json log here
 			System.out.println("3rd json response: " + response2);
 			in.close();
-			
+
 			JsonParser parser = new JsonParser();
 			JsonObject json2 = (JsonObject) parser.parse(response2.toString());
-			
+
 			Map<String, Object> respMap = toMap(json2);
-			
-			
+
 			String successJsonStr = successJsonEbl(response2.toString());
-			//write success transaction log here
+			// TODO write success transaction log here
 			JsonObject successJson = (JsonObject) parser.parse(successJsonStr);
 			Map<String, Object> successJsonMap = toMap(successJson);
 
-			String creationTime = json2.get("creationTime").getAsString() != null ? json2.get("creationTime").getAsString() : "";
-
+			String creationTime = json2.get("creationTime").getAsString() != null
+					? json2.get("creationTime").getAsString()
+					: "";
 
 			JsonObject authorizationResponse = successJson.getAsJsonObject("authorizationResponse");
-			String authDate = authorizationResponse.get("date").getAsString() != null ? authorizationResponse.get("date").getAsString() : "";
-			String financialNetworkCode = authorizationResponse.get("financialNetworkCode").getAsString() != null ? authorizationResponse.get("financialNetworkCode").getAsString() : "";
-			String transactionIdentifier = authorizationResponse.get("transactionIdentifier").getAsString() != null ? authorizationResponse.get("transactionIdentifier").getAsString() : "";
-			String authTime = authorizationResponse.get("time").getAsString() != null ? authorizationResponse.get("time").getAsString() : "";
-			String stan = authorizationResponse.get("stan").getAsString() != null ? authorizationResponse.get("stan").getAsString() : "";
-			String commercialCardIndicator = authorizationResponse.get("commercialCardIndicator").getAsString() != null ? authorizationResponse.get("commercialCardIndicator").getAsString() : "";
+			String authDate = authorizationResponse.get("date").getAsString() != null
+					? authorizationResponse.get("date").getAsString()
+					: "";
+			String financialNetworkCode = authorizationResponse.get("financialNetworkCode").getAsString() != null
+					? authorizationResponse.get("financialNetworkCode").getAsString()
+					: "";
+			String transactionIdentifier = authorizationResponse.get("transactionIdentifier").getAsString() != null
+					? authorizationResponse.get("transactionIdentifier").getAsString()
+					: "";
+			String authTime = authorizationResponse.get("time").getAsString() != null
+					? authorizationResponse.get("time").getAsString()
+					: "";
+			String stan = authorizationResponse.get("stan").getAsString() != null
+					? authorizationResponse.get("stan").getAsString()
+					: "";
+			String commercialCardIndicator = authorizationResponse.get("commercialCardIndicator").getAsString() != null
+					? authorizationResponse.get("commercialCardIndicator").getAsString()
+					: "";
 			String financialNetworkDate = "";
-			if(authorizationResponse.has("financialNetworkDate")) {
-				financialNetworkDate = !authorizationResponse.get("financialNetworkDate").getAsString().equals(null)? authorizationResponse.get("financialNetworkDate").getAsString() : "";
+			if (authorizationResponse.has("financialNetworkDate")) {
+				financialNetworkDate = !authorizationResponse.get("financialNetworkDate").getAsString().equals(null)
+						? authorizationResponse.get("financialNetworkDate").getAsString()
+						: "";
 			}
-			
-			String responseCode = authorizationResponse.get("responseCode").getAsString() != null ? authorizationResponse.get("responseCode").getAsString() : "";
-			String processingCode = authorizationResponse.get("processingCode").getAsString() != null ? authorizationResponse.get("processingCode").getAsString() : "";
-			String cardSecurityCodeError = authorizationResponse.get("cardSecurityCodeError").getAsString() != null ? authorizationResponse.get("cardSecurityCodeError").getAsString() : "";
+
+			String responseCode = authorizationResponse.get("responseCode").getAsString() != null
+					? authorizationResponse.get("responseCode").getAsString()
+					: "";
+			String processingCode = authorizationResponse.get("processingCode").getAsString() != null
+					? authorizationResponse.get("processingCode").getAsString()
+					: "";
+			String cardSecurityCodeError = authorizationResponse.get("cardSecurityCodeError").getAsString() != null
+					? authorizationResponse.get("cardSecurityCodeError").getAsString()
+					: "";
 
 			String totalCapturedAmount = json2.get("totalCapturedAmount").getAsString();
 
 			JsonObject sourceOfFunds = json2.getAsJsonObject("sourceOfFunds");
-			String cardType = sourceOfFunds.get("type").getAsString() != null ? sourceOfFunds.get("type").getAsString() : "";
+			String cardType = sourceOfFunds.get("type").getAsString() != null ? sourceOfFunds.get("type").getAsString()
+					: "";
 
 			JsonObject customer = json2.getAsJsonObject("customer");
-			String firstName = customer.get("firstName").getAsString() != null ? customer.get("firstName").getAsString() : "";
+			String firstName = customer.get("firstName").getAsString() != null ? customer.get("firstName").getAsString()
+					: "";
 			String lastName = "";
-			if(customer.has("lastName")) {
+			if (customer.has("lastName")) {
 				lastName = customer.get("lastName").getAsString() != null ? customer.get("lastName").getAsString() : "";
 			}
-			
-
 
 			JsonObject sourceOfFunds1 = json2.getAsJsonObject("sourceOfFunds");
 			JsonObject provided = sourceOfFunds1.getAsJsonObject("provided");
 			JsonObject cardData = provided.getAsJsonObject("card");
 			String fundingMethod = "";
-			if(cardData.has("fundingMethod")) {
-				fundingMethod= cardData.get("fundingMethod").getAsString() != null ? cardData.get("fundingMethod").getAsString() :  "";
+			if (cardData.has("fundingMethod")) {
+				fundingMethod = cardData.get("fundingMethod").getAsString() != null
+						? cardData.get("fundingMethod").getAsString()
+						: "";
 			}
 			String nameOnCard = "";
-			if(cardData.has("nameOnCard")) {
-				nameOnCard = cardData.get("nameOnCard").getAsString() != null ? cardData.get("nameOnCard").getAsString() : "";
+			if (cardData.has("nameOnCard")) {
+				nameOnCard = cardData.get("nameOnCard").getAsString() != null ? cardData.get("nameOnCard").getAsString()
+						: "";
 			}
-			
+
 			String issuer = cardData.get("issuer").getAsString() != null ? cardData.get("issuer").getAsString() : "";
 
-			
-			
 			JsonObject device = successJson.getAsJsonObject("device");
 			String browser = device.get("browser").getAsString() != null ? device.get("browser").getAsString() : "";
 			JsonObject device1 = json2.getAsJsonObject("device");
-			String ipAddress = device1.get("ipAddress").getAsString() != null ? device.get("ipAddress").getAsString() : "";
-
+			String ipAddress = device1.get("ipAddress").getAsString() != null ? device.get("ipAddress").getAsString()
+					: "";
 
 			JsonObject sourceOfFundSuccess = successJson.getAsJsonObject("sourceOfFunds");
 			JsonObject providedSuccess = sourceOfFundSuccess.getAsJsonObject("provided");
 			JsonObject cardSuccess = providedSuccess.getAsJsonObject("card");
-			String cardNumber = cardSuccess.get("number").getAsString() != null ? cardSuccess.get("number").getAsString() : "";
-			String cardBrand = cardSuccess.get("brand").getAsString() != null ? cardSuccess.get("brand").getAsString() : "";
+			String cardNumber = cardSuccess.get("number").getAsString() != null
+					? cardSuccess.get("number").getAsString()
+					: "";
+			String cardBrand = cardSuccess.get("brand").getAsString() != null ? cardSuccess.get("brand").getAsString()
+					: "";
 
 			JsonObject cardExpirySuccess = cardSuccess.getAsJsonObject("expiry");
-			String expiryYear = cardExpirySuccess.get("year").getAsString() != null ? cardExpirySuccess.get("year").getAsString() : "";
-			String expiryMonth = cardExpirySuccess.get("month").getAsString() != null ? cardExpirySuccess.get("month").getAsString() : "";
-
+			String expiryYear = cardExpirySuccess.get("year").getAsString() != null
+					? cardExpirySuccess.get("year").getAsString()
+					: "";
+			String expiryMonth = cardExpirySuccess.get("month").getAsString() != null
+					? cardExpirySuccess.get("month").getAsString()
+					: "";
 
 			JsonObject transaction = successJson.getAsJsonObject("transaction");
-			String currency = transaction.get("currency").getAsString() != null ? transaction.get("currency").getAsString() : "";
-			String receipt = transaction.get("receipt").getAsString() != null ? transaction.get("receipt").getAsString() : "";
-			String trxSource = transaction.get("source").getAsString() != null ? transaction.get("source").getAsString() : "";
+			String currency = transaction.get("currency").getAsString() != null
+					? transaction.get("currency").getAsString()
+					: "";
+			String receipt = transaction.get("receipt").getAsString() != null ? transaction.get("receipt").getAsString()
+					: "";
+			String trxSource = transaction.get("source").getAsString() != null ? transaction.get("source").getAsString()
+					: "";
 			String trxType = transaction.get("type").getAsString() != null ? transaction.get("type").getAsString() : "";
-			String frequency = transaction.get("frequency").getAsString() != null ? transaction.get("frequency").getAsString() : "";
-			String terminal = transaction.get("terminal").getAsString() != null ? transaction.get("terminal").getAsString() : "";
-			String authorizationCode = transaction.get("authorizationCode").getAsString() != null ? transaction.get("authorizationCode").getAsString() : "";
+			String frequency = transaction.get("frequency").getAsString() != null
+					? transaction.get("frequency").getAsString()
+					: "";
+			String terminal = transaction.get("terminal").getAsString() != null
+					? transaction.get("terminal").getAsString()
+					: "";
+			String authorizationCode = transaction.get("authorizationCode").getAsString() != null
+					? transaction.get("authorizationCode").getAsString()
+					: "";
 			String trxId = transaction.get("id").getAsString() != null ? transaction.get("id").getAsString() : "";
 			String targetTransactionId = "";
-			if(transaction.has("targetTransactionId")) {
-				targetTransactionId = transaction.get("targetTransactionId").getAsString() != null ? transaction.get("targetTransactionId").getAsString() : "";
+			if (transaction.has("targetTransactionId")) {
+				targetTransactionId = transaction.get("targetTransactionId").getAsString() != null
+						? transaction.get("targetTransactionId").getAsString()
+						: "";
 			}
 			String transactionId = "";
-			if(transaction.has("transactionId")) {
-				transactionId = transaction.get("transactionId").getAsString() != null ? transaction.get("transactionId").getAsString() : "";
+			if (transaction.has("transactionId")) {
+				transactionId = transaction.get("transactionId").getAsString() != null
+						? transaction.get("transactionId").getAsString()
+						: "";
 			}
-			
-
 
 			JsonObject acquirerSuccess = transaction.getAsJsonObject("acquirer");
-			String acquirerDate = acquirerSuccess.get("date").getAsString() != null ? acquirerSuccess.get("date").getAsString() : "";
-			String acquirerId = acquirerSuccess.get("id").getAsString() != null ? acquirerSuccess.get("id").getAsString() : "";
-			String settlementDate = acquirerSuccess.get("settlementDate").getAsString() != null ? acquirerSuccess.get("settlementDate").getAsString() : "";
-			String acquirerBatch = acquirerSuccess.get("batch").getAsString() != null ? acquirerSuccess.get("batch").getAsString() : "";
-			String timeZone = acquirerSuccess.get("timeZone").getAsString() != null ? acquirerSuccess.get("timeZone").getAsString() : "";
+			String acquirerDate = acquirerSuccess.get("date").getAsString() != null
+					? acquirerSuccess.get("date").getAsString()
+					: "";
+			String acquirerId = acquirerSuccess.get("id").getAsString() != null
+					? acquirerSuccess.get("id").getAsString()
+					: "";
+			String settlementDate = acquirerSuccess.get("settlementDate").getAsString() != null
+					? acquirerSuccess.get("settlementDate").getAsString()
+					: "";
+			String acquirerBatch = acquirerSuccess.get("batch").getAsString() != null
+					? acquirerSuccess.get("batch").getAsString()
+					: "";
+			String timeZone = acquirerSuccess.get("timeZone").getAsString() != null
+					? acquirerSuccess.get("timeZone").getAsString()
+					: "";
 
-
-			String secure3DId = successJson.get("3DSecureId").getAsString() != null ? successJson.get("3DSecureId").getAsString() : "";
-			String merchantSuccess = successJson.get("merchant").getAsString() != null ? successJson.get("merchant").getAsString() : "";
-			String version = successJson.get("version").getAsString() != null ? successJson.get("version").getAsString() : "";
-			String trxResult = successJson.get("result").getAsString() != null ? successJson.get("result").getAsString() : "";
-			String gatewayEntryPoint = successJson.get("gatewayEntryPoint").getAsString() != null ? successJson.get("gatewayEntryPoint").getAsString() : "";
-
+			String secure3DId = successJson.get("3DSecureId").getAsString() != null
+					? successJson.get("3DSecureId").getAsString()
+					: "";
+			String merchantSuccess = successJson.get("merchant").getAsString() != null
+					? successJson.get("merchant").getAsString()
+					: "";
+			String version = successJson.get("version").getAsString() != null ? successJson.get("version").getAsString()
+					: "";
+			String trxResult = successJson.get("result").getAsString() != null ? successJson.get("result").getAsString()
+					: "";
+			String gatewayEntryPoint = successJson.get("gatewayEntryPoint").getAsString() != null
+					? successJson.get("gatewayEntryPoint").getAsString()
+					: "";
 
 			JsonObject responseSuccess = successJson.getAsJsonObject("response");
 			String responseGatewayCode = "";
-			if(responseSuccess.has("gateway")) {
+			if (responseSuccess.has("gateway")) {
 				responseGatewayCode = responseSuccess.get("gateway").getAsString();
 			}
-			
 
 			JsonObject cardSecurityCode = responseSuccess.getAsJsonObject("cardSecurityCode");
-			String acquirerCode = cardSecurityCode.get("acquirerCode").getAsString() != null ? cardSecurityCode.get("acquirerCode").getAsString() : "";
-			String gatewayCode = cardSecurityCode.get("gatewayCode").getAsString() != null ? cardSecurityCode.get("gatewayCode").getAsString() : "";
-
+			String acquirerCode = cardSecurityCode.get("acquirerCode").getAsString() != null
+					? cardSecurityCode.get("acquirerCode").getAsString()
+					: "";
+			String gatewayCode = cardSecurityCode.get("gatewayCode").getAsString() != null
+					? cardSecurityCode.get("gatewayCode").getAsString()
+					: "";
 
 			JsonObject secure3D = successJson.getAsJsonObject("3DSecure");
-			String authenticationToken = secure3D.get("authenticationToken").getAsString() != null ? secure3D.get("authenticationToken").getAsString() : "";
+			String authenticationToken = secure3D.get("authenticationToken").getAsString() != null
+					? secure3D.get("authenticationToken").getAsString()
+					: "";
 			String acsEci = secure3D.get("acsEci").getAsString() != null ? secure3D.get("acsEci").getAsString() : "";
-			String authenticationStatus = secure3D.get("authenticationStatus").getAsString() != null ? secure3D.get("authenticationStatus").getAsString() : "";
+			String authenticationStatus = secure3D.get("authenticationStatus").getAsString() != null
+					? secure3D.get("authenticationStatus").getAsString()
+					: "";
 			String xid = secure3D.get("xid").getAsString() != null ? secure3D.get("xid").getAsString() : "";
-			String enrollmentStatus = secure3D.get("enrollmentStatus").getAsString() != null ? secure3D.get("enrollmentStatus").getAsString() : "";
-
+			String enrollmentStatus = secure3D.get("enrollmentStatus").getAsString() != null
+					? secure3D.get("enrollmentStatus").getAsString()
+					: "";
 
 			JsonObject orderSuccess = successJson.getAsJsonObject("order");
-			String orderStatus = orderSuccess.get("status").getAsString() != null ? orderSuccess.get("status").getAsString() :"";
-			String totalRefundedAmount = orderSuccess.get("totalRefundedAmount").getAsString() != null ? orderSuccess.get("totalRefundedAmount").getAsString() :"";
+			String orderStatus = orderSuccess.get("status").getAsString() != null
+					? orderSuccess.get("status").getAsString()
+					: "";
+			String totalRefundedAmount = orderSuccess.get("totalRefundedAmount").getAsString() != null
+					? orderSuccess.get("totalRefundedAmount").getAsString()
+					: "";
 
-
-			
-			
 			JsonObject responseJson1 = successJson.getAsJsonObject("response");
 			String acquirerMessage = responseJson1.get("acquirerMessage").getAsString();
-			String totalAuthorizedAmount = json2.get("totalAuthorizedAmount").getAsString() != null ? json2.get("totalAuthorizedAmount").getAsString() : "";
-			
+			String totalAuthorizedAmount = json2.get("totalAuthorizedAmount").getAsString() != null
+					? json2.get("totalAuthorizedAmount").getAsString()
+					: "";
+
 			String resultJson = json2.get("result").getAsString();
 
 			try {
@@ -2054,14 +2120,13 @@ public class PaymentController extends BaseDao implements SaltTracker {
 						transactionModel.setAcquirerMessage(acquirerMessage);
 						transactionModel.setFinancialNetworkCode(financialNetworkCode);
 						transactionModel.setTransactionIdentifier(transactionIdentifier);// TODO
-																												// can
-																												// be
-																												// used
+																							// can
+																							// be
+																							// used
 						transactionModel.setNameOnCard(nameOnCard);
 						transactionModel.setCard_expiry_year(expiryYear);
 						transactionModel.setAuthorizationResponse_time(authTime);
-						transactionModel
-								.setTransaction_currency(currency);
+						transactionModel.setTransaction_currency(currency);
 						transactionModel.setSecureId(secure3DId);
 						transactionModel.setAcquirerCode(acquirerCode);
 						transactionModel.setAuthorizationResponse_stan(stan);
@@ -2069,17 +2134,14 @@ public class PaymentController extends BaseDao implements SaltTracker {
 						transactionModel.setTotalAuthorizedAmount(totalAuthorizedAmount);
 						transactionModel.setProvided_card_number(cardNumber);
 						transactionModel.setCardSecurityCode_gatewayCode(gatewayCode);
-						transactionModel
-								.setAuthenticationToken(authenticationToken);
+						transactionModel.setAuthenticationToken(authenticationToken);
 						transactionModel.setTransaction_receipt(receipt);
-						transactionModel
-								.setResponse_gatewayCode(responseGatewayCode);
+						transactionModel.setResponse_gatewayCode(responseGatewayCode);
 						transactionModel.setOrder_status(orderStatus);
 						transactionModel.setAcquirer_date(acquirerDate);
 						transactionModel.setVersion(version);
 						transactionModel.setCommercialCardIndicator(commercialCardIndicator);
-						transactionModel
-								.setCard_brand(cardBrand);
+						transactionModel.setCard_brand(cardBrand);
 						transactionModel.setSourceOfFunds_type(cardType);
 						transactionModel.setCustomer_firstName(firstName);
 						transactionModel.setCustomer_lastName(lastName);
@@ -2091,28 +2153,21 @@ public class PaymentController extends BaseDao implements SaltTracker {
 						transactionModel.setTransaction_source(trxSource);
 						transactionModel.setResult(trxResult);
 						transactionModel.setCreationTime(creationTime);
-						transactionModel
-								.setTotalRefundedAmount(totalRefundedAmount);
-						transactionModel
-								.setAcquirer_batch(acquirerBatch);
+						transactionModel.setTotalRefundedAmount(totalRefundedAmount);
+						transactionModel.setAcquirer_batch(acquirerBatch);
 						transactionModel.setDescription(respMap.get("description").toString());
 						transactionModel.setTransaction_type(trxType);
 						transactionModel.setFinancialNetworkDate(financialNetworkDate);
-						transactionModel
-								.setResponseCode(responseCode);
-						transactionModel
-								.setTransaction_frequency(frequency);
-						transactionModel
-								.setTransaction_terminal(terminal);
-						transactionModel
-								.setAuthorizationCode(authorizationCode);
+						transactionModel.setResponseCode(responseCode);
+						transactionModel.setTransaction_frequency(frequency);
+						transactionModel.setTransaction_terminal(terminal);
+						transactionModel.setAuthorizationCode(authorizationCode);
 						transactionModel.setAuthenticationStatus(authenticationStatus);
 						transactionModel.setProcessingCode(processingCode);
 						transactionModel.setExpiry_month(expiryMonth);
 						transactionModel.setSecure_xid(xid);
 //						System.out.println("xid: " + transactionModel.getSecure_xid());
-						transactionModel
-								.setEnrollmentStatus(enrollmentStatus);
+						transactionModel.setEnrollmentStatus(enrollmentStatus);
 //						System.out.println("setEnrollmentStatus: " + transactionModel.getEnrollmentStatus());
 						transactionModel.setCardSecurityCodeError(cardSecurityCodeError);
 						transactionModel.setTimeZone(timeZone);
@@ -2281,10 +2336,6 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		return returnURL;
 	}
 
-	
-	
-	
-	
 //	public String retriveOrder(HttpServletRequest request, Model model, HttpServletResponse response,
 //			@RequestParam(required = false) String orderId, final RedirectAttributes redirectAttributes) {
 //
@@ -3988,6 +4039,13 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	public String bkashCheck(HttpServletRequest request, Model model, @ModelAttribute BKashModel bKashModel,
 			// @RequestParam String orderId,
 			HttpServletResponse response, final RedirectAttributes redirectAttributes) {
+		String transactionId2 = "";
+		try {
+			transactionId2 = URLDecoder.decode(request.getParameter("transactionId1"), "UTF-8");
+		} catch (UnsupportedEncodingException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 
 		if (logger.isInfoEnabled()) {
 			logger.info("bkashCheck -- START");
@@ -4002,7 +4060,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			Long transactionId_w = 0L;
 			TransactionModel transactionModel_w = null;
 			String key = messageUtil.getBundle("secret.key");
-			transactionId_w = Long.parseLong(encryption.decode(key, bKashModel.getTransactionId1()));
+			transactionId_w = Long.parseLong(encryption.decode(key, transactionId2));
 			transactionModel_w = transactionService.fetchTransactionById(transactionId_w);
 			String orderId = transactionModel_w.getTxnId();
 			System.out.println("bKashModel.getTransactionId1():" + bKashModel.getTransactionId1()
