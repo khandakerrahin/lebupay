@@ -11,9 +11,10 @@ public class CommonModel {
 	private Long aModifiedBy;
 	private String aModifiedDate;
 	private Status status;
-
 	private Status companyStatus;
 	private String csrfPreventionSalt;
+	private long transactionValidity;	//	added by Shaker on 15.04.2019
+	private boolean isValid;	//	added by Shaker on 16.04.2019
 	private String salt;
 	private String sessionId;
 	private String encId;
@@ -28,6 +29,22 @@ public class CommonModel {
 		this.createdBy = createdBy;
 	}
 
+	public Long getTransactionValidity() {	//	added by Shaker on 15.04.2019
+		return transactionValidity;
+	}
+
+	public void setTransactionValidity(Long transactionValidity) {	//	added by Shaker on 15.04.2019
+		this.transactionValidity = transactionValidity;
+	}
+	
+	public boolean getIsValid() {	//	added by Shaker on 16.04.2019
+		return isValid;
+	}
+
+	public void setIsValid(boolean isValid) {	//	added by Shaker on 16.04.2019
+		this.isValid = isValid;
+	}
+	
 	public String getCreatedDate() {
 		return createdDate;
 	}

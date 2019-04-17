@@ -51,7 +51,7 @@ public class MerchantModel extends CommonModel {
 	public void setMerchantId(Long merchantId) {
 		this.merchantId = merchantId;
 	}
-
+	
 	public TypeModel getTypeModel() {
 		return typeModel;
 	}

@@ -476,11 +476,18 @@ public class IndexController extends BaseDao implements SaltTracker {
 			
 			TransactionModel transactionModel1 = transactionService.fetchTransactionByTXNId(transactionModel.getTxnId());
 			
-			if((transactionModel1.getPaymentModel().getFailureURL()).equals("None")) {
-				model.addAttribute("returnUrl", "index");
-			} else {
-				model.addAttribute("returnUrl", transactionModel1.getPaymentModel().getFailureURL());
+			if(transactionModel1.getIsValid()) {
+				//	trx is valid
+				if((transactionModel1.getPaymentModel().getFailureURL()).equals("None")) {
+					model.addAttribute("returnUrl", "index");
+				} else {
+					model.addAttribute("returnUrl", transactionModel1.getPaymentModel().getFailureURL());
+				}
+			}else {
+				return "redirect:/transaction_expired?orderId=" + transactionModel.getTxnId();
 			}
+			
+			
 			
 		} catch (Exception e) {
 			e.printStackTrace();

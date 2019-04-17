@@ -189,6 +189,17 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("already.paid"));
 				return "redirect:/payment_failure";
 
+			} else if (transactionModel2.getTransactionStatus() == 7) { // expired
+
+				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.expired"));
+				return "redirect:/transaction_expired?orderId=" + transactionModel2.getTxnId();
+
+			}
+			if (transactionModel2.getIsValid()) { // valid, do nothing
+			} else {
+				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.expired"));
+				return "redirect:/transaction_expired?orderId=" + transactionModel2.getTxnId();
+
 			}
 		}
 		transactionModelSaltTracker.setTxnId(transactionModel2.getTxnId());
@@ -1225,6 +1236,84 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 		return "payment-success";
 	}
+	
+	
+	//	added by Shaker on 16.04.2019
+	/**
+	 * This method is used to open Transaction Expired Page.
+	 * 
+	 * @param request
+	 * @param model
+	 * @param response
+	 * @param orderId
+	 * @return transaction-expired.jsp
+	 */
+	@RequestMapping(value = "/transaction_expired", method = RequestMethod.GET)
+	public String transactionExpired(HttpServletRequest request, Model model, HttpServletResponse response,
+			@RequestParam(required = false) String orderId) {
+
+		if (logger.isInfoEnabled()) {
+			logger.info("Transaction Expired -- START");
+		}
+
+		try {
+
+			TransactionModel transactionModel = transactionService.fetchTransactionByTXNId(orderId);
+			PaymentModel paymentModel1 = transactionService.fetchTransactionByTXNId_detail(orderId);//TODO accommodate get Customer detail
+			
+			if (Objects.nonNull(transactionModel)) {
+				if (transactionModel.getTransactionStatus() != 0 && transactionModel.getTransactionStatus() != 7) {
+					int result = transactionService.updateTransaction(
+							transactionModel.getMerchantModel().getMerchantId(), 7,
+							transactionModel.getTransactionId());
+					System.out.println("Result ==>> " + result);
+					if (Objects.nonNull(paymentModel1.getFailureURL()))
+						if (!paymentModel1.getFailureURL().equals("None"))
+							response.sendRedirect(paymentModel1.getFailureURL());
+					
+					//TODO Added By Wasif 20190314
+					
+					if (!paymentModel1.getServerFailureURL().equals("NotSet")) {
+					//	response.sendRedirect(transactionModel.getPaymentModel().getServerFailureURL());
+						
+					
+					String inputJsonString = "{\"email\":\"" + paymentModel1.getEmailId() 
+					+ "\", \"mobileNumber\":\"" + paymentModel1.getMobileNumber()
+					+ "\", \"amount\":\"" + paymentModel1.getAmount()
+					+ "\", \"orderTransactionID\":\"" + paymentModel1.getOrderTransactionID()
+					+ "\", \"responseCode\":\"" + paymentModel1.getResponseCode()
+					+ "\", \"transactionStatus\":\"" + "Failure"+ "\"}";
+				
+								
+					System.out.println("inputJsonString ==>> " + inputJsonString);
+					ClientResponse client_response = payconnectApiAcess(paymentModel1.getServerFailureURL(),
+							inputJsonString, "post");
+					
+					try {
+						//logwrite.writeLog(transactionModel.getMerchantModel().getMerchantId(),"Citybank approveOrder",1, "approveOrder cityTrxModelUpd txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
+						writeLogV2(transactionModel.getMerchantModel().getMerchantId(),"server-server API",2, "on failure order trx ID:"+transactionModel.getPaymentModel().getOrderTransactionID()+",response:"+client_response);
+
+					} catch (Exception e1) {
+						//  Auto-generated catch block
+						e1.printStackTrace();
+					}
+					/***/
+					}										
+				}else {
+					System.out.println("ALREADY UPDATED!!");
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		if (logger.isInfoEnabled()) {
+			logger.info("Transaction Expired -- END");
+		}
+
+		return "transaction-expired";
+	}
 
 	/**
 	 * This method is used to open Payment Failure Page for City Bank.
@@ -1413,6 +1502,17 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
 				return "redirect:/failure?orderId=" + transactionModel2.getTxnId();
+
+			} else if (transactionModel2.getTransactionStatus() == 7) { // expired
+
+				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.expired"));
+				return "redirect:/transaction_expired?orderId=" + transactionModel2.getTxnId();
+
+			}
+			if (transactionModel2.getIsValid()) { // valid, do nothing
+			} else {
+				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.expired"));
+				return "redirect:/transaction_expired?orderId=" + transactionModel2.getTxnId();
 
 			}
 		}
@@ -2344,6 +2444,17 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
 				return "redirect:/failure?orderId=" + transactionModel2.getTxnId();
 
+			} else if (transactionModel2.getTransactionStatus() == 7) { // expired
+
+				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.expired"));
+				return "redirect:/transaction_expired?orderId=" + transactionModel2.getTxnId();
+
+			}
+			if (transactionModel2.getIsValid()) { // valid, do nothing
+			} else {
+				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.expired"));
+				return "redirect:/transaction_expired?orderId=" + transactionModel2.getTxnId();
+
 			}
 		}
 
@@ -3210,6 +3321,11 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.failed"));
 				return "redirect:/failure?orderId=" + transactionModel2.getTxnId();
 
+			} else if (transactionModel2.getTransactionStatus() == 7) { // expired
+
+				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.expired"));
+				return "redirect:/transaction_expired?orderId=" + transactionModel2.getTxnId();
+
 			} else if (transactionModel2.getTransactionStatus() == 4) { // Not Paid Yet
 
 				transactionModelSaltTracker.setTxnId(transactionModel2.getTxnId());
@@ -3218,6 +3334,12 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				model.addAttribute("wallet", messageUtil.getBundle("bKash.wallet"));
 				model.addAttribute("reference", messageUtil.getBundle("bKash.reference"));
 				model.addAttribute("counter", messageUtil.getBundle("bKash.counter"));
+			}
+			if (transactionModel2.getIsValid()) { // valid, do nothing
+			} else {
+				redirectAttributes.addFlashAttribute("failure", messageUtil.getBundle("transaction.expired"));
+				return "redirect:/transaction_expired?orderId=" + transactionModel2.getTxnId();
+
 			}
 
 		}

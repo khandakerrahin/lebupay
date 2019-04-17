@@ -1489,7 +1489,8 @@ public class MerchantDaoImpl extends BaseDao implements MerchantDao{
 						+ "c.CREATED_BY," // 44
 						+ "c.MODIFIED_DATE," // 45
 						+ "c.MODIFIED_BY," // 46
-						+ "t.TYPE_NAME " // 47
+						+ "t.TYPE_NAME, " // 47
+						+ "m.ORDER_VALIDITY " // 48	//	added by Shaker on 15.04.2019 
 						+ "from MERCHANT_MASTER m left outer join TYPE_MASTER t on m.TYPE_ID = t.TYPE_ID "
 						+ "left outer join COMPANY_MASTER c on m.MERCHANT_ID = c.MERCHANT_ID "
 						+ "where m.MERCHANT_ID=:MERCHANT_ID and m.STATUS !=:STATUS";
@@ -1568,6 +1569,7 @@ public class MerchantDaoImpl extends BaseDao implements MerchantDao{
 					companyModel.setCreatedBy(rs.getLong(44));
 					companyModel.setModifiedDate(rs.getString(45));
 					companyModel.setModifiedBy(rs.getLong(46));
+					merchantModel.setTransactionValidity(rs.getLong(48));	//	added by Shaker on 15.04.2019 
 					
 					typeModel.setTypeName(rs.getString(47));
 					
@@ -3094,7 +3096,8 @@ public class MerchantDaoImpl extends BaseDao implements MerchantDao{
 						+ "c.CREATED_BY," // 44
 						+ "c.MODIFIED_DATE," // 45
 						+ "c.MODIFIED_BY," // 46
-						+ "t.TYPE_NAME " // 47
+						+ "t.TYPE_NAME, " // 47
+						+ "m.ORDER_VALIDITY " // 48
 						+ "from MERCHANT_MASTER m left outer join TYPE_MASTER t on m.TYPE_ID = t.TYPE_ID "
 						+ "left outer join COMPANY_MASTER c on m.MERCHANT_ID = c.MERCHANT_ID "
 						+ "where m.ACCESS_KEY=:ACCESS_KEY and m.STATUS !=:STATUS";
@@ -3178,6 +3181,7 @@ public class MerchantDaoImpl extends BaseDao implements MerchantDao{
 					
 					merchantModel.setCompanyModel(companyModel);
 					merchantModel.setTypeModel(typeModel);
+					merchantModel.setTransactionValidity(rs.getLong(48));
 				}
 		} finally {
 	          try{

@@ -828,6 +828,7 @@ public class MerchantServiceImpl extends BaseDao implements MerchantService {
 		int result = 0;	
 		MerchantModel merchantModel = new MerchantModel();
 		merchantModel.setMerchantId(emailInvoicingModel.getCreatedBy());
+		merchantModel.setTransactionValidity(emailInvoicingModel.getTransactionValidity());	//	added by Shaker on 15.04.2019
 		
 		PaymentModel paymentModel = new PaymentModel();
 		paymentModel.setAmount(Double.parseDouble(emailInvoicingModel.getAmount()));

@@ -89,7 +89,7 @@ public class TransactionModel extends CommonModel {
 	public void setTransactionId(Long transactionId) {
 		this.transactionId = transactionId;
 	}
-
+	
 	public Double getAmount() {
 		return amount;
 	}
@@ -434,7 +434,7 @@ public class TransactionModel extends CommonModel {
 	public void setCreationTime(String creationTime) {
 		this.creationTime = creationTime;
 	}
-
+	
 	public String getCustomer_firstName() {
 		return customer_firstName;
 	}

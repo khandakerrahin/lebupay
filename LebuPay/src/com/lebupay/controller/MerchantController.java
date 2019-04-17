@@ -2886,6 +2886,7 @@ public class MerchantController implements SaltTracker {
 					MerchantSessionModel merchantSessionModel = (MerchantSessionModel) httpServletRequest.getSession().getAttribute("merchantModel");
 					emailInvoicingModel.setCreatedBy(merchantSessionModel.getMerchantId());
 					MerchantModel merchantModel = merchantService.fetchActiveMerchantById(merchantSessionModel.getMerchantId());
+					emailInvoicingModel.setTransactionValidity(merchantModel.getTransactionValidity());	//	added by Shaker on 15.04.2019
 					redirectAttributes.addFlashAttribute("transactionAmount", merchantModel.getTransactionAmount());
 					redirectAttributes.addFlashAttribute("loyaltyPoint", merchantModel.getLoyaltyPoint());
 					redirectAttributes.addFlashAttribute("link", "Link For Payment");

@@ -1329,19 +1329,24 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 		Connection connection = oracleConnection.Connect();
 		OraclePreparedStatement pst = null;
 		try {
-			String sql = "insert into TRANSACTION_MASTER (TRANSACTION_ID,AMOUNT,MERCHANT_ID,STATUS,CREATED_BY,CREATED_DATE,TXN_ID,ORDER_ID,GROSS_AMOUNT) values(TRANSACTION_MASTER_SEQ.nextval,"
+			String sql = "insert into TRANSACTION_MASTER (TRANSACTION_ID,AMOUNT,MERCHANT_ID,STATUS,CREATED_BY,CREATED_DATE,EXPIRE_DATE,TXN_ID,ORDER_ID,GROSS_AMOUNT) values(TRANSACTION_MASTER_SEQ.nextval,"
 					+ ":AMOUNT,"
 					+ ":MERCHANT_ID,"
 					+ ":STATUS,"
 					+ ":CREATED_BY,"
-					+ "localtimestamp(0),:TXN_ID,:ORDER_ID,:GROSS_AMOUNT) ";
-
+					+ "localtimestamp(0),"
+					+ "(localtimestamp(0) + NUMTODSINTERVAL(:transactionValidity,'minute')),"
+					+ ":TXN_ID,"
+					+ ":ORDER_ID,"
+					+ ":GROSS_AMOUNT) ";
+			System.out.println(transactionModel.getMerchantModel().getTransactionValidity() + "	Insert Transaction By Merchant==>> "+sql);
 			String pk[] = {"TRANSACTION_ID"};
 			pst = (OraclePreparedStatement) connection.prepareStatement(sql, pk);
 			pst.setDoubleAtName("AMOUNT", transactionModel.getAmount()); // AMOUNT
 			pst.setLongAtName("MERCHANT_ID", transactionModel.getMerchantModel().getMerchantId()); // MERCHANT_ID
 			pst.setIntAtName("STATUS", 4); // STATUS
 			pst.setLongAtName("CREATED_BY", transactionModel.getMerchantModel().getMerchantId()); // CREATED_BY
+			pst.setLongAtName("transactionValidity", transactionModel.getMerchantModel().getTransactionValidity()); // EXPIRE_DATE
 			pst.setStringAtName("TXN_ID", transactionModel.getTxnId()); // TXN_ID
 			pst.setStringAtName("ORDER_ID", transactionModel.getOrder_id()); // ORDER_ID
 			pst.setDoubleAtName("GROSS_AMOUNT", transactionModel.getAmount()); // GROSS AMOUNT
@@ -1610,12 +1615,13 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					//WASIF 20181114
 					+ "m.SEBL_USER_NAME," // 25
 					+ "m.SEBL_PASSWORD," // 26
-					+ "m.SEBL_ID " // 27
+					+ "m.SEBL_ID, " // 27
+					+ "case when tm.EXPIRE_DATE>localtimestamp(0) then 1 else 0 end as isValid " // 28	//	added by Shaker on 16.04.2019
 					/*
 					+ " , m.NOTIFICATION_SMS," //28
 					+ "m.NOTIFICATION_EMAIL " //29 /**/
 					
-					+ "from TRANSACTION_MASTER tm, ORDER_MASTER om, MERCHANT_MASTER m where tm.MERCHANT_ID = m.MERCHANT_ID and tm.ORDER_ID = om.ORDER_ID and tm.TRANSACTION_ID =:TRANSACTION_ID order by tm.CREATED_DATE desc";
+					+ " from TRANSACTION_MASTER tm, ORDER_MASTER om, MERCHANT_MASTER m where tm.MERCHANT_ID = m.MERCHANT_ID and tm.ORDER_ID = om.ORDER_ID and tm.TRANSACTION_ID =:TRANSACTION_ID order by tm.CREATED_DATE desc";
 
 			System.out.println("Fetch Transaction By ID ==>> "+sql);
 
@@ -1667,6 +1673,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 				//.set(rs.getString(27));
 				
 				transactionModel.setMerchantModel(merchantModel);
+				transactionModel.setIsValid((rs.getInt(28)==1?true:false));	//	added by Shaker on 16.04.2019
 
 			}
 
@@ -1859,7 +1866,8 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					//WASIF 20181114
 					//WASIF 20190304 
 					+ "om.NOTIFICATION_EMAIL," // 31
-					+ "om.NOTIFICATION_SMS" // 32
+					+ "om.NOTIFICATION_SMS," // 32
+					+ "case when tm.EXPIRE_DATE>localtimestamp(0) then 1 else 0 end as isValid" // 33	//	added by Shaker on 16.04.2019
 					/*
 					+ "om.SERVER_SUCCESS_URL," // 33
 					+ "om.SERVER_FAILURE_URL" // 34 //WASIF 20190319 
@@ -1933,6 +1941,8 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 				transactionModel.setMerchantModel(merchantModel);
 
 				transactionModel.setPaymentModel(paymentModel);
+				transactionModel.setIsValid((rs.getInt(33)==1?true:false));	//	added by Shaker on 16.04.2019
+				
 			}
 
 		} finally {
@@ -2813,6 +2823,12 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 				else if(status == 4) {
 					paymentModel.setTransactionStatus("Incomplete");
 				}
+				else if(status == 6) {
+					paymentModel.setTransactionStatus("Voided");
+				}
+				else if(status == 7) {
+					paymentModel.setTransactionStatus("Expired");
+				}
 
 				PaymentModel paymentModel3 = new PaymentModel();
 				Gson gson = new Gson();
@@ -2927,6 +2943,12 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 				}
 				else if(status == 4) {
 					paymentModel.setTransactionStatus("Incomplete");
+				}
+				else if(status == 6) {
+					paymentModel.setTransactionStatus("Voided");
+				}
+				else if(status == 7) {
+					paymentModel.setTransactionStatus("Expired");
 				}
 				
 				paymentModel.setAmount(rs.getDouble(1));
