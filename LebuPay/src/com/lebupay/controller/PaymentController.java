@@ -1266,42 +1266,46 @@ public class PaymentController extends BaseDao implements SaltTracker {
 					int result = transactionService.updateTransaction(
 							transactionModel.getMerchantModel().getMerchantId(), 7,
 							transactionModel.getTransactionId());
-					System.out.println("Result ==>> " + result);
-					if (Objects.nonNull(paymentModel1.getFailureURL()))
-						if (!paymentModel1.getFailureURL().equals("None"))
-							response.sendRedirect(paymentModel1.getFailureURL());
-					
-					//TODO Added By Wasif 20190314
-					
-					if (!paymentModel1.getServerFailureURL().equals("NotSet")) {
-					//	response.sendRedirect(transactionModel.getPaymentModel().getServerFailureURL());
-						
-					
-					String inputJsonString = "{\"email\":\"" + paymentModel1.getEmailId() 
-					+ "\", \"mobileNumber\":\"" + paymentModel1.getMobileNumber()
-					+ "\", \"amount\":\"" + paymentModel1.getAmount()
-					+ "\", \"orderTransactionID\":\"" + paymentModel1.getOrderTransactionID()
-					+ "\", \"responseCode\":\"" + paymentModel1.getResponseCode()
-					+ "\", \"transactionStatus\":\"" + "Failure"+ "\"}";
-				
-								
-					System.out.println("inputJsonString ==>> " + inputJsonString);
-					ClientResponse client_response = payconnectApiAcess(paymentModel1.getServerFailureURL(),
-							inputJsonString, "post");
-					
-					try {
-						//logwrite.writeLog(transactionModel.getMerchantModel().getMerchantId(),"Citybank approveOrder",1, "approveOrder cityTrxModelUpd txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
-						writeLogV2(transactionModel.getMerchantModel().getMerchantId(),"server-server API",2, "on failure order trx ID:"+transactionModel.getPaymentModel().getOrderTransactionID()+",response:"+client_response);
-
-					} catch (Exception e1) {
-						//  Auto-generated catch block
-						e1.printStackTrace();
-					}
-					/***/
-					}										
+					System.out.println("Result ==>> " + result);									
+					// shaker move from here
+					// added by Shaker on 16.04.2019
 				}else {
 					System.out.println("ALREADY UPDATED!!");
 				}
+				// shaker move start
+				if (Objects.nonNull(paymentModel1.getFailureURL()))
+					if (!paymentModel1.getFailureURL().equals("None"))
+						response.sendRedirect(paymentModel1.getFailureURL());
+				
+				//TODO Added By Wasif 20190314
+				
+				if (!paymentModel1.getServerFailureURL().equals("NotSet")) {
+				//	response.sendRedirect(transactionModel.getPaymentModel().getServerFailureURL());
+					
+				
+				String inputJsonString = "{\"email\":\"" + paymentModel1.getEmailId() 
+				+ "\", \"mobileNumber\":\"" + paymentModel1.getMobileNumber()
+				+ "\", \"amount\":\"" + paymentModel1.getAmount()
+				+ "\", \"orderTransactionID\":\"" + paymentModel1.getOrderTransactionID()
+				+ "\", \"responseCode\":\"" + paymentModel1.getResponseCode()
+				+ "\", \"transactionStatus\":\"" + "Failure"+ "\"}";
+			
+							
+				System.out.println("inputJsonString ==>> " + inputJsonString);
+				ClientResponse client_response = payconnectApiAcess(paymentModel1.getServerFailureURL(),
+						inputJsonString, "post");
+				
+				try {
+					//logwrite.writeLog(transactionModel.getMerchantModel().getMerchantId(),"Citybank approveOrder",1, "approveOrder cityTrxModelUpd txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
+					writeLogV2(transactionModel.getMerchantModel().getMerchantId(),"server-server API",2, "on failure order trx ID:"+transactionModel.getPaymentModel().getOrderTransactionID()+",response:"+client_response);
+
+				} catch (Exception e1) {
+					//  Auto-generated catch block
+					e1.printStackTrace();
+				}
+				/***/
+				} 
+				// shaker move end
 			}
 
 		} catch (Exception e) {
@@ -1343,39 +1347,44 @@ public class PaymentController extends BaseDao implements SaltTracker {
 							transactionModel.getMerchantModel().getMerchantId(), 3,
 							transactionModel.getTransactionId());
 					System.out.println("Result ==>> " + result);
-					if (Objects.nonNull(paymentModel1.getFailureURL()))
-						if (!paymentModel1.getFailureURL().equals("None"))
-							response.sendRedirect(paymentModel1.getFailureURL());
-					
-					//TODO Added By Wasif 20190314
-					
-					if (!paymentModel1.getServerFailureURL().equals("NotSet")) {
-					//	response.sendRedirect(transactionModel.getPaymentModel().getServerFailureURL());
-						
-					
-					String inputJsonString = "{\"email\":\"" + paymentModel1.getEmailId() 
-					+ "\", \"mobileNumber\":\"" + paymentModel1.getMobileNumber()
-					+ "\", \"amount\":\"" + paymentModel1.getAmount()
-					+ "\", \"orderTransactionID\":\"" + paymentModel1.getOrderTransactionID()
-					+ "\", \"responseCode\":\"" + paymentModel1.getResponseCode()
-					+ "\", \"transactionStatus\":\"" + "Failure"+ "\"}";
-				
-								
-					System.out.println("inputJsonString ==>> " + inputJsonString);
-					ClientResponse client_response = payconnectApiAcess(paymentModel1.getServerFailureURL(),
-							inputJsonString, "post");
-					
-					try {
-						//logwrite.writeLog(transactionModel.getMerchantModel().getMerchantId(),"Citybank approveOrder",1, "approveOrder cityTrxModelUpd txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
-						writeLogV2(transactionModel.getMerchantModel().getMerchantId(),"server-server API",2, "on failure order trx ID:"+transactionModel.getPaymentModel().getOrderTransactionID()+",response:"+client_response);
-
-					} catch (Exception e1) {
-						//  Auto-generated catch block
-						e1.printStackTrace();
-					}
-					/***/
-					}										
+					// shaker move from here
+					// added by Shaker on 16.04.2019
 				}
+				
+				// shaker move start
+				if (Objects.nonNull(paymentModel1.getFailureURL()))
+					if (!paymentModel1.getFailureURL().equals("None"))
+						response.sendRedirect(paymentModel1.getFailureURL());
+				
+				//TODO Added By Wasif 20190314
+				
+				if (!paymentModel1.getServerFailureURL().equals("NotSet")) {
+				//	response.sendRedirect(transactionModel.getPaymentModel().getServerFailureURL());
+					
+				
+				String inputJsonString = "{\"email\":\"" + paymentModel1.getEmailId() 
+				+ "\", \"mobileNumber\":\"" + paymentModel1.getMobileNumber()
+				+ "\", \"amount\":\"" + paymentModel1.getAmount()
+				+ "\", \"orderTransactionID\":\"" + paymentModel1.getOrderTransactionID()
+				+ "\", \"responseCode\":\"" + paymentModel1.getResponseCode()
+				+ "\", \"transactionStatus\":\"" + "Failure"+ "\"}";
+			
+							
+				System.out.println("inputJsonString ==>> " + inputJsonString);
+				ClientResponse client_response = payconnectApiAcess(paymentModel1.getServerFailureURL(),
+						inputJsonString, "post");
+				
+				try {
+					//logwrite.writeLog(transactionModel.getMerchantModel().getMerchantId(),"Citybank approveOrder",1, "approveOrder cityTrxModelUpd txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
+					writeLogV2(transactionModel.getMerchantModel().getMerchantId(),"server-server API",2, "on failure order trx ID:"+transactionModel.getPaymentModel().getOrderTransactionID()+",response:"+client_response);
+
+				} catch (Exception e1) {
+					//  Auto-generated catch block
+					e1.printStackTrace();
+				}
+				/***/
+				}
+				// shaker move end
 			}
 
 		} catch (Exception e) {
@@ -1417,13 +1426,17 @@ public class PaymentController extends BaseDao implements SaltTracker {
 							transactionModel.getMerchantModel().getMerchantId(), 5,
 							transactionModel.getTransactionId());
 					System.out.println("Result ==>> " + result);
-					if (Objects.nonNull(paymentModel1.getFailureURL()))
-						if (!paymentModel1.getFailureURL().equals("None"))
-							response.sendRedirect(paymentModel1.getFailureURL());
-					//TODO Added By Wasif 20190314
-					if (!paymentModel1.getServerFailureURL().equals("NotSet"))
-						response.sendRedirect(paymentModel1.getServerFailureURL());				
+					// shaker move from here
+					// added by Shaker on 16.04.2019
 				}
+				// shaker move start
+				if (Objects.nonNull(paymentModel1.getFailureURL()))
+					if (!paymentModel1.getFailureURL().equals("None"))
+						response.sendRedirect(paymentModel1.getFailureURL());
+				//TODO Added By Wasif 20190314
+				if (!paymentModel1.getServerFailureURL().equals("NotSet"))
+					response.sendRedirect(paymentModel1.getServerFailureURL());
+				// shaker move end
 			}
 
 		} catch (Exception e) {
@@ -2866,36 +2879,40 @@ public class PaymentController extends BaseDao implements SaltTracker {
 							transactionModel.getMerchantModel().getMerchantId(), 3,
 							transactionModel.getTransactionId());
 					System.out.println("Result ==>> " + result);
-					if (Objects.nonNull(paymentModel1.getFailureURL()))
-						if (!paymentModel1.getFailureURL().equals("None")) {
-							response.sendRedirect(transactionModel.getPaymentModel().getFailureURL());
-							//TODO Added By Wasif 20190314
-							if (!paymentModel1.getServerFailureURL().equals("NotSet")) {
-							//	response.sendRedirect(transactionModel.getPaymentModel().getServerSuccessURL());
-								
-							
-							String inputJsonString = "{\"email\":\"" + paymentModel1.getEmailId() 
-							+ "\", \"mobileNumber\":\"" + paymentModel1.getMobileNumber()
-							+ "\", \"amount\":\"" + paymentModel1.getAmount()
-							+ "\", \"orderTransactionID\":\"" + paymentModel1.getOrderTransactionID()+ "\", \"transactionStatus\":\"" + "Failure"+"\"}";
-						
-										
-							System.out.println("inputJsonString ==>> " + inputJsonString);
-							ClientResponse client_response = payconnectApiAcess(paymentModel1.getServerFailureURL(),
-									inputJsonString, "post");
-							
-							try {
-								//logwrite.writeLog(transactionModel.getMerchantModel().getMerchantId(),"Citybank approveOrder",1, "approveOrder cityTrxModelUpd txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
-								writeLogV2(transactionModel.getMerchantModel().getMerchantId(),"server-server API",2, "on failure order trx ID:"+transactionModel.getPaymentModel().getOrderTransactionID()+",response:"+client_response);
-
-							} catch (Exception e1) {
-								//  Auto-generated catch block
-								e1.printStackTrace();
-							}
-							/***/
-							}
-						}
+					// shaker move from here
+					// added by Shaker on 16.04.2019
 				}
+				// shaker move start				
+				if (Objects.nonNull(paymentModel1.getFailureURL()))
+					if (!paymentModel1.getFailureURL().equals("None")) {
+						response.sendRedirect(transactionModel.getPaymentModel().getFailureURL());
+						//TODO Added By Wasif 20190314
+						if (!paymentModel1.getServerFailureURL().equals("NotSet")) {
+						//	response.sendRedirect(transactionModel.getPaymentModel().getServerSuccessURL());
+							
+						
+						String inputJsonString = "{\"email\":\"" + paymentModel1.getEmailId() 
+						+ "\", \"mobileNumber\":\"" + paymentModel1.getMobileNumber()
+						+ "\", \"amount\":\"" + paymentModel1.getAmount()
+						+ "\", \"orderTransactionID\":\"" + paymentModel1.getOrderTransactionID()+ "\", \"transactionStatus\":\"" + "Failure"+"\"}";
+					
+									
+						System.out.println("inputJsonString ==>> " + inputJsonString);
+						ClientResponse client_response = payconnectApiAcess(paymentModel1.getServerFailureURL(),
+								inputJsonString, "post");
+						
+						try {
+							//logwrite.writeLog(transactionModel.getMerchantModel().getMerchantId(),"Citybank approveOrder",1, "approveOrder cityTrxModelUpd txnId:"+txnId+",purchaseAmount:"+purchaseAmount+",merchantTransId:"+merchantTransId);
+							writeLogV2(transactionModel.getMerchantModel().getMerchantId(),"server-server API",2, "on failure order trx ID:"+transactionModel.getPaymentModel().getOrderTransactionID()+",response:"+client_response);
+
+						} catch (Exception e1) {
+							//  Auto-generated catch block
+							e1.printStackTrace();
+						}
+						/***/
+						}
+					}
+				// shaker move end
 			}
 
 		} catch (Exception e) {
@@ -3079,8 +3096,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 				model.addAttribute("paymentModel", paymentModel);
 				String key = messageUtil.getBundle("secret.key");
 				TransactionModel transactionModel = new TransactionModel();
-				MerchantModel merchantModel = new MerchantModel();
-				merchantModel.setMerchantId(paymentModel.getMerchantModel().getMerchantId());
+				MerchantModel merchantModel = merchantService.fetchActiveMerchantById(paymentModel.getMerchantModel().getMerchantId());
 				transactionModel.setMerchantModel(merchantModel);
 				transactionModel.setAmount(paymentModel.getAmount());
 				transactionModel.setOrder_id(paymentModel.getOrderID().toString());
