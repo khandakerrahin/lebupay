@@ -29,6 +29,7 @@
 <link rel="stylesheet" href="resources/css/custom.css">
 <link rel="stylesheet" href="resources/css/responsive.css">
 <link rel="stylesheet" href="resources/css/mk-notifications.css">
+<link href="resources/css/notify.css" rel="stylesheet">
 <link
 	href="resources/css/css.css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i"
 	rel="stylesheet">
@@ -37,24 +38,17 @@
 <!-- jQuery 2.2.3 -->
 <script src="<%=basePath%>resources/js/jquery-2.2.3.min.js"></script>
 <script src="<%=basePath%>resources/js/bootstrap.min.js"></script>
-<script src="<%=basePath%>resources/js/mk-notifications.js"></script>
+
 <link rel="stylesheet" type="text/css"
 	href="<%=basePath%>resources/vendors/growl/css/jquery.growl.css" />
 <script src="<%=basePath%>resources/vendors/growl/js/jquery.growl.js"
 	type="text/javascript"></script>
+<script src="<%=basePath%>resources/js/jquery.notify.js"></script>
 
-<link rel="stylesheet" 
-      href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" 
-      integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" 
-      crossorigin="anonymous">
-<script src="https://code.jquery.com/jquery-3.3.1.min.js" 
-        integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT" 
-        crossorigin="anonymous">
-</script>
 
 <style>
 .navImg {
-	width: 70%;
+	width: 58px;
 	margin-top: -10% !important;
 }
 
@@ -108,6 +102,9 @@
 @media ( max-width : 723px) {
 	.lebuImg {
 		margin-top: 0% !important;
+	}
+	#brand1{
+	margin-top:-7% !important; 
 	}
 }
 </style>
@@ -246,14 +243,14 @@ $(document).ready(function(){
 				<div class="row">
 					<div class="col-sm-12">
 						<div class="row">
-							<div class="col-xs-8">
+							<div class="col-xs-6">
 								<a class="navbar-brand" href="#"> <img alt="${merchantName}"
 									id="brand2"
 									src="<%=basePath%>resources/images/merchantLogo/${logo}"
 									class="img img-responsive navImg">
 								</a>
 							</div>
-							<div class="col-xs-4">
+							<div class="col-xs-6">
 								<a class="navbar-brand" href="#" style="float: right;"> <img
 									alt="LebuPay" id="brand1"
 									class="img img-responsive navImg lebuImg"
@@ -466,7 +463,8 @@ $(document).ready(function(){
 													<div class="row">
 														<div class="col-xs-8">
 															<b id="infoName">Merchant Name</b><br> <i
-																id="infoItem" data-reactid=".0.2.1.0.3.0.0.1.0.0.0.0">${merchantName }</i>
+																id="infoItem">${merchantName }</i>&nbsp;<i class="fa fa-question-circle" aria-hidden="true" ></i>
+																
 														</div>
 														<div class="col-xs-4">
 															<b id="infoName">Amount</b><br> <strong
@@ -477,28 +475,91 @@ $(document).ready(function(){
 															</strong>
 														</div>
 													</div>
+													
 													<br>
 													<div class="contSec"
 														style="border-top: 1px solid #66ab6f; border-radius: 20px">
 														<div class="eachBox" style="text-align: center">
-															<ul>
+															<%  
+														String city = request.getAttribute("CITY").toString();
+														String ebl = request.getAttribute("EBL").toString(); 
+														String sebl = request.getAttribute("SEBL").toString();
+													
+														%>
 
-																<li class="card_logos"><a href="#"><img
-																		src="<%=basePath%>resources/images/visa.png"
-																		alt="visa card"></a></li>
-																<li class="card_logos"><a
-																	href="ebl?transactionId=${transactionId1 }"><img
-																		src="<%=basePath%>resources/images/mastercard.png"
-																		alt="master card"></a></li>
-																<li class="card_logos diner"><a
-																	href="ebl?transactionId=${transactionId1 }"><img
-																		src="<%=basePath%>resources/images/diners_club.png"
-																		alt="diners club"></a></li>
-																<li id="bkash_hov" class="card_logos"><a href="#"
-																	id="bkashClicked"><img
-																		src="<%=basePath%>resources/images/bkash.png"
-																		style="width: 25px" alt="bkash"></a></li>
-															</ul>
+															<% if(ebl.equals("Y")){ %>
+															<div id="eblDiv">
+																<ul>
+
+																	<li class="card_logos"><a
+																		href="ebl?transactionId=${transactionId1 }"><img
+																			src="<%=basePath%>resources/images/visa.png"
+																			alt="visa card"></a></li>
+																	<li class="card_logos"><a
+																		href="ebl?transactionId=${transactionId1 }"><img
+																			src="<%=basePath%>resources/images/mastercard.png"
+																			alt="master card"></a></li>
+																	<li class="card_logos diner"><a
+																		href="ebl?transactionId=${transactionId1 }"><img
+																			src="<%=basePath%>resources/images/diners_club.png"
+																			alt="diners club"></a></li>
+																	<li id="bkash_hov" class="card_logos"><a href="#"
+																		id="bkashClicked"><img
+																			src="<%=basePath%>resources/images/bkash.png"
+																			style="width: 25px" alt="bkash"></a></li>
+																</ul>
+															</div>
+															<% }else if(city.equals("Y")){ %>
+															<div id="cityDiv">
+																<ul>
+
+																	<li class="card_logos"><a
+																		href="paycitybank?transactionId=${transactionId1 }"><img
+																			src="<%=basePath%>resources/images/visa.png"
+																			alt="visa card"></a></li>
+																	<li class="card_logos"><a
+																		href="paycitybank?transactionId=${transactionId1 }"><img
+																			src="<%=basePath%>resources/images/mastercard.png"
+																			alt="master card"></a></li>
+																	<li class="card_logos diner"><a
+																		href="paycitybank?transactionId=${transactionId1 }"><img
+																			src="<%=basePath%>resources/images/amex.png"
+																			alt="diners club"></a></li>
+																	<li id="bkash_hov" class="card_logos"><a href="#"
+																		id="bkashClicked"><img
+																			src="<%=basePath%>resources/images/bkash.png"
+																			style="width: 25px" alt="bkash"></a></li>
+																</ul>
+															</div>
+
+															<% } else if(sebl.equals("Y")){ %>
+															<div id="seblDiv">
+																<ul>
+
+																	<li class="card_logos"><a
+																		href="sebl?transactionId=${transactionId1 }"><img
+																			src="<%=basePath%>resources/images/visa.png"
+																			alt="visa card"></a></li>
+																	<li class="card_logos"><a
+																		href="sebl?transactionId=${transactionId1 }"><img
+																			src="<%=basePath%>resources/images/mastercard.png"
+																			alt="master card"></a></li>
+																	<li id="bkash_hov" class="card_logos"><a href="#"
+																		id="bkashClicked"><img
+																			src="<%=basePath%>resources/images/bkash.png"
+																			style="width: 25px" alt="bkash"></a></li>
+																</ul>
+															</div>
+															<% }else{ %>
+															<div id="showBkashDiv">
+																<ul>
+																	<li id="bkash_hov" class="card_logos"><a href="#"
+																		id="bkashClicked"><img
+																			src="<%=basePath%>resources/images/bkash.png"
+																			style="width: 25px" alt="bkash"></a></li>
+																</ul>
+															</div>
+															<%} %>
 														</div>
 														<div id="bkashDiv" style="display: none">
 
@@ -661,12 +722,18 @@ $(document).ready(function(){
 
 														</div>
 														<%--  --%>
+
 													</div>
+													<p class="cancelOrder" style="text-align:center">
+														<a href="${returnUrl }">Cancel Order</a>and return to
+														LebuPay
+													</p>
 												</div>
 											</div>
 										</div>
 										<div class="col-md-3 col-sm-3 col-xs-12"></div>
 									</div>
+									
 									<div class="payment_page_footer" style="margin-top: 0px">
 										<div class="row">
 											<div class="col-md-12">
@@ -684,7 +751,7 @@ $(document).ready(function(){
 													<li><img
 														src="<%=basePath%>resources/images/diner-club-protect.png"
 														alt="diners-club-protect"></li>
-											
+
 												</ul>
 											</div>
 										</div>
@@ -732,28 +799,7 @@ $(document).ready(function(){
 		  }
 		
 		});
-	mkNotifications();
-	mkNoti(
-			  'Notification Title',
-			  'Notification Body', {
-
-			    // Default, Primary, Success, Danger, Warning, Info, Light, Dark, Purple
-			    status: 'default',
-
-
-			    // Linkify the notification box
-			    link: {
-			      url: null,
-			      target: '_self',
-			      function: null
-			    },
-
-			    // Is dismissable?
-			    dismissable: true,
-
-			  }
-			);
-						
+		
 	</script>
 	<!-- ./wrapper -->
 	<%
@@ -852,4 +898,11 @@ $(document).ready(function(){
 			$("#sectionC").remove();
 
 		}
+		$(".fa").on("click", function(e){
+			$.notify({
+				  title: 'Transaction Details', 
+				  content: "<b>TrxID:</b> ${transactionId}", 
+				  timeout: 0
+				});
+			});
 	</script>

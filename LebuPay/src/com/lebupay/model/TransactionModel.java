@@ -82,7 +82,9 @@ public class TransactionModel extends CommonModel {
 	private String targetTransactionId_bankresp;
 	private String trx_transactionId_bankresp;
 
-	private String logo = "wetopup.png"; // changed by ajmain
+	private String logo = "bubble.png"; // changed by ajmain
+
+	private String lebuPayTrx;
 
 	public Long getTransactionId() {
 		return transactionId;
@@ -706,6 +708,14 @@ public class TransactionModel extends CommonModel {
 
 	public void setLogo(String logo) { // added by ajmain
 		this.logo = logo;
+	}
+
+	public String getLebuPayTrx() {
+		return lebuPayTrx;
+	}
+
+	public void setLebuPayTrx(String lebuPayTrxId) {
+		lebuPayTrx = lebuPayTrxId;
 	}
 
 	@Override

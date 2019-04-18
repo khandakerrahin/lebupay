@@ -1386,7 +1386,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 	public String ebl(HttpServletRequest request, Model model, @RequestParam String transactionId,
 			HttpServletResponse response, final RedirectAttributes redirectAttributes) {
-
+		System.out.println("EBL Started");
 		if (logger.isInfoEnabled()) {
 			logger.info("ebl -- START");
 		}
@@ -1442,7 +1442,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		}
 
 		transactionModelSaltTracker.setTxnId(transactionModel2.getTxnId());
-
+		System.out.println(transactionModel2.getMerchantModel().getEblId());
 		String requestURL = messageUtil.getBundle("ebi.first.url");
 		System.out.println("requestURL ==>> " + requestURL);
 		Map<String, String> argsMap = new HashMap<String, String>();
@@ -1892,9 +1892,14 @@ public class PaymentController extends BaseDao implements SaltTracker {
 			String authDate = authorizationResponse.get("date").getAsString() != null
 					? authorizationResponse.get("date").getAsString()
 					: "";
-			String financialNetworkCode = authorizationResponse.get("financialNetworkCode").getAsString() != null
-					? authorizationResponse.get("financialNetworkCode").getAsString()
-					: "";
+
+			String financialNetworkCode = "";
+			if (authorizationResponse.has("financialNetworkDate")) {
+				financialNetworkCode = authorizationResponse.get("financialNetworkCode").getAsString() != null
+						? authorizationResponse.get("financialNetworkCode").getAsString()
+						: "";
+			}
+
 			String transactionIdentifier = authorizationResponse.get("transactionIdentifier").getAsString() != null
 					? authorizationResponse.get("transactionIdentifier").getAsString()
 					: "";
@@ -2778,6 +2783,208 @@ public class PaymentController extends BaseDao implements SaltTracker {
 		 * countryObject.getString("alpha2"); System.out.println("Country: ");
 		 * System.out.println(country); System.out.println(alpha2Code);/
 		 **/
+
+		return retval;
+	}
+
+	@RequestMapping(value = "/void", method = RequestMethod.GET)
+
+	public String voidEblOrder(HttpServletRequest request, String orderid, TransactionModel tm,
+			String targetTransactionId, String transactionId) {
+
+		String retval = "";
+		/*
+		 * //@RequestMapping(value = "/ebl_void", method = RequestMethod.GET)
+		 * 
+		 * public String eblVoid(HttpServletRequest request, Model model, @RequestParam
+		 * String transactionId,String orderid, HttpServletResponse response, final
+		 * RedirectAttributes redirectAttributes) { /
+		 **/
+		if (logger.isInfoEnabled()) {
+			logger.info("ebl void -- START");
+		}
+
+		String path = request.getContextPath();
+		String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path
+				+ "/";
+		Map<String, String> argsMap = new HashMap<String, String>();
+		Long transactionId1 = 0L;
+		TransactionModel transactionModel2 = null;
+
+		try {
+
+			String key = messageUtil.getBundle("secret.key");
+			transactionId1 = Long.parseLong(encryption.decode(key, transactionId));
+			System.out.println("TransactionId After Decode== >> " + transactionId1);
+
+			try {
+				// TODO
+				// logwrite.writeLog
+				writeLogV2(0L, "EBL void GET", 1, "trxID:" + transactionId1 + ",SESSIONKEY:" + transactionId);
+			} catch (Exception e1) {
+				// Auto-generated catch block
+				e1.printStackTrace();
+			}
+			transactionModel2 = tm;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
+
+		try {
+
+			// change before final commit. after order put lebupay order id, after
+			// transaction put transaction identifier value
+			URL url = new URL("https://test-gateway.mastercard.com/api/rest/version/43/merchant/"
+					+ transactionModel2.getMerchantModel().getEblId() + "/order/" + transactionModel2.getTxnId()
+					+ "/transaction/" + transactionModel2.getTxnId());
+
+			String authStr = transactionModel2.getMerchantModel().getEblUserName() + ":"
+					+ transactionModel2.getMerchantModel().getEblPassword();
+			String authEncoded = Base64.encode(authStr);
+			HttpURLConnection http = (HttpURLConnection) url.openConnection();
+			http.setRequestMethod("PUT");
+			http.setRequestProperty("Authorization", "Basic " + authEncoded);
+			http.setDoOutput(true);
+
+			JsonObject mainJson = new JsonObject();
+			JsonObject transactionJson = new JsonObject();
+
+			mainJson.addProperty("apiOperation", "VOID");
+			transactionJson.addProperty("targetTransactionId", "1"); // change it with id which send with transaction
+																		// field
+
+			mainJson.add("transaction", transactionJson);
+
+			String data1 = mainJson.toString();
+			DataOutputStream dos = new DataOutputStream(http.getOutputStream());
+			dos.writeBytes(data1);
+			dos.flush();
+			dos.close();
+			System.out.println("void request Json data: " + data1);
+
+			System.out.println("Initiation void json");
+			String res_status = http.getResponseMessage();
+			BufferedReader in = new BufferedReader(new InputStreamReader(http.getInputStream()));
+			String inputLine;
+			StringBuffer response2 = new StringBuffer();
+			while ((inputLine = in.readLine()) != null) {
+				response2.append(inputLine);
+			}
+			// TODO write json log here
+			System.out.println("void response json response: " + response2.toString());
+			in.close();
+
+			JsonParser parser = new JsonParser();
+			JsonObject json2 = (JsonObject) parser.parse(response2.toString());
+
+			Map<String, Object> respMap = toMap(json2);
+
+			JsonObject authorizationResponse = json2.getAsJsonObject("authorizationResponse");
+			String transactionIdentifier = authorizationResponse.get("transactionIdentifier").getAsString();
+
+			JsonObject customer = json2.getAsJsonObject("customer");
+			String firstName = customer.get("firstName").getAsString() != null ? customer.get("firstName").getAsString()
+					: "";
+			String lastName = "";
+			if (customer.has("lastName")) {
+				lastName = customer.get("lastName").getAsString() != null ? customer.get("lastName").getAsString() : "";
+			}
+
+			JsonObject device = json2.getAsJsonObject("device");
+			String browser = device.get("browser").getAsString() != null ? device.get("browser").getAsString() : "";
+			JsonObject device1 = json2.getAsJsonObject("device");
+			String ipAddress = device1.get("ipAddress").getAsString() != null ? device.get("ipAddress").getAsString()
+					: "";
+
+			String merchant = json2.get("merchant").getAsString();
+
+			JsonObject orderJson = json2.getAsJsonObject("order");
+			String orderAmount = orderJson.get("amount").getAsString() != null ? orderJson.get("amount").getAsString()
+					: "";
+			String orderCreationTime = orderJson.get("creationTime").getAsString() != null
+					? orderJson.get("creationTime").getAsString()
+					: "";
+			String orderCurrency = orderJson.get("currency").getAsString() != null
+					? orderJson.get("currency").getAsString()
+					: "";
+			String orderId = orderJson.get("id").getAsString() != null ? orderJson.get("id").getAsString() : "";
+			String orderStatus = orderJson.get("status").getAsString() != null ? orderJson.get("status").getAsString()
+					: "";
+			String orderTotalAuthorizedAmount = orderJson.get("totalAuthorizedAmount").getAsString() != null
+					? orderJson.get("totalAuthorizedAmount").getAsString()
+					: "";
+			String orderTotalCapturedAmount = orderJson.get("totalCapturedAmount").getAsString() != null
+					? orderJson.get("totalCapturedAmount").getAsString()
+					: "";
+			String orderTotalRefundedAmount = orderJson.get("totalRefundedAmount").getAsString() != null
+					? orderJson.get("totalRefundedAmount").getAsString()
+					: "";
+
+			JsonObject transaction = json2.getAsJsonObject("transaction");
+			String trxAmount = transaction.get("amount").getAsString() != null ? transaction.get("amount").getAsString()
+					: "";
+			String trxCurrency = transaction.get("currency").getAsString() != null
+					? transaction.get("currency").getAsString()
+					: "";
+			String trxFrequency = transaction.get("frequency").getAsString() != null
+					? transaction.get("frequency").getAsString()
+					: "";
+			String trxId = transaction.get("id").getAsString() != null ? transaction.get("id").getAsString() : "";
+			String trxReceipt = transaction.get("receipt").getAsString() != null
+					? transaction.get("receipt").getAsString()
+					: "";
+			String trxSource = transaction.get("source").getAsString() != null ? transaction.get("source").getAsString()
+					: "";
+			String trxTargetTransactionId = transaction.get("targetTransactionId").getAsString() != null
+					? transaction.get("targetTransactionId").getAsString()
+					: "";
+			String trxTerminal = transaction.get("terminal").getAsString() != null
+					? transaction.get("terminal").getAsString()
+					: "";
+			String trxType = transaction.get("type").getAsString() != null ? transaction.get("type").getAsString() : "";
+
+			JsonObject acquirerSuccess = transaction.getAsJsonObject("acquirer");
+			String acquirerDate = acquirerSuccess.get("date").getAsString() != null
+					? acquirerSuccess.get("date").getAsString()
+					: "";
+			String acquirerId = acquirerSuccess.get("id").getAsString() != null
+					? acquirerSuccess.get("id").getAsString()
+					: "";
+			String settlementDate = acquirerSuccess.get("settlementDate").getAsString() != null
+					? acquirerSuccess.get("settlementDate").getAsString()
+					: "";
+			String acquirerBatch = acquirerSuccess.get("batch").getAsString() != null
+					? acquirerSuccess.get("batch").getAsString()
+					: "";
+			String timeZone = acquirerSuccess.get("timeZone").getAsString() != null
+					? acquirerSuccess.get("timeZone").getAsString()
+					: "";
+			String acquirerTrxId = acquirerSuccess.get("transactionId").getAsString() != null
+					? acquirerSuccess.get("transactionId").getAsString()
+					: "";
+
+			String result = json2.get("result").getAsString();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		try {
+
+			// TODO
+			// logwrite.writeLog
+			writeLogV2(0L, "EBL VOID GET", 1, "trxid:" + transactionId1 + ",VOID, REQ MAP :" + argsMap.toString());
+		} catch (Exception e1) {
+			// Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		HTTPConnection.disconnect();
+
+		if (logger.isInfoEnabled()) {
+			logger.info("ebl -- END");
+		}
 
 		return retval;
 	}
