@@ -17,6 +17,7 @@ import com.lebupay.common.SendMail;
 import com.lebupay.common.Util;
 import com.lebupay.dao.MerchantDao;
 import com.lebupay.dao.TransactionDAO;
+import com.lebupay.model.CardIssuerModel;
 import com.lebupay.model.CardTypePercentageModel;
 import com.lebupay.model.CityBankTransactionModel;
 import com.lebupay.model.DataTableModel;
@@ -534,6 +535,29 @@ public Object[][] exportAllTransactionsForExcelByMerchantId(DataTableModel dataT
 		return paymentModel;
 	}
 	
+	
+	/**
+	 * This method is used for fetching the Transactions w.r.t txnID.
+	 * @param txnID
+	 * @return TransactionModel
+	 * @throws Exception
+	 */
+	public CardIssuerModel fetchBinDetail (String provided_card) throws Exception {
+		
+		if (logger.isInfoEnabled()) {
+			logger.info("fetchBinDetail -- START");
+		}
+		
+		CardIssuerModel cardIssuerModel = transactionDao.fetchBinDetail(provided_card);
+		
+		
+		if (logger.isInfoEnabled()) {
+			logger.info("fetchBinDetail -- END");
+	   }
+		
+		return cardIssuerModel;
+	}
+	
 	/**
 	 * This method is used for fetching the Transactions w.r.t OREDR_ID.
 	 * @param txnID
@@ -600,6 +624,9 @@ public Object[][] exportAllTransactionsForExcelByMerchantId(DataTableModel dataT
 			
 		return result;
 	}
+	
+	
+
 	
 	/**
 	 * This method is used for updating the Customer Details present in the Order Table.

@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import com.lebupay.model.CardIssuerModel;
 import com.lebupay.model.CardTypePercentageModel;
 import com.lebupay.model.CityBankTransactionModel;
 import com.lebupay.model.DataTableModel;
@@ -312,4 +313,14 @@ public interface TransactionDAO {
 	 * @throws Exception
 	 */
 	public int insertSEblTransactionAfterPayment(TransactionModel transactionModel) throws Exception ;
+
+	/**
+	 * 
+	 * @param provided_card
+	 * @return
+	 * @throws Exception
+	 */
+	public CardIssuerModel fetchBinDetail(String provided_card) throws Exception ;
+	
+	
 }

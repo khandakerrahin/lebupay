@@ -6,6 +6,7 @@ package com.lebupay.service;
 
 import java.util.List;
 
+import com.lebupay.model.CardIssuerModel;
 import com.lebupay.model.DataTableModel;
 import com.lebupay.model.PaymentModel;
 import com.lebupay.model.TransactionModel;
@@ -145,6 +146,14 @@ public interface TransactionService {
 	 */
 	public PaymentModel fetchTransactionByTXNId_detail (String txnID) throws Exception ;
 	
+
+	/**
+	 * This method is used for fetching the Transactions w.r.t txnID.
+	 * @param provided_card
+	 * @return CardIssuerModel
+	 * @throws Exception
+	 */
+	public CardIssuerModel fetchBinDetail (String provided_card) throws Exception ;
 	/**
 	 * This method is used for fetching the Transactions w.r.t ORDER_ID.
 	 * @param txnID

@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 import com.lebupay.common.Util;
 import com.lebupay.dao.TransactionDAO;
 import com.lebupay.logwriter.Logwriter;
+import com.lebupay.model.CardIssuerModel;
 import com.lebupay.model.CardTypePercentageModel;
 import com.lebupay.model.CityBankTransactionModel;
 import com.lebupay.model.DataTableModel;
@@ -1423,13 +1424,22 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ "CARD_BRAND=:CARD_BRAND,SOURCE_OF_FUNDS_TYPE=:SOURCE_OF_FUNDS_TYPE,CUSTOMER_FIRSTNAME=:CUSTOMER_FIRSTNAME,DEVICE_BROWSER=:DEVICE_BROWSER,DEVICE_IPADDRESS=:DEVICE_IPADDRESS,ACSECI_VALUE=:ACSECI_VALUE,ACQUIRER_ID=:ACQUIRER_ID,SETTLEMENT_DATE=:SETTLEMENT_DATE," // 8
 					+ "TRANSACTION_SOURCE=:TRANSACTION_SOURCE,RESULT=:RESULT,CREATION_TIME=:CREATION_TIME,CUSTOMER_LASTNAME=:CUSTOMER_LASTNAME,TOTAL_REFUNDED_AMOUNT=:TOTAL_REFUNDED_AMOUNT,ACQUIRER_BATCH=:ACQUIRER_BATCH,DESCRIPTION=:DESCRIPTION,TRANSACTION_TYPE=:TRANSACTION_TYPE," // 8
 					+ "FINANCIAL_NETWORK_DATE=:FINANCIAL_NETWORK_DATE,RESPONSE_CODE=:RESPONSE_CODE,TRANSACTION_FREQUENCY=:TRANSACTION_FREQUENCY,TRANSACTION_TERMINAL=:TRANSACTION_TERMINAL,AUTHORIZATION_CODE=:AUTHORIZATION_CODE,AUTHENTICATION_STATUS=:AUTHENTICATION_STATUS,PROCESSING_CODE=:PROCESSING_CODE," // 7
+					+ "BIN_ISSUER_COUNTRY =:BIN_ISSUER_COUNTRY,"
 					+ "EXPIRY_MONTH=:EXPIRY_MONTH,SECURE_XID=:SECURE_XID,ENROLLMENT_STATUS=:ENROLLMENT_STATUS,CARD_SECURITY_CODE_ERROR=:CARD_SECURITY_CODE_ERROR,TIME_ZONE=:TIME_ZONE,GATEWAY_ENTRY_POINT=:GATEWAY_ENTRY_POINT,MODIFIED_DATE=CURRENT_TIMESTAMP " // 7
 					+ "where MERCHANT_ID =:MERCHANT_ID and TRANSACTION_ID =:TRANSACTION_ID";
+			
+
 			pst = (OraclePreparedStatement) connection.prepareStatement(sql);
 			pst.setStringAtName("TXN_ID", transactionModel.getTxnId()); // TXN_ID
 			pst.setDoubleAtName("BALANCE", transactionModel.getBalance()); // BALANCE
 			pst.setDoubleAtName("LOYALTY_POINT", transactionModel.getLoyaltyPoint()); // LOYALTY_POINT
-			pst.setLongAtName("STATUS", 0); // STATUS
+			if(transactionModel.getTrx_status()== 6) {
+				pst.setLongAtName("STATUS", transactionModel.getTrx_status());//20190418
+			}else {
+			pst.setLongAtName("STATUS", 0); // STATUS 
+			}
+			//TODO hard coded
+			
 
 			pst.setStringAtName("AUTHORIZATION_RESPONSE_DATE", transactionModel.getAuthorizationResponse_date());
 			pst.setStringAtName("FUNDING_METHOD", transactionModel.getFundingMethod());
@@ -1488,6 +1498,8 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 			pst.setDoubleAtName("GROSS_AMOUNT", transactionModel.getGrossAmount());
 			pst.setDoubleAtName("AMOUNT", transactionModel.getAmount());
 			pst.setStringAtName("BANK", transactionModel.getBank());
+			pst.setStringAtName("BIN_ISSUER_COUNTRY", transactionModel.getCardIssuerModel().getIssuerCountry());
+			
 			
 			
 			
@@ -1565,6 +1577,10 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 		return result;
 	}
 
+	
+	
+	
+	
 	/**
 	 * This method is used to fetch the transaction w.r.t ID.
 	 * @param transactionId
@@ -2112,6 +2128,104 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 
 		return paymentModel;
 	
+	}
+	
+	
+	/**
+	 * This method is used for fetching Transaction by TXNID. Wasif 20190320
+	 * @param txnID
+	 * @return CardIssuerModel
+	 * @throws Exception
+	 */
+	public CardIssuerModel fetchBinDetail (String provided_card) throws Exception {
+		
+		if (logger.isInfoEnabled()) {
+			logger.info("fetchBinDetail -- START");
+		}
+		
+		 String bin=  provided_card.substring(0,6);
+		 System.out.println("transactionDaoImpl-fetchBinDetail provided_card:"+provided_card+" --> BIN:"+bin );
+
+		Connection connection = oracleConnection.Connect();
+		OraclePreparedStatement  pst = null;
+		//TransactionModel transactionModel = null;
+		CardIssuerModel cardIssuerModel = null;
+		try {
+			
+           String sql= "select "
+            		+ "bl.bin," //1
+            		+ "bl.COUNTRY_ISO_CODE," //2
+            		+ "bl.STATUS, " //3
+            		+ "bl.COUNTRY " //4            		
+            		+ "from bin_list bl "
+            		+ "where bl.bin =:bin ";
+
+			pst = (OraclePreparedStatement) connection.prepareStatement(sql);
+			pst.setStringAtName("bin", bin);
+			System.out.println(" fetchBinDetail sql: "+sql);
+			ResultSet rs =  pst.executeQuery();
+		    int counter=0;
+		
+			while(rs.next()){
+				counter++;
+				
+				cardIssuerModel = new CardIssuerModel();
+
+				cardIssuerModel.setCOUNTRY_ISO_CODE(rs.getInt(2));
+				cardIssuerModel.setBinStatus(rs.getInt(3)); 
+				cardIssuerModel.setIssuerCountry(rs.getString(4)); //20190320	
+				
+			    int countryIsoCode= rs.getInt(2);
+			    System.out.println("fetchBinDetail countryIsoCode:"+countryIsoCode);
+				if(countryIsoCode == 50 ) {
+					cardIssuerModel.setBinType(1);//Local Bangladeshi card
+				}
+				else  {
+					cardIssuerModel.setBinType(2);//International card
+				}								
+				//TODO
+				if (logger.isInfoEnabled()) { 
+					logger.info("transactionDaoImpl fetchBinDetail Card IssuerCountry: "+rs.getString(4));
+				}			
+			}
+			if(counter == 0) {
+				cardIssuerModel = new CardIssuerModel();
+				cardIssuerModel.setBinType(0);
+				cardIssuerModel.setBinStatus(1);// not in the list
+			}
+			
+			
+		} 
+		catch(Exception e) {
+			if (logger.isInfoEnabled()) { 
+				logger.info(" transactionDaoImpl -fetchBinDetail responseCode: "+ e+"\n"+e.getStackTrace());			
+			}
+			e.printStackTrace();
+		} 
+		finally {
+			try{
+				if(pst != null)
+					if(!pst.isClosed())
+						pst.close();
+
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+
+			try{
+				if(connection != null)
+					if(!connection.isClosed())
+						connection.close();
+
+			}catch(Exception e){
+				e.printStackTrace();
+			}      
+		}
+
+		if (logger.isInfoEnabled()) {
+			logger.info("fetchBinDetail -- END");
+		}
+		return cardIssuerModel;	
 	}
 
 
@@ -2813,6 +2927,9 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 				else if(status == 4) {
 					paymentModel.setTransactionStatus("Incomplete");
 				}
+				else if(status == 6) {
+					paymentModel.setTransactionStatus("Expired");
+				}
 
 				PaymentModel paymentModel3 = new PaymentModel();
 				Gson gson = new Gson();
@@ -2927,6 +3044,9 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 				}
 				else if(status == 4) {
 					paymentModel.setTransactionStatus("Incomplete");
+				}
+				else if(status == 6) {
+					paymentModel.setTransactionStatus("Void");
 				}
 				
 				paymentModel.setAmount(rs.getDouble(1));

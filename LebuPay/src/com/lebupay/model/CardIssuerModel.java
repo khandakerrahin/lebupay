@@ -16,6 +16,13 @@ public class CardIssuerModel extends CommonModel {
 	private int logitude;
 	private IssuerBankModel issuerBankModel;
 	private int originType;
+
+	private int binStatus;
+	private String IssuerCountry;
+	private int binType;
+	private int COUNTRY_ISO_CODE;
+	private int resp_ACSEI;
+	
 	
 	public IssuerNumberModel getIssuerNumberModel() {
 		return issuerNumberModel;
@@ -100,6 +107,36 @@ public class CardIssuerModel extends CommonModel {
 	}
 	public void setOriginType(int originType) {
 		this.originType = originType;
+	}
+	public int getBinStatus() {
+		return binStatus;
+	}
+	public void setBinStatus(int binStatus) {
+		this.binStatus = binStatus;
+	}
+	public String getIssuerCountry() {
+		return IssuerCountry;
+	}
+	public void setIssuerCountry(String issuerCountry) {
+		IssuerCountry = issuerCountry;
+	}
+	public int getBinType() {
+		return binType;
+	}
+	public void setBinType(int binType) {
+		this.binType = binType;
+	}
+	public int getCOUNTRY_ISO_CODE() {
+		return COUNTRY_ISO_CODE;
+	}
+	public void setCOUNTRY_ISO_CODE(int cOUNTRY_ISO_CODE) {
+		COUNTRY_ISO_CODE = cOUNTRY_ISO_CODE;
+	}
+	public int getResp_ACSEI() {
+		return resp_ACSEI;
+	}
+	public void setResp_ACSEI(int resp_ACSEI) {
+		this.resp_ACSEI = resp_ACSEI;
 	}
 	
 	
