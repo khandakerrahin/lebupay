@@ -710,11 +710,11 @@ public class TransactionModel extends CommonModel {
 		this.logo = logo;
 	}
 
-	public String getLebuPayTrx() {
+	public String getLebuPayTrx() { // added by ajmain
 		return lebuPayTrx;
 	}
 
-	public void setLebuPayTrx(String lebuPayTrxId) {
+	public void setLebuPayTrx(String lebuPayTrxId) { // added by ajmain
 		lebuPayTrx = lebuPayTrxId;
 	}
 
