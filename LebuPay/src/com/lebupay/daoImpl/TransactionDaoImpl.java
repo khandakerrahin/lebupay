@@ -3063,7 +3063,6 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 				}
 				else if(status == 7) {
 					paymentModel.setTransactionStatus("Expired");
-					paymentModel.setTransactionStatus("Void");
 				}
 				
 				paymentModel.setAmount(rs.getDouble(1));
