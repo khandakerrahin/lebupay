@@ -409,6 +409,29 @@ public class Util {
 
 		return !m.matches();
 	}
+	
+	//	added by Shaker on 23.04.2019
+	/**
+	 * This method is used to check null or empty
+	 * @param String
+	 * @return boolean
+	 */
+	public static boolean isNullOrEmpty(String s) {
+		if(s==null) return true;
+		else if(s.isEmpty()) return true;
+		else return false;
+	}
+	
+	//	added by Shaker on 23.04.2019
+	/**
+	 * This method is used to check null or empty
+	 * @param Integer
+	 * @return boolean
+	 */
+	public static boolean isNullOrEmpty(Integer s) {
+		if(s==null) return true;
+		else return false;
+	}
 
 	/**
 	 * This method is used to get Date from Current time Stamp.

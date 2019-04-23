@@ -32,6 +32,7 @@ import com.lebupay.exception.EmptyValueException;
 import com.lebupay.exception.FormExceptions;
 import com.lebupay.model.ContactUsModel;
 import com.lebupay.model.DataTableModel;
+import com.lebupay.model.EmailInvoicingModel;
 import com.lebupay.service.ContactUsService;
 
 import oracle.jdbc.OraclePreparedStatement;
@@ -79,31 +80,20 @@ public class ContactUsServiceImpl extends BaseDao implements ContactUsService {
 			try{
 				// Send Email
 				String action="saveContactUs";
-
-				String [] retval = spiderEmailSender.fetchTempConfig(action);
-				
-				String jsonReqName = retval[0];
-				String jsonReqPath = retval[1];
-				String templateID = retval[2];
-				
 				String header = "Thank you";
 				String emailMessageBody = "<p>Hi "+contactUsModel.getName()+"!</p><p>Thanks for your Query. Our system team will get back to you soon.</p> <p>Payment GateWay Team </p>";
 				String subject = messageUtil.getBundle("contactus.subject");
 				
-				
-				String jsonReqString = getFileString(jsonReqName,jsonReqPath);
-				jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
-				
-				jsonReqString= jsonReqString.replace("replace_header_here", header);
-				jsonReqString= jsonReqString.replace("replace_name_here", contactUsModel.getName());
-				jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
-				jsonReqString= jsonReqString.replace("replace_subject_here",subject);
-				jsonReqString= jsonReqString.replace("replace_to_here", contactUsModel.getEmailId());
-				jsonReqString= jsonReqString.replace("replace_cc_here", "");
-				jsonReqString= jsonReqString.replace("replace_bcc_here", "");
-				jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
-				
-				spiderEmailSender.sendEmail(jsonReqString,true);
+				EmailInvoicingModel emailInvoicingModel = new EmailInvoicingModel();
+				emailInvoicingModel.setAction(action);
+				emailInvoicingModel.setHeader(header);
+				emailInvoicingModel.setFirstName(contactUsModel.getName());
+				emailInvoicingModel.setEmailMessageBody(emailMessageBody);
+				emailInvoicingModel.setSubject(subject);
+				emailInvoicingModel.setEmailId(contactUsModel.getEmailId());
+				emailInvoicingModel.setIsTemplate(true);
+
+				spiderEmailSender.sendEmail(emailInvoicingModel);
 				
 				
 				//sendMail.send(contactUsModel.getEmailId(), messageBody, subject);
@@ -222,34 +212,24 @@ public class ContactUsServiceImpl extends BaseDao implements ContactUsService {
 			try{
 				// Send Email
 				String action="replyContactUs";
-
-				String [] retval = spiderEmailSender.fetchTempConfig(action);
-				
-				String jsonReqName = retval[0];
-				String jsonReqPath = retval[1];
-				String templateID = retval[2];
-				
 				String header = "Thank you";
 				String emailMessageBody = "<p>Hi "+contactUsModel.getName()+"!</p><p>Your Query was "+contactUsModel.getContactUsMessage()+".</p>"
 						+ "<p>"+contactUsModel.getReply()+".</p> "
 						+ " <p>Payment GateWay Team </p>";
 				String subject = messageUtil.getBundle("contactus.subject");
 				
-				String jsonReqString = getFileString(jsonReqName,jsonReqPath);
-				jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
-				
-				jsonReqString= jsonReqString.replace("replace_header_here", header);
-				jsonReqString= jsonReqString.replace("replace_name_here", contactUsModel.getName());
-				jsonReqString= jsonReqString.replace("replace_contactUsQuery_here", contactUsModel.getContactUsMessage());
-				jsonReqString= jsonReqString.replace("replace_contactUsReply_here", contactUsModel.getReply());
-				jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
-				jsonReqString= jsonReqString.replace("replace_subject_here",subject);
-				jsonReqString= jsonReqString.replace("replace_to_here", contactUsModel.getEmailId());
-				jsonReqString= jsonReqString.replace("replace_cc_here", "");
-				jsonReqString= jsonReqString.replace("replace_bcc_here", "");
-				jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
-				
-				spiderEmailSender.sendEmail(jsonReqString,true);
+				EmailInvoicingModel emailInvoicingModel = new EmailInvoicingModel();
+				emailInvoicingModel.setAction(action);
+				emailInvoicingModel.setHeader(header);
+				emailInvoicingModel.setFirstName(contactUsModel.getName());
+				emailInvoicingModel.setEmailMessageBody(emailMessageBody);
+				emailInvoicingModel.setSubject(subject);
+				emailInvoicingModel.setQuery(contactUsModel.getContactUsMessage());
+				emailInvoicingModel.setReply(contactUsModel.getReply());
+				emailInvoicingModel.setEmailId(contactUsModel.getEmailId());
+				emailInvoicingModel.setIsTemplate(true);
+
+				spiderEmailSender.sendEmail(emailInvoicingModel);
 				
 				//sendMail.send(contactUsModel.getEmailId(), messageBody, subject);
 				
@@ -373,12 +353,5 @@ public class ContactUsServiceImpl extends BaseDao implements ContactUsService {
 		}
 		
 		return objects;
-	}
-	
-	public String getFileString(String filename,String path) throws IOException {
-		File fl = new File(path+"/"+filename);
-		
-		String targetFileStr = new String(Files.readAllBytes(Paths.get(fl.getAbsolutePath())));
-		return targetFileStr;
 	}
 }

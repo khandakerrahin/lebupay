@@ -66,6 +66,7 @@ import com.lebupay.model.BKashModel;
 import com.lebupay.model.CheckoutModel;
 import com.lebupay.model.CityBankTransactionModel;
 import com.lebupay.model.CompanyModel;
+import com.lebupay.model.EmailInvoicingModel;
 import com.lebupay.model.MerchantModel;
 import com.lebupay.model.ParameterModel;
 import com.lebupay.model.PaymentModel;
@@ -655,33 +656,21 @@ public class PaymentController extends BaseDao implements SaltTracker {
 									try {
 										// Send Email
 										String action = "paymentSuccess";
-
-										String[] retval = spiderEmailSender.fetchTempConfig(action);
-
-										String jsonReqName = retval[0];
-										String jsonReqPath = retval[1];
-										String templateID = retval[2];
-
 										String header = "Payment successful";
+										String subject = messageUtil.getBundle("transaction.email.subject");
 										String emailMessageBody = "<p>Hi there!</p><p>We have successfully received "
 												+ transactionModel.getGrossAmount() + " BDT. </p> <p>Lebupay Team </p>";
-										String subject = messageUtil.getBundle("transaction.email.subject");
+										
+										EmailInvoicingModel emailInvoicingModel = new EmailInvoicingModel();
+										emailInvoicingModel.setAction(action);
+										emailInvoicingModel.setHeader(header);
+										emailInvoicingModel.setAmount(""+transactionModel.getGrossAmount());
+										emailInvoicingModel.setEmailMessageBody(emailMessageBody);
+										emailInvoicingModel.setSubject(subject);
+										emailInvoicingModel.setEmailId(paymentModel.getEmailId());
+										emailInvoicingModel.setIsTemplate(true);
 
-										String jsonReqString = getFileString(jsonReqName, jsonReqPath);
-										jsonReqString = jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
-
-										jsonReqString = jsonReqString.replace("replace_header_here", header);
-										jsonReqString = jsonReqString.replace("replace_amount_here",
-												"" + transactionModel.getGrossAmount());
-										jsonReqString = jsonReqString.replace("replace_emailMessageBody_here",
-												emailMessageBody);
-										jsonReqString = jsonReqString.replace("replace_subject_here", subject);
-										jsonReqString = jsonReqString.replace("replace_to_here", paymentModel.getEmailId());
-										jsonReqString = jsonReqString.replace("replace_cc_here", "");
-										jsonReqString = jsonReqString.replace("replace_bcc_here", "");
-										jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
-
-										spiderEmailSender.sendEmail(jsonReqString, true);
+										spiderEmailSender.sendEmail(emailInvoicingModel);
 
 										// sendMail.send(paymentModel.getEmailId(), emailMessageBody, subject);
 
@@ -887,31 +876,21 @@ public class PaymentController extends BaseDao implements SaltTracker {
 									try {
 										// Send Email
 										String action = "paymentCancelled";
-
-										String[] retval = spiderEmailSender.fetchTempConfig(action);
-
-										String jsonReqName = retval[0];
-										String jsonReqPath = retval[1];
-										String templateID = retval[2];
-
 										String header = "Payment cancelled";
-										String emailMessageBody = "<p>Hi there!</p><p>You have cancelled your order. Please try again.</p> <p>Lebupay Team </p>";
 										String subject = messageUtil.getBundle("transaction.email.subject.cancelled");
+										String emailMessageBody = "<p>Hi there!</p><p>You have cancelled your order. Please try again.</p> <p>Lebupay Team </p>";
+										
+										EmailInvoicingModel emailInvoicingModel = new EmailInvoicingModel();
+										emailInvoicingModel.setAction(action);
+										emailInvoicingModel.setHeader(header);
+										emailInvoicingModel.setAmount(""+transactionModel.getGrossAmount());
+										emailInvoicingModel.setEmailMessageBody(emailMessageBody);
+										emailInvoicingModel.setSubject(subject);
+										emailInvoicingModel.setEmailId(paymentModel.getEmailId());
+										emailInvoicingModel.setIsTemplate(true);
 
-										String jsonReqString = getFileString(jsonReqName, jsonReqPath);
-										jsonReqString = jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
-
-										jsonReqString = jsonReqString.replace("replace_header_here", header);
-										jsonReqString = jsonReqString.replace("replace_emailMessageBody_here",
-												emailMessageBody);
-										jsonReqString = jsonReqString.replace("replace_subject_here", subject);
-										jsonReqString = jsonReqString.replace("replace_to_here", paymentModel.getEmailId());
-										jsonReqString = jsonReqString.replace("replace_cc_here", "");
-										jsonReqString = jsonReqString.replace("replace_bcc_here", "");
-										jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
-
-										spiderEmailSender.sendEmail(jsonReqString, true);
-
+										spiderEmailSender.sendEmail(emailInvoicingModel);
+										
 										// sendMail.send(paymentModel.getEmailId(), messageBody, subject);
 									} catch (Exception e) {
 										System.out.println("Mail Sending Failed");
@@ -1098,30 +1077,21 @@ public class PaymentController extends BaseDao implements SaltTracker {
 									try {
 										// Send Email
 										String action = "paymentDeclined";
-
-										String [] retval = spiderEmailSender.fetchTempConfig(action);
-
-										String jsonReqName = retval[0];
-										String jsonReqPath = retval[1];
-										String templateID = retval[2];
-
 										String header = "Payment declined";
 										String emailMessageBody = "<p>Hi there!</p><p>Your payment has been declined. Please try again.</p> <p>Lebupay Team </p>";
 										String subject = messageUtil.getBundle("transaction.email.subject.declined");
 
-										String jsonReqString = getFileString(jsonReqName, jsonReqPath);
-										jsonReqString = jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+										EmailInvoicingModel emailInvoicingModel = new EmailInvoicingModel();
+										emailInvoicingModel.setAction(action);
+										emailInvoicingModel.setHeader(header);
+										emailInvoicingModel.setAmount(""+transactionModel.getGrossAmount());
+										emailInvoicingModel.setEmailMessageBody(emailMessageBody);
+										emailInvoicingModel.setSubject(subject);
+										emailInvoicingModel.setEmailId(paymentModel.getEmailId());
+										emailInvoicingModel.setIsTemplate(true);
 
-										jsonReqString = jsonReqString.replace("replace_header_here", header);
-										jsonReqString = jsonReqString.replace("replace_emailMessageBody_here",
-												emailMessageBody);
-										jsonReqString = jsonReqString.replace("replace_subject_here", subject);
-										jsonReqString = jsonReqString.replace("replace_to_here", paymentModel.getEmailId());
-										jsonReqString = jsonReqString.replace("replace_cc_here", "");
-										jsonReqString = jsonReqString.replace("replace_bcc_here", "");
-										jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
-
-										spiderEmailSender.sendEmail(jsonReqString, true);
+										spiderEmailSender.sendEmail(emailInvoicingModel);
+										
 										// sendMail.send(paymentModel.getEmailId(), messageBody, subject);
 									} catch (Exception e) {
 										e.printStackTrace();
@@ -1886,34 +1856,27 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 											// Send Email
 											String action = "transactionSuccess";
-											String [] retval = spiderEmailSender.fetchTempConfig(action);
-
-											String jsonReqName = retval[0];
-											String jsonReqPath = retval[1];
-											String templateID = retval[2];
-
+											
 											String header = "Transaction successful";
+											
+											Double amount = transactionModel.getGrossAmount();
+											
 											String emailMessageBody = "<p>Dear Sir/Madam!</p><p>We have successfully received "
-													+ transactionModel.getGrossAmount()
+													+ amount
 													+ " BDT. </p> <p>Thank You for paying with LEBUPAY</p>";
+
 											String subject = messageUtil.getBundle("transaction.email.subject");
 
-											String jsonReqString = getFileString(jsonReqName, jsonReqPath);
-											jsonReqString = jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+											EmailInvoicingModel emailInvoicingModel = new EmailInvoicingModel();
+											emailInvoicingModel.setAction(action);
+											emailInvoicingModel.setHeader(header);
+											emailInvoicingModel.setAmount(""+transactionModel.getGrossAmount());
+											emailInvoicingModel.setEmailMessageBody(emailMessageBody);
+											emailInvoicingModel.setSubject(subject);
+											emailInvoicingModel.setEmailId(paymentModel.getEmailId());
+											emailInvoicingModel.setIsTemplate(true);
 
-											jsonReqString = jsonReqString.replace("replace_header_here", header);
-											jsonReqString = jsonReqString.replace("replace_amount_here",
-													"" + transactionModel.getGrossAmount());
-											jsonReqString = jsonReqString.replace("replace_emailMessageBody_here",
-													emailMessageBody);
-											jsonReqString = jsonReqString.replace("replace_subject_here", subject);
-											jsonReqString = jsonReqString.replace("replace_to_here",
-													paymentModel.getEmailId());
-											jsonReqString = jsonReqString.replace("replace_cc_here", "");
-											jsonReqString = jsonReqString.replace("replace_bcc_here", "");
-											jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
-
-											spiderEmailSender.sendEmail(jsonReqString, true);
+											spiderEmailSender.sendEmail(emailInvoicingModel);
 
 											// sendMail.send(paymentModel.getEmailId(), messageBody, subject);
 
@@ -2741,34 +2704,27 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 											// Send Email
 											String action = "transactionSuccess";
-											String [] retval = spiderEmailSender.fetchTempConfig(action);
-
-											String jsonReqName = retval[0];
-											String jsonReqPath = retval[1];
-											String templateID = retval[2];
 
 											String header = "Transaction successful";
+											
+											Double amount = transactionModel.getGrossAmount();
+											
 											String emailMessageBody = "<p>Dear Sir/Madam!</p><p>We have successfully received "
-													+ transactionModel.getGrossAmount()
+													+ amount
 													+ " BDT. </p> <p>Thank You for paying with LEBUPAY</p>";
+
 											String subject = messageUtil.getBundle("transaction.email.subject");
 
-											String jsonReqString = getFileString(jsonReqName, jsonReqPath);
-											jsonReqString = jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+											EmailInvoicingModel emailInvoicingModel = new EmailInvoicingModel();
+											emailInvoicingModel.setAction(action);
+											emailInvoicingModel.setHeader(header);
+											emailInvoicingModel.setAmount(""+transactionModel.getGrossAmount());
+											emailInvoicingModel.setEmailMessageBody(emailMessageBody);
+											emailInvoicingModel.setSubject(subject);
+											emailInvoicingModel.setEmailId(paymentModel.getEmailId());
+											emailInvoicingModel.setIsTemplate(true);
 
-											jsonReqString = jsonReqString.replace("replace_header_here", header);
-											jsonReqString = jsonReqString.replace("replace_amount_here",
-													"" + transactionModel.getGrossAmount());
-											jsonReqString = jsonReqString.replace("replace_emailMessageBody_here",
-													emailMessageBody);
-											jsonReqString = jsonReqString.replace("replace_subject_here", subject);
-											jsonReqString = jsonReqString.replace("replace_to_here",
-													paymentModel.getEmailId());
-											jsonReqString = jsonReqString.replace("replace_cc_here", "");
-											jsonReqString = jsonReqString.replace("replace_bcc_here", "");
-											jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
-
-											spiderEmailSender.sendEmail(jsonReqString, true);
+											spiderEmailSender.sendEmail(emailInvoicingModel);
 
 											// sendMail.send(paymentModel.getEmailId(), messageBody, subject);
 
@@ -3546,40 +3502,29 @@ public class PaymentController extends BaseDao implements SaltTracker {
 													if (logger.isInfoEnabled()) {
 														logger.info("Bkash inside email_notification : "+email_notification);
 													}
-													//TODO make email sender unified 
-													String [] retval = spiderEmailSender.fetchTempConfig(action);
-
-													String jsonReqName = retval[0];
-													String jsonReqPath = retval[1];
-													String templateID = retval[2];
-
-
-
 													//	if (logger.isInfoEnabled()) {
 													//	logger.info("customerDetails : " + customerDetails);
 													//	logger.info("customerEmail : " + customerEmail);
 													//	}
 													String header = "Transaction successful";
+													
+													Double amount = transactionModel.getGrossAmount();
+
 													String emailMessageBody = "<p>Dear "+firstName+" "+lastName+",</p><p>We have successfully received "
 															+ transactionModel.getGrossAmount()
 															+ " BDT. </p> <p>Thank You for paying with LEBUPAY</p>";
 													String subject = messageUtil.getBundle("transaction.email.subject");
 
-													String jsonReqString = getFileString(jsonReqName, jsonReqPath);
-													jsonReqString = jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
+													EmailInvoicingModel emailInvoicingModel = new EmailInvoicingModel();
+													emailInvoicingModel.setAction(action);
+													emailInvoicingModel.setHeader(header);
+													emailInvoicingModel.setAmount(""+transactionModel.getGrossAmount());
+													emailInvoicingModel.setEmailMessageBody(emailMessageBody);
+													emailInvoicingModel.setSubject(subject);
+													emailInvoicingModel.setEmailId(paymentModel.getEmailId());
+													emailInvoicingModel.setIsTemplate(true);
 
-													jsonReqString = jsonReqString.replace("replace_header_here", header);
-													jsonReqString = jsonReqString.replace("replace_amount_here",
-															"" + transactionModel.getGrossAmount());
-													jsonReqString = jsonReqString.replace("replace_emailMessageBody_here",
-															emailMessageBody);
-													jsonReqString = jsonReqString.replace("replace_subject_here", subject);
-													jsonReqString = jsonReqString.replace("replace_to_here",to);
-													jsonReqString = jsonReqString.replace("replace_cc_here", "");
-													jsonReqString = jsonReqString.replace("replace_bcc_here", "");
-													jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
-
-													spiderEmailSender.sendEmail(jsonReqString, true);
+													spiderEmailSender.sendEmail(emailInvoicingModel);
 												}
 												
 												if(sms_notifictaion.equals("1")) {
@@ -3896,14 +3841,6 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 /** Added by Wasif ***/
 	
-
-	public String getFileString(String filename, String path) throws IOException {
-		File fl = new File(path + "/" + filename);
-
-		String targetFileStr = new String(Files.readAllBytes(Paths.get(fl.getAbsolutePath())));
-		return targetFileStr;
-	}
-
 	public String decode(String message, String key) {
 		Map<String, Object> mb;
 		mb = new Gson().fromJson((String) message, new TypeToken<HashMap<String, Object>>() {

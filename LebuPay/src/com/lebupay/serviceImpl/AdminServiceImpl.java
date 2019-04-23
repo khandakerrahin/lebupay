@@ -33,6 +33,7 @@ import com.lebupay.exception.MailSendException;
 import com.lebupay.model.AdminModel;
 import com.lebupay.model.CardTypeModel;
 import com.lebupay.model.DataTableModel;
+import com.lebupay.model.EmailInvoicingModel;
 import com.lebupay.model.MerchantCardPercentageModel;
 import com.lebupay.model.MerchantModel;
 import com.lebupay.model.Status;
@@ -130,31 +131,22 @@ public class AdminServiceImpl extends BaseDao implements AdminService {
 				// Send Email
 				String action="passwordResetAdmin";
 
-				String [] retval = spiderEmailSender.fetchTempConfig(action);
-				
-				String jsonReqName = retval[0];
-				String jsonReqPath = retval[1];
-				String templateID = retval[2];
 				
 				String header = "Password reset link";
 				String resetLink = basePath+"admin/mail-forgot-password?adminId="+adminModel.getAdminId();
 				String emailMessageBody = "<p>Hi there!</p><p>We got a request to reset your password for your Payment Gateway account </p><p><a href="+resetLink+">Click here</a> to change your password. </p> <p>Payment GateWay Team </p>";
 				String subject = messageUtil.getBundle("forgotPassword.email.subject");
 				
-				
-				String jsonReqString = getFileString(jsonReqName,jsonReqPath);
-				jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
-				
-				jsonReqString= jsonReqString.replace("replace_header_here", header);
-				jsonReqString= jsonReqString.replace("replace_resetLink_here", resetLink);
-				jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
-				jsonReqString= jsonReqString.replace("replace_subject_here",subject);
-				jsonReqString= jsonReqString.replace("replace_to_here", adminModel.getEmailId());
-				jsonReqString= jsonReqString.replace("replace_cc_here", "");
-				jsonReqString= jsonReqString.replace("replace_bcc_here", "");
-				jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
-				
-				spiderEmailSender.sendEmail(jsonReqString,true);
+				EmailInvoicingModel emailInvoicingModel = new EmailInvoicingModel();
+				emailInvoicingModel.setAction(action);
+				emailInvoicingModel.setHeader(header);
+				emailInvoicingModel.setResetLink(resetLink);
+				emailInvoicingModel.setEmailMessageBody(emailMessageBody);
+				emailInvoicingModel.setSubject(subject);
+				emailInvoicingModel.setEmailId(adminModel.getEmailId());
+				emailInvoicingModel.setIsTemplate(true);
+
+				spiderEmailSender.sendEmail(emailInvoicingModel);
 				
 				
 				//sendMail.send(adminModel.getEmailId(), messageBody, subject);
@@ -633,12 +625,5 @@ public class AdminServiceImpl extends BaseDao implements AdminService {
 		}
 		
 		return result;
-	}
-	
-	public String getFileString(String filename,String path) throws IOException {
-		File fl = new File(path+"/"+filename);
-		
-		String targetFileStr = new String(Files.readAllBytes(Paths.get(fl.getAbsolutePath())));
-		return targetFileStr;
 	}
 }

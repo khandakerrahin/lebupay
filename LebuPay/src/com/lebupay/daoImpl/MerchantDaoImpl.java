@@ -16,10 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.lebupay.common.MessageUtil;
+import com.lebupay.common.SpiderEmailSender;
 import com.lebupay.dao.MerchantDao;
 import com.lebupay.model.CardTypePercentageModel;
 import com.lebupay.model.CompanyModel;
 import com.lebupay.model.DataTableModel;
+import com.lebupay.model.EmailInvoicingModel;
 import com.lebupay.model.MerchantModel;
 import com.lebupay.model.Status;
 import com.lebupay.model.TypeModel;
@@ -36,6 +38,9 @@ public class MerchantDaoImpl extends BaseDao implements MerchantDao{
 	
 	@Autowired
 	private MessageUtil messageUtil;
+	
+	@Autowired
+	private SpiderEmailSender spiderEmailSender;
 	
 	/**
 	 * This method is used to check whether the Mobile Number is already present in Database or not during sign up.
@@ -2749,6 +2754,28 @@ public class MerchantDaoImpl extends BaseDao implements MerchantDao{
 				result = 1; 
 			
 			connection.commit();
+			
+			//	added by Shaker on 23.04.2019
+			if(merchantModel.getStatus().ordinal() == 0) {
+				// send email
+				String action="merchantActivated";
+				String header = "Activation success";
+				String emailMessageBody = "<p>Hi "+merchantModel.getFirstName() +" "+merchantModel.getLastName()+"!</p><p>Your account is now activated. </p> <p>Payment GateWay Team </p>";
+				String subject = messageUtil.getBundle("merchant.activation.email.subject");
+				
+				EmailInvoicingModel emailInvoicingModel = new EmailInvoicingModel();
+				emailInvoicingModel.setAction(action);
+				emailInvoicingModel.setHeader(header);
+				emailInvoicingModel.setEmailMessageBody(emailMessageBody);
+				emailInvoicingModel.setSubject(subject);
+				emailInvoicingModel.setEmailId(merchantModel.getEmailId());
+				emailInvoicingModel.setFirstName(merchantModel.getFirstName());
+				emailInvoicingModel.setLastName(merchantModel.getLastName());
+				emailInvoicingModel.setMobileNumber(merchantModel.getMobileNo());
+				emailInvoicingModel.setIsTemplate(true);
+
+				spiderEmailSender.sendEmail(emailInvoicingModel);
+			}
 			
 		} finally {
 			

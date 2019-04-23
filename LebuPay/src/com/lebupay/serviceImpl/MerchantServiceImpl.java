@@ -133,31 +133,20 @@ public class MerchantServiceImpl extends BaseDao implements MerchantService {
 			// Send Email
 			
 			String action="sendOTP";
-
-			String [] retval = spiderEmailSender.fetchTempConfig(action);
-			
-			String jsonReqName = retval[0];
-			String jsonReqPath = retval[1];
-			String templateID = retval[2];
-			
 			String header = "OTP";
 			String emailMessageBody = "<p>Hi there!</p><p>Your new OTP is "+phoneCode+". </p> <p>Payment GateWay Team </p>";
 			String subject = messageUtil.getBundle("new.otp.email.subject");
 			
-			
-			String jsonReqString = getFileString(jsonReqName,jsonReqPath);
-			jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
-			
-			jsonReqString= jsonReqString.replace("replace_header_here", header);
-			jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
-			jsonReqString= jsonReqString.replace("replace_otp_here",""+phoneCode);
-			jsonReqString= jsonReqString.replace("replace_subject_here",subject);
-			jsonReqString= jsonReqString.replace("replace_to_here", merchantModel.getEmailId());
-			jsonReqString= jsonReqString.replace("replace_cc_here", "");
-			jsonReqString= jsonReqString.replace("replace_bcc_here", "");
-			jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
-			
-			spiderEmailSender.sendEmail(jsonReqString,true);
+			EmailInvoicingModel emailInvoicingModel = new EmailInvoicingModel();
+			emailInvoicingModel.setAction(action);
+			emailInvoicingModel.setHeader(header);
+			emailInvoicingModel.setEmailMessageBody(emailMessageBody);
+			emailInvoicingModel.setSubject(subject);
+			emailInvoicingModel.setOTP(""+phoneCode);
+			emailInvoicingModel.setEmailId(merchantModel.getEmailId());
+			emailInvoicingModel.setIsTemplate(true);
+
+			spiderEmailSender.sendEmail(emailInvoicingModel);
 			
 			//sendMail.send(merchantModel.getEmailId(), messageBody, subject);
 			
@@ -217,32 +206,20 @@ public class MerchantServiceImpl extends BaseDao implements MerchantService {
 				
 				// Send Email
 				String action="phoneVerification";
-
-				String [] retval = spiderEmailSender.fetchTempConfig(action);
-				
-				String jsonReqName = retval[0];
-				String jsonReqPath = retval[1];
-				String templateID = retval[2];
-				
 				String header = "Payment Gateway account request";
 				String emailMessageBody = "<p>Hi there!</p><p>We got a request to create a new Payment Gateway account with your mobile number *****"+phoneNumber+" and email ID <a href=#>"+userEmail+"</a>. </p> <p>Payment GateWay Team </p>";
 				String subject = messageUtil.getBundle("signup.email.subject");
 				
-				
-				String jsonReqString = getFileString(jsonReqName,jsonReqPath);
-				jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
-				
-				jsonReqString= jsonReqString.replace("replace_header_here", header);
-				jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
-				jsonReqString= jsonReqString.replace("replace_phoneNumber_here",""+phoneNumber);
-				jsonReqString= jsonReqString.replace("replace_email_here",""+userEmail);
-				jsonReqString= jsonReqString.replace("replace_subject_here",subject);
-				jsonReqString= jsonReqString.replace("replace_to_here", userEmail);
-				jsonReqString= jsonReqString.replace("replace_cc_here", "");
-				jsonReqString= jsonReqString.replace("replace_bcc_here", "");
-				jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
-				
-				spiderEmailSender.sendEmail(jsonReqString,true);
+				EmailInvoicingModel emailInvoicingModel = new EmailInvoicingModel();
+				emailInvoicingModel.setAction(action);
+				emailInvoicingModel.setHeader(header);
+				emailInvoicingModel.setEmailMessageBody(emailMessageBody);
+				emailInvoicingModel.setSubject(subject);
+				emailInvoicingModel.setEmailId(userEmail);
+				emailInvoicingModel.setMobileNumber(phoneNumber);
+				emailInvoicingModel.setIsTemplate(true);
+
+				spiderEmailSender.sendEmail(emailInvoicingModel);
 
 				//sendMail.send(userEmail, messageBody, subject);
 				
@@ -326,13 +303,6 @@ public class MerchantServiceImpl extends BaseDao implements MerchantService {
 					
 					// Send Email
 					String action="passwordResetMerchant";
-					
-					String [] retval = spiderEmailSender.fetchTempConfig(action);
-					
-					String jsonReqName = retval[0];
-					String jsonReqPath = retval[1];
-					String templateID = retval[2];
-					
 					String header = "Password reset link";
 					String key = messageUtil.getBundle("secret.key");
 					String id = encryption.encode(key, String.valueOf(userId));
@@ -341,20 +311,16 @@ public class MerchantServiceImpl extends BaseDao implements MerchantService {
 					String resetLink = basePath+"merchant/mail-forgot-password?userId="+id;
 					String emailMessageBody = "<p>Hi there!</p><p>We got a request to reset your password for your Payment Gateway account </p><p><a href="+resetLink+">Click here</a> to change your password. </p> <p>Payment GateWay Team </p>";
 					
-					
-					String jsonReqString = getFileString(jsonReqName,jsonReqPath);
-					jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
-					
-					jsonReqString= jsonReqString.replace("replace_header_here", header);
-					jsonReqString= jsonReqString.replace("replace_resetLink_here", resetLink);
-					jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
-					jsonReqString= jsonReqString.replace("replace_subject_here",subject);
-					jsonReqString= jsonReqString.replace("replace_to_here", merchantModel.getEmailId());
-					jsonReqString= jsonReqString.replace("replace_cc_here", "");
-					jsonReqString= jsonReqString.replace("replace_bcc_here", "");
-					jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
-					
-					spiderEmailSender.sendEmail(jsonReqString,true);
+					EmailInvoicingModel emailInvoicingModel = new EmailInvoicingModel();
+					emailInvoicingModel.setAction(action);
+					emailInvoicingModel.setHeader(header);
+					emailInvoicingModel.setResetLink(resetLink);
+					emailInvoicingModel.setEmailMessageBody(emailMessageBody);
+					emailInvoicingModel.setSubject(subject);
+					emailInvoicingModel.setEmailId(merchantModel.getEmailId());
+					emailInvoicingModel.setIsTemplate(true);
+
+					spiderEmailSender.sendEmail(emailInvoicingModel);
 					
 					
 					
@@ -513,30 +479,20 @@ public class MerchantServiceImpl extends BaseDao implements MerchantService {
 			try{
 				// Send Email
 				String action="sendOTP";
-
-				String [] retval = spiderEmailSender.fetchTempConfig(action);
-				
-				String jsonReqName = retval[0];
-				String jsonReqPath = retval[1];
-				String templateID = retval[2];
-				
 				String header = "OTP";
 				String emailMessageBody = "<p>Hi there!</p><p>Your new OTP is "+phoneCode+". </p> <p>. Thank you for using Lebupay. </p>";
 				String subject = messageUtil.getBundle("new.otp.email.subject");
-				
-				String jsonReqString = getFileString(jsonReqName,jsonReqPath);
-				jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
-				
-				jsonReqString= jsonReqString.replace("replace_header_here", header);
-				jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
-				jsonReqString= jsonReqString.replace("replace_otp_here",""+phoneCode);
-				jsonReqString= jsonReqString.replace("replace_subject_here",subject);
-				jsonReqString= jsonReqString.replace("replace_to_here", merchantModel.getEmailId());
-				jsonReqString= jsonReqString.replace("replace_cc_here", "");
-				jsonReqString= jsonReqString.replace("replace_bcc_here", "");
-				jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
-				
-				spiderEmailSender.sendEmail(jsonReqString,true);
+
+				EmailInvoicingModel emailInvoicingModel = new EmailInvoicingModel();
+				emailInvoicingModel.setAction(action);
+				emailInvoicingModel.setHeader(header);
+				emailInvoicingModel.setOTP(""+phoneCode);
+				emailInvoicingModel.setEmailMessageBody(emailMessageBody);
+				emailInvoicingModel.setSubject(subject);
+				emailInvoicingModel.setEmailId(merchantModel.getEmailId());
+				emailInvoicingModel.setIsTemplate(true);
+
+				spiderEmailSender.sendEmail(emailInvoicingModel);
 				
 				//sendMail.send(merchantModel.getEmailId(), messageBody, subject);
 				
@@ -754,41 +710,19 @@ public class MerchantServiceImpl extends BaseDao implements MerchantService {
 		try{
 			// Send Email
 			String action="emailInvoicing";
-
-			String [] retval = spiderEmailSender.fetchTempConfig(action);
-			
-			String jsonReqName = retval[0];
-			String jsonReqPath = retval[1];
-			String templateID = retval[2];
-			
 			String header = "Invoice";
 			String emailMessageBody = "<p>Dear "+emailInvoicingModel.getFirstName()+" "+emailInvoicingModel.getLastName()+"</p>"
 					+ "<p>Your Invoice No is "+emailInvoicingModel.getInvoiceNo()+" for the type "+emailInvoicingModel.getType()+"</p>"
 					+ " <p>Your Billing Amount is "+emailInvoicingModel.getBDT()+" "+emailInvoicingModel.getAmount()+"</p>"
 					+ " <p>"+emailInvoicingModel.getDescription()+"</p>"
 					+ " <p>Payment GateWay Team </p>";
-			String subject = emailInvoicingModel.getSubject();
 			
-			
-			String jsonReqString = getFileString(jsonReqName,jsonReqPath);
-			jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
-			
-			jsonReqString= jsonReqString.replace("replace_header_here", header);
-			jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
-			jsonReqString= jsonReqString.replace("replace_firstName_here",""+emailInvoicingModel.getFirstName());
-			jsonReqString= jsonReqString.replace("replace_lastName_here",""+emailInvoicingModel.getLastName());
-			jsonReqString= jsonReqString.replace("replace_invoiceNo_here", emailInvoicingModel.getInvoiceNo());
-			jsonReqString= jsonReqString.replace("replace_type_here", emailInvoicingModel.getType());
-			jsonReqString= jsonReqString.replace("replace_BDT_here", emailInvoicingModel.getBDT());
-			jsonReqString= jsonReqString.replace("replace_amount_here", emailInvoicingModel.getAmount());
-			jsonReqString= jsonReqString.replace("replace_description_here", emailInvoicingModel.getDescription());
-			jsonReqString= jsonReqString.replace("replace_subject_here",subject);
-			jsonReqString= jsonReqString.replace("replace_to_here", emailInvoicingModel.getEmailId());
-			jsonReqString= jsonReqString.replace("replace_cc_here", "");
-			jsonReqString= jsonReqString.replace("replace_bcc_here", "");
-			jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
-			
-			spiderEmailSender.sendEmail(jsonReqString,true);
+			emailInvoicingModel.setAction(action);
+			emailInvoicingModel.setHeader(header);
+			emailInvoicingModel.setEmailMessageBody(emailMessageBody);
+			emailInvoicingModel.setIsTemplate(true);
+
+			spiderEmailSender.sendEmail(emailInvoicingModel);
 			
 			//sendMail.send(emailInvoicingModel.getEmailId(), messageBody, emailInvoicingModel.getSubject());
 			result = 1;
@@ -886,34 +820,20 @@ public class MerchantServiceImpl extends BaseDao implements MerchantService {
 						// Send Email
 						String action="payViaLink";
 
-						String [] retval = spiderEmailSender.fetchTempConfig(action);
-						
-						String jsonReqName = retval[0];
-						String jsonReqPath = retval[1];
-						String templateID = retval[2];
-						
 						String header = "Payment Link";
 						String emailMessageBody = "<p>Dear "+emailInvoicingModel.getFirstName()+" "+emailInvoicingModel.getLastName()+",</p>"
 								+ "<p>Your Payment Link is: "+paymentLink+"</p>"
 								+ " <p>"+emailInvoicingModel.getDescription()+"</p>"
 								+ " <p>Payment GateWay Team </p>";
 						
-						String jsonReqString = getFileString(jsonReqName,jsonReqPath);
-						jsonReqString= jsonReqString.replaceAll("\\r\\n|\\r|\\n", "");
-						
-						jsonReqString= jsonReqString.replace("replace_header_here", header);
-						jsonReqString= jsonReqString.replace("replace_emailMessageBody_here", emailMessageBody);
-						jsonReqString= jsonReqString.replace("replace_firstName_here", emailInvoicingModel.getFirstName());
-						jsonReqString= jsonReqString.replace("replace_lastName_here", emailInvoicingModel.getLastName());
-						jsonReqString= jsonReqString.replace("replace_paymentLink_here", paymentLink);
-						jsonReqString= jsonReqString.replace("replace_description_here", emailInvoicingModel.getDescription());
-						jsonReqString= jsonReqString.replace("replace_subject_here", emailInvoicingModel.getSubject());
-						jsonReqString= jsonReqString.replace("replace_to_here", emailInvoicingModel.getEmailId());
-						jsonReqString= jsonReqString.replace("replace_cc_here", "");
-						jsonReqString= jsonReqString.replace("replace_bcc_here", "");
-						jsonReqString= jsonReqString.replace("replace_templateID_here", templateID);
-						
-						spiderEmailSender.sendEmail(jsonReqString,true);
+						emailInvoicingModel.setAction(action);
+						emailInvoicingModel.setHeader(header);
+						emailInvoicingModel.setAmount(""+transactionModel.getGrossAmount());
+						emailInvoicingModel.setEmailMessageBody(emailMessageBody);
+						emailInvoicingModel.setPaymentLink(paymentLink);
+						emailInvoicingModel.setIsTemplate(true);
+
+						spiderEmailSender.sendEmail(emailInvoicingModel);
 						
 						result = 1;
 						
@@ -1012,12 +932,4 @@ public class MerchantServiceImpl extends BaseDao implements MerchantService {
 		
 		return cardTypePercentageModels;
 	}
-	
-	public String getFileString(String filename,String path) throws IOException {
-		File fl = new File(path+"/"+filename);
-		
-		String targetFileStr = new String(Files.readAllBytes(Paths.get(fl.getAbsolutePath())));
-		return targetFileStr;
-	}
-	
 }
