@@ -81,6 +81,8 @@ public class TransactionModel extends CommonModel {
 	private String transaction_Id_bankresp;
 	private String targetTransactionId_bankresp;
 	private String trx_transactionId_bankresp;
+	private CardIssuerModel cardIssuerModel;
+	private int trx_status;//TODO Wasif 20190418 for ebl void and all other trx update
 
 	public Long getTransactionId() {
 		return transactionId;
@@ -697,6 +699,22 @@ public class TransactionModel extends CommonModel {
 
 	public void setTrx_transactionId_bankresp(String trx_transactionId_bankresp) {
 		this.trx_transactionId_bankresp = trx_transactionId_bankresp;
+	}
+
+	public CardIssuerModel getCardIssuerModel() {
+		return cardIssuerModel;
+	}
+
+	public void setCardIssuerModel(CardIssuerModel cardIssuerModel) {
+		this.cardIssuerModel = cardIssuerModel;
+	}
+
+	public int getTrx_status() {
+		return trx_status;
+	}
+
+	public void setTrx_status(int trx_status) {
+		this.trx_status = trx_status;
 	}
 
 	@Override

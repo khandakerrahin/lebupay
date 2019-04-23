@@ -470,7 +470,7 @@ public class IndexController extends BaseDao implements SaltTracker {
 			}else {
 				//model.addAttribute("SEBL", false);
 				model.addAttribute("SEBL", "N");
-				System.out.println("--=== SEBL true");
+				System.out.println("--=== SEBL false");
 			}
 			
 			
