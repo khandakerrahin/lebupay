@@ -14,7 +14,7 @@
     
 <script src="<%=basePath%>resources/js/jquery-2.1.1.js"></script>
 <script type="text/javascript">
-$(window).on('keydown',function(event)
+/* $(window).on('keydown',function(event)
 	    {
 	    if(event.keyCode==123)
 	    {
@@ -36,7 +36,7 @@ $(window).on('keydown',function(event)
 	       
 	        return false;  //Prevent from ctrl+shift+i
 	    }
-	});
+	}); */
 	
 	$(document).on("contextmenu",function(e)
 	{
@@ -568,6 +568,22 @@ html {
 										type="submit" value="log in">
 									<%-- <div id="serverRes" style="display: none;"><img src="<%=basePath%>resources/images/spinner.gif" alt="loading..."></div><div></div> --%>
 								</form>
+								`						checkMerchant
+								<form action="merchant/checkMerchant" class="lp-form" method="post" id="">
+									 <input type="hidden" name="csrfPreventionSalt"
+										value="<%=request.getAttribute("csrfPreventionSaltPage")%>" /> 
+									<label> <span class="lp-sprite lp-f-name"></span> <input
+										type="text" name="userName" field-name="Email or Mobile"
+										data-valied="blank-email_mobile"
+										placeholder="Email / Mobile number" id="checkUsername">
+									</label> <label> <span class="lp-sprite lp-pass"></span> <input
+										type="password" name="password" field-name="Password"
+										data-valied="blank" placeholder="Password">
+									</label> <input
+										class="lp-form-submit-button lp-login-button lp-button green lp-transition"
+										type="submit" value="log in">
+									<%-- <div id="serverRes" style="display: none;"><img src="<%=basePath%>resources/images/spinner.gif" alt="loading..."></div><div></div> --%>
+								</form>
 								<div class="lp-terms-line lp-forgot-password-link">
 									<div class="row">
 										<a class="col-xs-6" href="javascript:void(0)"
@@ -674,5 +690,42 @@ html {
 		</div>
 	</div>
 	<!--Contact Us Modal end-->
+	<script>
+$("#loginCheck").on("submit", function(e){
+	e.preventDefault();
+	var username = $("#checkUsername").val();
+	var data = {
+			"username" : username
+			};
+	console.log(data);
+	$.ajax({
+        type: "post",
+        url: "merchant/checkMerchant",
+        data: data,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+console.log("ada " + response);
+            },
+            error: function(err){
+console.log(err);
+                }
+	});
+});
+
+function checkEmail(email, tagName) {
+    var emailVal = email.value;
+    var $mailErr = $('#' + tagName);
+    var reg =
+        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (reg.test(emailVal.toLowerCase())) {
+        $mailErr.text("");
+    } else {
+        $mailErr.text("Invalid Email");
+        $mailErr.css("color", "red");
+    }
+}
+	</script>
 </body>
 </html>
