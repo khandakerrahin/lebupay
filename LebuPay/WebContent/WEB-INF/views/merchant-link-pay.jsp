@@ -505,8 +505,8 @@ $(document).ready(function(){
 																			alt="diners club"></a></li>
 																	<li id="bkash_hov" class="card_logos"><a href="#"
 																		id="bkashClicked"><img
-																			src="<%=basePath%>resources/images/bkash.png"
-																			style="width: 25px" alt="bkash"></a></li>
+																			src="<%=basePath%>resources/images/bkash4.png"
+																			style="width: 27px;height: 26px !important;" alt="bkash"><b style="font-size: 9px;color: #000;">bKash</b></a></li>
 																</ul>
 															</div>
 															<% }else if(city.equals("Y")){ %>
@@ -527,8 +527,8 @@ $(document).ready(function(){
 																			alt="diners club"></a></li>
 																	<li id="bkash_hov" class="card_logos"><a href="#"
 																		id="bkashClicked"><img
-																			src="<%=basePath%>resources/images/bkash.png"
-																			style="width: 25px" alt="bkash"></a></li>
+																			src="<%=basePath%>resources/images/bkash4.png"
+																			style="width: 27px;height: 26px !important;" alt="bkash"><b style="font-size: 9px;color: #000;">bKash</b></a></li>
 																</ul>
 															</div>
 
@@ -546,8 +546,8 @@ $(document).ready(function(){
 																			alt="master card"></a></li>
 																	<li id="bkash_hov" class="card_logos"><a href="#"
 																		id="bkashClicked"><img
-																			src="<%=basePath%>resources/images/bkash.png"
-																			style="width: 25px" alt="bkash"></a></li>
+																			src="<%=basePath%>resources/images/bkash4.png"
+																			style="width: 27px;height: 26px !important;" alt="bkash"><b style="font-size: 9px;color: #000;">bKash</b></a></li>
 																</ul>
 															</div>
 															<% }else{ %>
@@ -555,8 +555,8 @@ $(document).ready(function(){
 																<ul>
 																	<li id="bkash_hov" class="card_logos"><a href="#"
 																		id="bkashClicked"><img
-																			src="<%=basePath%>resources/images/bkash.png"
-																			style="width: 25px" alt="bkash"></a></li>
+																			src="<%=basePath%>resources/images/bkash4.png"
+																			style="width: 27px;height: 26px !important;" alt="bkash"><b style="font-size: 9px;color: #000;">bKash</b></a></li>
 																</ul>
 															</div>
 															<%} %>

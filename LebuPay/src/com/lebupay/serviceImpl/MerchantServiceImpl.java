@@ -281,6 +281,23 @@ public class MerchantServiceImpl extends BaseDao implements MerchantService {
 		return merchant;
 	}
 
+	public MerchantModel checkMerchant(MerchantModel merchantModel) throws Exception {
+
+		if (logger.isInfoEnabled()) {
+			logger.info("checkMerchant in MerchantService -- START: ");
+		}
+
+		merchantValidation.validityCheck(merchantModel);
+
+		MerchantModel merchant = merchantDao.userCheck(merchantModel.getUserName());
+
+		if (logger.isInfoEnabled()) {
+			logger.info("checkMerchant in MerchantService -- END: ");
+		}
+
+		return merchant;
+	}
+
 	/**
 	 * This method is use to check forgot password and if email id is present then
 	 * send a link in provided email id.
@@ -1039,12 +1056,6 @@ public class MerchantServiceImpl extends BaseDao implements MerchantService {
 
 		String targetFileStr = new String(Files.readAllBytes(Paths.get(fl.getAbsolutePath())));
 		return targetFileStr;
-	}
-
-	@Override
-	public MerchantModel checkMerchant(MerchantModel merchantModel) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

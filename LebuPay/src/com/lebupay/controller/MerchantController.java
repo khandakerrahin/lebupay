@@ -84,6 +84,7 @@ import com.lebupay.serviceImpl.TransactionServiceImpl;
  * @author Java-Team
  *
  */
+
 @Controller
 @RequestMapping(value = "/merchant")
 public class MerchantController implements SaltTracker {
@@ -129,11 +130,82 @@ public class MerchantController implements SaltTracker {
 	 * @param merchantModel
 	 * @return int
 	 */
-	@RequestMapping(value = "/checkMerchant", method = RequestMethod.POST)
-	public String checkMerchant(HttpServletRequest request, HttpServletResponse response, MerchantModel merchantModel) {
-		System.out.println("fsdf" + (String) request.toString());
+	@RequestMapping(value = "/login1", method = RequestMethod.POST)
+	public @ResponseBody String checkMerchant(HttpServletRequest httpServletRequest, HttpServletResponse response,
+			MerchantModel merchantModel) {
+
+		if (logger.isInfoEnabled()) {
+			logger.info("checkMerchant -- START: ");
+		}
+
+		String retVal = "3";
+		System.out.println("In checkMerchant method");
+
+		String username = (String) httpServletRequest.getParameter("username");
+
+		if (!username.contains("@")) {
+			if (!phoneNumberFormated(username)) {
+				return retVal;
+			}
+		}
+
+		merchantModel.setUserName(username);
+
 		CommonModel commonModel = new CommonModel();
-		return "";
+		String newSalt = "";
+		String sessionId = httpServletRequest.getSession().getId();
+		List<String> activeSalts = SALT_TRACKER.get(sessionId);
+		String salt = "";
+
+		try {
+			salt = merchantModel.getCsrfPreventionSalt();
+
+			// if (!org.springframework.util.CollectionUtils.isEmpty(activeSalts)&
+			// activeSalts.contains(salt)) {
+
+			MerchantModel merchantDetails = merchantService.checkMerchant(merchantModel);
+
+			if (Objects.nonNull(merchantDetails)) {
+				System.out.println("Email or phone is found");
+				retVal = "1";
+			} else {
+				System.out.println("Email or phone not found");
+				retVal = "2";
+			}
+
+		} catch (Exception e) {
+			retVal = "2";
+			e.printStackTrace();
+//			commonModel.setStatus(Status.DELETE);
+//			commonModel.setMessage(e.getMessage());
+		} finally {
+			activeSalts.remove(salt);
+			newSalt = (String) httpServletRequest.getAttribute("csrfPreventionSaltPage");
+			commonModel.setCsrfPreventionSalt(newSalt);
+			activeSalts.add(newSalt);
+		}
+
+		if (logger.isInfoEnabled()) {
+			logger.info("checkMerchant -- END");
+		}
+
+		return retVal + "," + newSalt;
+	}
+
+	private boolean phoneNumberFormated(String phoneNumber) {
+
+		boolean valid = false;
+		try {
+			phoneNumber = phoneNumber.replace("+", "").replaceAll("-", "").replaceAll(" ", "");
+			if (phoneNumber.matches("^((880)|(0))?(1[3-9]{1}|35|44|66){1}[0-9]{8}$")) {
+				valid = true;
+			} else {
+				valid = false;
+			}
+			return valid;
+		} catch (Exception e) {
+			return valid;
+		}
 	}
 
 	/**
@@ -150,9 +222,21 @@ public class MerchantController implements SaltTracker {
 		if (logger.isInfoEnabled()) {
 			logger.info("merchantRegistration -- START");
 		}
+		String name = merchantModel.getFirstName();
+		String firstName = "";
+		String lastName = "";
+		if (name.contains(" ")) {
+			String[] nameList = name.split(" ");
+			lastName = nameList[nameList.length - 1];
+			for (int i = 0; i < nameList.length - 1; ++i) {
+				firstName += nameList[i];
+			}
+			merchantModel.setFirstName(firstName);
+		}
+		merchantModel.setLastName(lastName);
 
 		CommonModel commonModel = new CommonModel();
-
+		System.out.println(merchantModel.getCsrfPreventionSalt());
 		String sessionId = httpServletRequest.getSession().getId();
 		List<String> activeSalts = SALT_TRACKER.get(sessionId);
 		String salt = "";
