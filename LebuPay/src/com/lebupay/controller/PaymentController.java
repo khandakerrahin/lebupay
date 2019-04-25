@@ -652,6 +652,9 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 							String sms_notifictaion = paymentModel.getNotification_sms();
 							String email_notification = paymentModel.getNotification_email();
+							String customerDetails = paymentModel.getCustomerDetails();
+							String firstName = decode(customerDetails, "firstName");
+							String lastName = decode(customerDetails, "lastName");
 							paymentModel = gson.fromJson(paymentModel.getCustomerDetails(), PaymentModel.class);// Wasif
 																												// 20190312
 							// JSON to Java object, read it from a Json String.
@@ -678,6 +681,17 @@ public class PaymentController extends BaseDao implements SaltTracker {
 										emailInvoicingModel.setEmailMessageBody(emailMessageBody);
 										emailInvoicingModel.setSubject(subject);
 										emailInvoicingModel.setEmailId(paymentModel.getEmailId());
+										emailInvoicingModel.setCardType(brand);
+										emailInvoicingModel.setNameOnCard(transactionModel.getNameOnCard());
+										emailInvoicingModel.setFirstName(firstName);
+										emailInvoicingModel.setLastName(lastName);
+										emailInvoicingModel.setMobileNumber(paymentModel.getMobileNumber());
+										emailInvoicingModel.setCardNumber(pan);
+										emailInvoicingModel.setBankTrxID(cityOrderID);
+										emailInvoicingModel.setTrxID(orderDescription);
+										emailInvoicingModel.setTransactionType(transactionType);
+										//emailInvoicingModel.setIPAddress(ipAddress);
+										emailInvoicingModel.setCurrency(cityTransactionModel.getCurrency());
 										emailInvoicingModel.setIsTemplate(true);
 
 										spiderEmailSender.sendEmail(emailInvoicingModel);
@@ -703,7 +717,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 										sendSMS.smsSend(paymentModel.getMobileNumber(), "We have received "
 												+ transactionModel.getGrossAmount()
-												+ " BDT. Thank You for paying with LEBUPAY. Visit www.we-top-up.com form mobile recharge.");
+												+ " BDT. Thank You for paying with LEBUPAY. Visit www.we-top-up.com for mobile recharge.");
 									} catch (Exception e) {
 										e.printStackTrace();
 									}
@@ -901,6 +915,8 @@ public class PaymentController extends BaseDao implements SaltTracker {
 										emailInvoicingModel.setAction(action);
 										emailInvoicingModel.setHeader(header);
 										emailInvoicingModel.setAmount("" + transactionModel.getGrossAmount());
+										emailInvoicingModel.setFirstName(transactionModel.getCustomer_firstName());
+										emailInvoicingModel.setLastName(transactionModel.getCustomer_lastName());
 										emailInvoicingModel.setEmailMessageBody(emailMessageBody);
 										emailInvoicingModel.setSubject(subject);
 										emailInvoicingModel.setEmailId(paymentModel.getEmailId());
@@ -1099,6 +1115,8 @@ public class PaymentController extends BaseDao implements SaltTracker {
 										emailInvoicingModel.setAction(action);
 										emailInvoicingModel.setHeader(header);
 										emailInvoicingModel.setAmount("" + transactionModel.getGrossAmount());
+										emailInvoicingModel.setFirstName(transactionModel.getCustomer_firstName());
+										emailInvoicingModel.setLastName(transactionModel.getCustomer_lastName());
 										emailInvoicingModel.setEmailMessageBody(emailMessageBody);
 										emailInvoicingModel.setSubject(subject);
 										emailInvoicingModel.setEmailId(paymentModel.getEmailId());
@@ -2108,6 +2126,11 @@ public class PaymentController extends BaseDao implements SaltTracker {
 
 										String sms_notifictaion = paymentModel.getNotification_sms();
 										String email_notification = paymentModel.getNotification_email();
+
+										String customerDetails = paymentModel.getCustomerDetails();
+										firstName = decode(customerDetails, "firstName");
+										lastName = decode(customerDetails, "lastName");
+										
 										paymentModel = gson.fromJson(paymentModel.getCustomerDetails(), PaymentModel.class);// Wasif
 
 										// JSON to Java object, read it from a Json String.
@@ -2132,10 +2155,21 @@ public class PaymentController extends BaseDao implements SaltTracker {
 												EmailInvoicingModel emailInvoicingModel = new EmailInvoicingModel();
 												emailInvoicingModel.setAction(action);
 												emailInvoicingModel.setHeader(header);
+												emailInvoicingModel.setFirstName(firstName);
+												emailInvoicingModel.setLastName(lastName);
 												emailInvoicingModel.setAmount(""+transactionModel.getGrossAmount());
 												emailInvoicingModel.setEmailMessageBody(emailMessageBody);
 												emailInvoicingModel.setSubject(subject);
 												emailInvoicingModel.setEmailId(paymentModel.getEmailId());
+												emailInvoicingModel.setCardType(cardBrand);
+												emailInvoicingModel.setNameOnCard(transactionModel.getNameOnCard());
+												emailInvoicingModel.setMobileNumber(paymentModel.getMobileNumber());
+												emailInvoicingModel.setCardNumber(cardNumber);
+												emailInvoicingModel.setBankTrxID(receipt);
+												emailInvoicingModel.setTrxID(orderId);
+												emailInvoicingModel.setTransactionType(trxType);
+												emailInvoicingModel.setIPAddress(ipAddress);
+												emailInvoicingModel.setCurrency(currency);
 												emailInvoicingModel.setIsTemplate(true);
 												
 												spiderEmailSender.sendEmail(emailInvoicingModel);
@@ -3148,6 +3182,9 @@ public class PaymentController extends BaseDao implements SaltTracker {
 									String sms_notifictaion = paymentModel.getNotification_sms();
 									String email_notification = paymentModel.getNotification_email();
 									paymentModel = gson.fromJson(paymentModel.getCustomerDetails(), PaymentModel.class);
+									String customerDetails = paymentModel.getCustomerDetails();
+									String firstName = decode(customerDetails, "firstName");
+									String lastName = decode(customerDetails, "lastName");
 									// JSON to Java object, read it from a Json String.
 									/*
 									 * paymentModel = gson.fromJson(
@@ -3179,6 +3216,17 @@ public class PaymentController extends BaseDao implements SaltTracker {
 											emailInvoicingModel.setEmailMessageBody(emailMessageBody);
 											emailInvoicingModel.setSubject(subject);
 											emailInvoicingModel.setEmailId(paymentModel.getEmailId());
+											emailInvoicingModel.setFirstName(firstName);
+											emailInvoicingModel.setLastName(lastName);
+											emailInvoicingModel.setCardType(transactionModel.getCard_brand());
+											emailInvoicingModel.setCardNumber(transactionModel.getProvided_card_number());
+											emailInvoicingModel.setNameOnCard(transactionModel.getNameOnCard());
+											emailInvoicingModel.setBankTrxID(transactionModel.getTransaction_receipt());
+											emailInvoicingModel.setMobileNumber(paymentModel.getMobileNumber());
+											emailInvoicingModel.setTrxID(orderId);
+											emailInvoicingModel.setTransactionType(transactionModel.getTransaction_type());
+											//emailInvoicingModel.setIPAddress(ipAddress);
+											emailInvoicingModel.setCurrency(transactionModel.getTransaction_currency());
 											emailInvoicingModel.setIsTemplate(true);
 
 											spiderEmailSender.sendEmail(emailInvoicingModel);
@@ -3192,7 +3240,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 										if (Objects.nonNull(paymentModel.getMobileNumber())) {
 											sendSMS.smsSend(paymentModel.getMobileNumber(), "We have received "
 													+ transactionModel.getGrossAmount()
-													+ " BDT. Thank You for paying with LEBUPAY. Visit www.we-top-up.com form mobile recharge.");
+													+ " BDT. Thank You for paying with LEBUPAY. Visit www.we-top-up.com for mobile recharge.");
 										}
 									}
 
@@ -4029,7 +4077,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 													String firstName = decode(customerDetails, "firstName");
 													String lastName = decode(customerDetails, "lastName");
 
-													String action = "transactionSuccess";
+													String action = "bkashSuccess";
 
 													// TODO
 													if (logger.isInfoEnabled()) {
@@ -4062,11 +4110,19 @@ public class PaymentController extends BaseDao implements SaltTracker {
 														EmailInvoicingModel emailInvoicingModel = new EmailInvoicingModel();
 														emailInvoicingModel.setAction(action);
 														emailInvoicingModel.setHeader(header);
-														emailInvoicingModel
-																.setAmount("" + transactionModel.getGrossAmount());
+														emailInvoicingModel.setFirstName(firstName);
+														emailInvoicingModel.setLastName(lastName);
+														emailInvoicingModel.setAmount("" + transactionModel.getGrossAmount());
 														emailInvoicingModel.setEmailMessageBody(emailMessageBody);
 														emailInvoicingModel.setSubject(subject);
-														emailInvoicingModel.setEmailId(paymentModel.getEmailId());
+														emailInvoicingModel.setEmailId(to);
+														emailInvoicingModel.setBankTrxID(transactionModel.getBkashTrxId());
+														emailInvoicingModel.setMobileNumber(bKashModel2.getSender());
+														emailInvoicingModel.setCreatedDate(bKashModel2.getDatetime());
+														emailInvoicingModel.setTrxID(orderId);
+														emailInvoicingModel.setTransactionType(transactionModel.getTransaction_type());
+														//emailInvoicingModel.setIPAddress(ipAddress);
+														emailInvoicingModel.setCurrency(transactionModel.getTransaction_currency());
 														emailInvoicingModel.setIsTemplate(true);
 
 														spiderEmailSender.sendEmail(emailInvoicingModel);
@@ -4082,7 +4138,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 															sendSMS.smsSend(paymentModel.getMobileNumber(),
 																	"We have received "
 																			+ transactionModel.getGrossAmount()
-																			+ " BDT. Thank You for paying with LEBUPAY. Visit www.we-top-up.com form mobile recharge.");
+																			+ " BDT. Thank You for paying with LEBUPAY. Visit www.we-top-up.com for mobile recharge.");
 														}
 													}
 

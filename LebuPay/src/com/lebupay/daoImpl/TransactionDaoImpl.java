@@ -1503,9 +1503,12 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 			pst.setDoubleAtName("GROSS_AMOUNT", transactionModel.getGrossAmount());
 			pst.setDoubleAtName("AMOUNT", transactionModel.getAmount());
 			pst.setStringAtName("BANK", transactionModel.getBank());
-			pst.setStringAtName("BIN_ISSUER_COUNTRY", transactionModel.getCardIssuerModel().getIssuerCountry());
 			
-			
+			if(transactionModel.getBank().equals("EBL"))
+				pst.setStringAtName("BIN_ISSUER_COUNTRY", transactionModel.getCardIssuerModel().getIssuerCountry());
+				   //Wasif 20190423
+				else
+				pst.setStringAtName("BIN_ISSUER_COUNTRY", null);
 			
 			
 			if(transactionModel.getCard_brand().equals("bkash"))

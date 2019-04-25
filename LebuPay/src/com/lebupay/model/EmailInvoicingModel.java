@@ -28,6 +28,15 @@ public class EmailInvoicingModel extends CommonModel {
 	private String otp;
 	private String query;
 	private String reply;
+	private String cardType;
+	private String cardNumber;
+	private String bankTrxID;
+	private String trxID;
+	private String IPAddress;
+	private String transactionType;
+	private String billingAddress;
+	private String currency;
+	private String nameOnCard;
 	private Boolean isTemplate = false;
 	
 	private List<String> pluggers;
@@ -216,6 +225,76 @@ public class EmailInvoicingModel extends CommonModel {
 		this.reply = reply;
 	}
 	
+	public String getCardType() {
+		return cardType;
+	}
+
+	public void setCardType(String cardType) {
+		this.cardType = cardType;
+	}
+	public String getCardNumber() {
+		return cardNumber;
+	}
+
+	public void setCardNumber(String cardNumber) {
+		this.cardNumber = cardNumber;
+	}
+	public String getTransactionType() {
+		return transactionType;
+	}
+
+	public void setTransactionType(String transactionType) {
+		this.transactionType = transactionType;
+	}
+	
+	public String getIPAddress() {
+		return IPAddress;
+	}
+
+	public void setIPAddress(String IPAddress) {
+		this.IPAddress = IPAddress;
+	}
+	
+	public String getBillingAddress() {
+		return billingAddress;
+	}
+
+	public void setBillingAddress(String billingAddress) {
+		this.billingAddress = billingAddress;
+	}
+	
+	public String getBankTrxID() {
+		return bankTrxID;
+	}
+
+	public void setBankTrxID(String bankTrxID) {
+		this.bankTrxID = bankTrxID;
+	}
+	
+	public String getTrxID() {
+		return trxID;
+	}
+
+	public void setTrxID(String trxID) {
+		this.trxID = trxID;
+	}
+	
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+	
+	public String getNameOnCard() {
+		return nameOnCard;
+	}
+
+	public void setNameOnCard(String nameOnCard) {
+		this.nameOnCard = nameOnCard;
+	}
+	
 	public Boolean getIsTemplate() {
 		return isTemplate;
 	}
@@ -237,8 +316,11 @@ public class EmailInvoicingModel extends CommonModel {
 				+ ", action=" + action + ", header=" + header
 				+ ", resetLink=" + resetLink + ", paymentLink=" + paymentLink
 				+ ", otp=" + otp + ", query=" + query
-				+ ", reply=" + reply
+				+ ", reply=" + reply + ", cardType=" + cardType + ", cardNumber=" + cardNumber 
+				+ ", bankTrxID=" + bankTrxID + ", trxID=" + trxID + ", IPAddress=" + IPAddress
+				+ ", transactionType=" + transactionType + ", billingAddress=" + billingAddress
+				+ ", currency=" + currency
+				+ ", nameOnCard=" + nameOnCard
 				+ ", isTemplate=" + isTemplate + "]";       
 	}
-
 }

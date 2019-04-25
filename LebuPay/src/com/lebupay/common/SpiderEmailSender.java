@@ -51,7 +51,6 @@ public class SpiderEmailSender extends BaseDao {
 			jsonReqString = jsonReqString.replace("replace_paymentLink_here", Util.isNullOrEmpty(emailInvoicingModel.getPaymentLink())?"":emailInvoicingModel.getPaymentLink());
 			jsonReqString = jsonReqString.replace("replace_description_here", Util.isNullOrEmpty(emailInvoicingModel.getDescription())?"":emailInvoicingModel.getDescription());
 			jsonReqString = jsonReqString.replace("replace_otp_here", Util.isNullOrEmpty(emailInvoicingModel.getOTP())?"":emailInvoicingModel.getOTP());
-			jsonReqString = jsonReqString.replace("replace_phoneNumber_here", Util.isNullOrEmpty(emailInvoicingModel.getMobileNumber())?"":emailInvoicingModel.getMobileNumber());
 			jsonReqString = jsonReqString.replace("replace_email_here", Util.isNullOrEmpty(emailInvoicingModel.getEmailId())?"":emailInvoicingModel.getEmailId());
 			jsonReqString = jsonReqString.replace("replace_invoiceNo_here", Util.isNullOrEmpty(emailInvoicingModel.getInvoiceNo())?"":emailInvoicingModel.getInvoiceNo());
 			jsonReqString = jsonReqString.replace("replace_type_here", Util.isNullOrEmpty(emailInvoicingModel.getType())?"":emailInvoicingModel.getType());
@@ -60,7 +59,18 @@ public class SpiderEmailSender extends BaseDao {
 			jsonReqString = jsonReqString.replace("replace_contactUsQuery_here", Util.isNullOrEmpty(emailInvoicingModel.getQuery())?"":emailInvoicingModel.getQuery());
 			jsonReqString = jsonReqString.replace("replace_contactUsReply_here", Util.isNullOrEmpty(emailInvoicingModel.getReply())?"":emailInvoicingModel.getReply());
 			jsonReqString = jsonReqString.replace("replace_templateID_here", templateID);
-
+			
+			jsonReqString = jsonReqString.replace("replace_cardType_here", Util.isNullOrEmpty(emailInvoicingModel.getCardType())?"":emailInvoicingModel.getCardType());
+			jsonReqString = jsonReqString.replace("replace_cardNumber_here", Util.isNullOrEmpty(emailInvoicingModel.getCardNumber())?"":emailInvoicingModel.getCardNumber());
+			jsonReqString = jsonReqString.replace("replace_nameOnCard_here", Util.isNullOrEmpty(emailInvoicingModel.getNameOnCard())?"":emailInvoicingModel.getNameOnCard());
+			jsonReqString = jsonReqString.replace("replace_bankTrxID_here", Util.isNullOrEmpty(emailInvoicingModel.getBankTrxID())?"":emailInvoicingModel.getBankTrxID());
+			jsonReqString = jsonReqString.replace("replace_trxID_here", Util.isNullOrEmpty(emailInvoicingModel.getTrxID())?"":emailInvoicingModel.getTrxID());
+			jsonReqString = jsonReqString.replace("replace_phoneNumber_here", Util.isNullOrEmpty(emailInvoicingModel.getMobileNumber())?"":emailInvoicingModel.getMobileNumber());
+			jsonReqString = jsonReqString.replace("replace_transactionType_here", Util.isNullOrEmpty(emailInvoicingModel.getTransactionType())?"":emailInvoicingModel.getTransactionType());
+			jsonReqString = jsonReqString.replace("replace_IPAddress_here", Util.isNullOrEmpty(emailInvoicingModel.getIPAddress())?"":emailInvoicingModel.getIPAddress());
+			jsonReqString = jsonReqString.replace("replace_currency_here", Util.isNullOrEmpty(emailInvoicingModel.getCurrency())?"":emailInvoicingModel.getCurrency());
+			jsonReqString = jsonReqString.replace("replace_billingAddress_here", Util.isNullOrEmpty(emailInvoicingModel.getBillingAddress())?"":emailInvoicingModel.getBillingAddress());
+			
 			post(jsonReqString, emailInvoicingModel.getIsTemplate());
 
 		} catch (ClientProtocolException e) {
