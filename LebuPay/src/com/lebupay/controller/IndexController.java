@@ -501,9 +501,6 @@ public class IndexController extends BaseDao implements SaltTracker {
 				model.addAttribute("SEBL", "N");
 				System.out.println("--=== SEBL false");
 			}
-<<<<<<< HEAD
-			
-			
 			TransactionModel transactionModel1 = transactionService.fetchTransactionByTXNId(transactionModel.getTxnId());
 			
 			if(transactionModel1.getIsValid()) {
@@ -515,24 +512,8 @@ public class IndexController extends BaseDao implements SaltTracker {
 				}
 			}else {
 				return "redirect:/transaction_expired?orderId=" + transactionModel.getTxnId();
-=======
 
-			TransactionModel transactionModel1 = transactionService
-					.fetchTransactionByTXNId(transactionModel.getTxnId());
-
-			if ((transactionModel1.getPaymentModel().getFailureURL()).equals("None")) {
-				model.addAttribute("returnUrl", "index");
-			} else {
-				model.addAttribute("returnUrl", transactionModel1.getPaymentModel().getFailureURL());
->>>>>>> branch 'ajmain_v1_2' of https://ShakerRahin@bitbucket.org/spiderdigitalcommerce/lebupay.git
 			}
-<<<<<<< HEAD
-			
-			
-			
-=======
-
->>>>>>> branch 'ajmain_v1_2' of https://ShakerRahin@bitbucket.org/spiderdigitalcommerce/lebupay.git
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("transactionidInvalid", messageUtil.getBundle("transactionid.invalid"));

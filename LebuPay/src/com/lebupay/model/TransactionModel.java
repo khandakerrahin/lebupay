@@ -793,7 +793,7 @@ public class TransactionModel extends CommonModel {
 				+ ", paymentModel=" + paymentModel + ", transaction="
 				+ transaction + ", cardPercentage=" + cardPercentage
 				+ ", type=" + type + ", grossAmount=" + grossAmount
-				+ ", bkashTrxId=" + bkashTrxId + ", bank=" + bank + ", logo=" + logo"]";
+				+ ", bkashTrxId=" + bkashTrxId + ", bank=" + bank + ", logo=" + logo+"]";
 	}
 
 }
