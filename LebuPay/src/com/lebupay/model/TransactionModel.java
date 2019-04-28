@@ -84,6 +84,10 @@ public class TransactionModel extends CommonModel {
 	private CardIssuerModel cardIssuerModel;
 	private int trx_status;//TODO Wasif 20190418 for ebl void and all other trx update
 
+	private String logo = "bubble.png"; // changed by ajmain
+
+	private String lebuPayTrx;
+
 	public Long getTransactionId() {
 		return transactionId;
 	}
@@ -716,6 +720,22 @@ public class TransactionModel extends CommonModel {
 	public void setTrx_status(int trx_status) {
 		this.trx_status = trx_status;
 	}
+	
+	public String getLogo() { // added by ajmain
+		return logo;
+	}
+
+	public void setLogo(String logo) { // added by ajmain
+		this.logo = logo;
+	}
+
+	public String getLebuPayTrx() { // added by ajmain
+		return lebuPayTrx;
+	}
+
+	public void setLebuPayTrx(String lebuPayTrxId) { // added by ajmain
+		lebuPayTrx = lebuPayTrxId;
+	}
 
 	@Override
 	public String toString() {
@@ -773,7 +793,7 @@ public class TransactionModel extends CommonModel {
 				+ ", paymentModel=" + paymentModel + ", transaction="
 				+ transaction + ", cardPercentage=" + cardPercentage
 				+ ", type=" + type + ", grossAmount=" + grossAmount
-				+ ", bkashTrxId=" + bkashTrxId + ", bank=" + bank + "]";
+				+ ", bkashTrxId=" + bkashTrxId + ", bank=" + bank + ", logo=" + logo"]";
 	}
 
 }

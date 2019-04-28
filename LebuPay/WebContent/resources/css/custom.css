@@ -487,6 +487,19 @@ input, select {outline: medium none; vertical-align: middle;}
     color: #66ab6f;
 }
 
+#backButton {
+    background-color: #f96b6b;
+    border: 1px solid rgba(255, 255, 255, 0);
+    color: #ffffff;
+    text-transform: uppercase;
+}
+
+#backButton:hover {
+    background-color: #ffffff;
+    border: 1px solid #f96b6b;
+    color: white;
+}
+
 .lp-custom-select-arrow .fa.fa-chevron-down {
     color: #757575;
 }
@@ -513,11 +526,11 @@ input, select {outline: medium none; vertical-align: middle;}
     width: 100%;
 }
 .lp-forgot-password-link div a:first-child{
-    text-align: right;
-    border-right: 1px solid #d6d5d5;
+    /* text-align: right;
+    border-right: 1px solid #d6d5d5; */
 }
 .lp-forgot-password-link div a:last-child{
-    text-align: left;
+    /* text-align: left; */
 }
  /* login area css start*/
 .admin_login{ background: url(../images/merchant_bg.jpg) no-repeat 0 0; background-size: cover; font-family: 'Roboto', sans-serif;}

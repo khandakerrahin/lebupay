@@ -339,7 +339,7 @@ function copyToClipboard (containerid) {
             	document.getElementById(containerid).innerHTML="<style>#msgtext{ background-color:#228B22; color: #fff; text-align: center; border-radius: 6px; padding-top: 8px; padding-bottom: 5px; }</style> <b id='msgtext'>Amount Copied</b>";
             }
             
-            setInterval(() => {
+            setInterval(function(){
                 document.getElementById(containerid).innerText = data;
             }, 1500);
         }
