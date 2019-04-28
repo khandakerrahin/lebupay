@@ -487,7 +487,7 @@ $(document).ready(function(){
 													<div class="row">
 														<div class="col-xs-8">
 															<b id="infoName" class="english1">Merchant Name</b> <b
-																id="infoName" class="bangla1" style="display: none">বণিক
+																id="infoName" class="bangla1" style="display: none">মার্চেন্টের
 																নাম</b><br> <i id="infoItem">${merchantName }</i>&nbsp;<i
 																class="fa fa-question-circle" aria-hidden="true"></i>
 
