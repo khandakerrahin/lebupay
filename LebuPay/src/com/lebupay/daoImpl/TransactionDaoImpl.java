@@ -1634,7 +1634,17 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ "m.SEBL_USER_NAME," // 25
 					+ "m.SEBL_PASSWORD," // 26
 					+ "m.SEBL_ID, " // 27
-					+ "case when tm.EXPIRE_DATE>localtimestamp(0) then 1 else 0 end as isValid " // 28	//	added by Shaker on 16.04.2019
+					
+					
+					//	added by Shaker on 16.04.2019
+					+ "case when tm.EXPIRE_DATE>localtimestamp(0) then 1 else 0 end as isValid, " // 28	
+					
+					
+					//	added by Shaker on 28.04.2019
+					+ "om.PAYMENT_METHOD, " // 29
+					+ "om.GATEWAY, " // 30
+					+ "m.API_GATEWAY_SELECTION " // 31
+					
 					/*
 					+ " , m.NOTIFICATION_SMS," //28
 					+ "m.NOTIFICATION_EMAIL " //29 /**/
@@ -1684,14 +1694,23 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 				merchantModel.setSeblUserName(rs.getString(25));
 				merchantModel.setSeblPassword(rs.getString(26));
 				merchantModel.setSeblId(rs.getString(27));
+				merchantModel.setApiGatewaySelection(rs.getString(31)); //	added by Shaker on 28.04.2019
+				
 				//TODO
 				/*
 				merchantModel.setNotification_sms(rs.getString(28));
 				merchantModel.setNotification_email(rs.getString(29));/**/
 				//.set(rs.getString(27));
+
+				PaymentModel paymentModel = new PaymentModel();
 				
 				transactionModel.setMerchantModel(merchantModel);
 				transactionModel.setIsValid((rs.getInt(28)==1?true:false));	//	added by Shaker on 16.04.2019
+				paymentModel.setPaymentMethod(rs.getString(29)); //	added by Shaker on 28.04.2019
+				paymentModel.setGateway(rs.getString(30)); //	added by Shaker on 28.04.2019
+				
+				transactionModel.setPaymentModel(paymentModel);
+				
 
 			}
 
@@ -2467,7 +2486,7 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ ") ";/**/
 			//TODO 20190220
 		
-			String sql = "insert into ORDER_MASTER (ORDER_ID,AMOUNT,MERCHANT_ID,SUCCESS_URL,FAILURE_URL,ORDER_TRANSACTION_ID,CUTOMER_DETAILS,TOKEN,STATUS,CREATED_BY,CREATED_DATE,NOTIFICATION_SMS,NOTIFICATION_EMAIL,SERVER_SUCCESS_URL,SERVER_FAILURE_URL) values(ORDER_MASTER_SEQ.nextval,"
+			String sql = "insert into ORDER_MASTER (ORDER_ID,AMOUNT,MERCHANT_ID,SUCCESS_URL,FAILURE_URL,ORDER_TRANSACTION_ID,CUTOMER_DETAILS,TOKEN,STATUS,CREATED_BY,CREATED_DATE,NOTIFICATION_SMS,NOTIFICATION_EMAIL,SERVER_SUCCESS_URL,SERVER_FAILURE_URL,PAYMENT_METHOD,GATEWAY) values(ORDER_MASTER_SEQ.nextval,"
 					+ ":AMOUNT,"
 					+ ":MERCHANT_ID,"
 					+ ":SUCCESS_URL,"
@@ -2481,7 +2500,9 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
 					+ ":NOTIFICATION_SMS,"
 					+ ":NOTIFICATION_EMAIL,"
 					+ ":SERVER_SUCCESS_URL,"
-					+ ":SERVER_FAILURE_URL"
+					+ ":SERVER_FAILURE_URL,"
+					+ ":PAYMENT_METHOD,"
+					+ ":GATEWAY"
 					+ ") "; /**/
 		
 
@@ -2501,6 +2522,11 @@ public class TransactionDaoImpl extends BaseDao implements TransactionDAO {
             pst.setStringAtName("NOTIFICATION_EMAIL",paymentModel.getNotification_email());/**/
             pst.setStringAtName("SERVER_SUCCESS_URL",paymentModel.getServerSuccessURL());
             pst.setStringAtName("SERVER_FAILURE_URL",paymentModel.getServerFailureURL());
+            
+            //	added by Shaker on 20190428
+            pst.setStringAtName("PAYMENT_METHOD",paymentModel.getPaymentMethod());
+            pst.setStringAtName("GATEWAY",paymentModel.getGateway());
+            
 			System.out.println("Insert Order By Merchant==>> "+sql);
 
 

@@ -38,6 +38,10 @@ public class PaymentModel extends CommonModel {
 	
 	private String serverSuccessURL;
 	private String serverFailureURL;
+	
+	//	added by Shaker on 20190428
+	private String paymentMethod;
+	private String gateway;
 
 
 
@@ -336,6 +340,30 @@ public class PaymentModel extends CommonModel {
 	public void setServerFailureURL(String serverFailureURL) {
 		this.serverFailureURL = serverFailureURL;
 	}
+	
+	public String getPaymentMethod() {
+		if(paymentMethod != null && !paymentMethod.isEmpty()) {
+		}else {
+			paymentMethod="NotSet";
+		}
+		return paymentMethod;
+	}
+
+	public void setPaymentMethod(String paymentMethod) {
+		this.paymentMethod = paymentMethod;
+	}
+	
+	public String getGateway() {
+		if(gateway != null && !gateway.isEmpty()) {
+		}else {
+			gateway="NotSet";
+		}
+		return gateway;
+	}
+
+	public void setGateway(String gateway) {
+		this.gateway = gateway;
+	}
 
 	@Override
 
@@ -355,6 +383,8 @@ public class PaymentModel extends CommonModel {
                 +",serverFailureURL="+serverFailureURL+",serverSuccessURL="+serverSuccessURL
 				+ ", notification_sms=" +notification_sms
 				+ ", notification_email=" +notification_email
+				+ ", paymentMethod=" +paymentMethod
+				+ ", gateway=" +gateway
 				+ ", merchantModel=" + merchantModel + ", customerDetails="
 				+ customerDetails + ", SESSIONKEY=" + SESSIONKEY + ",transactionDate=" + transactionDate
 				+ ", transactionModel=" + transactionModel + ", transactionStatus="

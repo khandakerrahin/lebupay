@@ -1,5 +1,4 @@
 <%@ include file="merchant-sandbox-header.jsp"%>
-
 <div class="sandBoxWrapper">
 	<div class="row brdr-btm">
 		<div class="col-md-10 col-sm-10 col-xs-12">
@@ -139,7 +138,7 @@
 				</div>
 				<div class="col-md-12 col-sm-12 col-xs-12">
 					<h5>
-						<b>Reference Key :</b> Pluggers
+						<b>Share via :</b> Select atleast one
 					</h5>
 				</div>
 				<div class="col-md-12 col-sm-12 col-xs-12">
@@ -166,6 +165,7 @@
 
 
 <script type="text/javascript">
+$('#merchant_copy_link_modal').modal('show');
 $('form[action="email-invoicing"]').submit(function(){
 	var mobileNo = $('[name="mobileNumber"]').val();
 	if(mobileNo.indexOf('+880') == -1){
@@ -312,9 +312,6 @@ function validateNumber(number, permit) {
 	
 	return false;
 }
-
-
-
 </script>
 
 
@@ -329,6 +326,21 @@ if (message != null) {
 		});
 		
 		$('#merchant_copy_link_modal').modal('show');
+		var is_mobile = !!navigator.userAgent.match(/iphone|android|blackberry/ig) || false;
+console.log($("#whatsappId").length);
+		if(is_mobile){
+			var value = "${basePaymentLink}";
+			console.log(value);
+			var href= "whatsapp://send?text="+value;
+			console.log(href);
+		$("#whatsappId").attr("href", href);	
+		}else{
+			var value = "${basePaymentLink}";
+			console.log(value);
+			$("#whatsappId").attr("href", "https://web.whatsapp.com/send?text="+value);
+			$("#whatsappId").attr("onclick", "window.open(this.href, 'windowName', 'width=350, height=450, scrollbars, resizable'); return false;");
+		}
+			
 	});
 	</script>
 <%
@@ -566,9 +578,27 @@ if (message != null) {
           <div class="modal-footer">
           <!--  <a href="javascript:void(0)" id="copyLink" class="copy_link">Copy Link</a>-->
       	<button type="button" class="btn btn-default copy_link btn-warning pull-left" id="copyLink">Copy Link</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      	<br><br>
+      	<b style="float: left;padding-right: 7px;padding-top: 4px;">Share via:</b>
+      	<a type="button" href="https://www.facebook.com/sharer/sharer.php?u=${basePaymentLink}" class="" id="copyLink" onclick="window.open(this.href, 'windowName', 'width=350, height=450, scrollbars, resizable'); return false;" style="background-color: #4b4bfb; border-color: #4b4bfb; height: 25px;">
+      	<img style="padding-top: 0px !important; margin-top: -1px; float: left; height: 27px !important; padding-right: 4px;" title="" src="<%=basePath %>resources/images/fb.png">
+</a>
+<a type="button" href="https://twitter.com/share?url=${basePaymentLink}" class="" id="copyLink" onclick="window.open(this.href, 'windowName', 'width=350, height=450, scrollbars, resizable'); return false;" style="background-color: #8787ff; border-color: #8787ff; height: 25px;">
+      	<img style="padding-top: 0px !important; margin-top: -1px; float: left; height: 27px !important; padding-right: 4px;" title="" src="<%=basePath %>resources/images/twitter.png">
+</a>
+      	<a type="button" href="#" class="" id="whatsappId" onclick="" style="background-color: green; border-color: green; height: 25px;">
+      	<img src="<%=basePath %>resources/images/whatsapp.jpg" style="padding-top: 0px !important; margin-top: -2px; float: left; height: 27px !important;" title="">
+      	</a>
+        
+        <a type="button" href="https://www.instagram.com/?url=${basePaymentLink}" class="" id="copyLink" onclick="window.open(this.href, 'windowName', 'width=350, height=450, scrollbars, resizable'); return false;" style="/*! background-color: #ee2a7b; */ /*! border-color: #ee2a7b; */ /*! height: 25px; */">
+      	<img src="<%=basePath %>resources/images/instagram.png" style="padding-top: 0px !important; margin-top: -2px; float: left; height: 27px !important;padding-left: 4px;" title="">
+</a>
+       
       </div>
     </div>
   </div>
 </div>
+
+
 <!-- Copy link modal for merchant end -->					

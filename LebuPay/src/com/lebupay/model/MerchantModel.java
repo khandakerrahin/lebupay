@@ -39,6 +39,7 @@ public class MerchantModel extends CommonModel {
 	private String seblPassword;
 	private String seblUserName;
 	private String seblId;
+	private String apiGatewaySelection;
 	//TODO
 	/*
 	private String notification_sms;
@@ -299,6 +300,15 @@ public class MerchantModel extends CommonModel {
 	public void setCityMerchantId(String cityMerchantId) {
 		this.cityMerchantId = cityMerchantId;
 	}
+	
+	public String getApiGatewaySelection() {
+		return apiGatewaySelection;
+	}
+
+	public void setApiGatewaySelection(String apiGatewaySelection) {
+		this.apiGatewaySelection = apiGatewaySelection;
+	}
+	
 	//TODO 
 /*
 	public String getNotification_sms() {
@@ -339,7 +349,7 @@ public class MerchantModel extends CommonModel {
 				+ transactionModels + ", companyModel=" + companyModel
 				+ ", checkoutModel=" + checkoutModel + ", eblPassword="
 				+ eblPassword + ", eblUserName=" + eblUserName + ", eblId="
-				+ eblId + ",seblPassword="+seblPassword+ ", seblUserName="+ seblUserName+ ", seblId="+seblId+ ",cityMerchantId=" + cityMerchantId + "]";
+				+ eblId + ",seblPassword="+seblPassword+ ", seblUserName="+ seblUserName+ ", seblId="+seblId+ ",cityMerchantId=" + cityMerchantId +",apiGatewaySelection="+apiGatewaySelection +"]";
 	}
 	/*public String toString() {
 	return "MerchantModel [merchantId=" + merchantId + ", typeModel="

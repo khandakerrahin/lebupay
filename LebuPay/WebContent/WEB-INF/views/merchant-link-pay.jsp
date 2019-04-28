@@ -3,6 +3,7 @@
 	String path = request.getContextPath();
 	String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
 			+ path + "/";
+	String bkash = request.getParameter("bkash") != null ? request.getParameter("bkash") : "";
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -99,12 +100,26 @@
 	display: block;
 }
 
+#mainBox {
+	padding-left: 5%;
+}
+
+#cancelOrderTag {
+	padding-left: 25%;
+}
+
 @media ( max-width : 723px) {
 	.lebuImg {
 		margin-top: 0% !important;
 	}
-	#brand1{
-	margin-top:-7% !important; 
+	#brand1 {
+		margin-top: -7% !important;
+	}
+	#mainBox {
+		padding-left: 0%;
+	}
+	#cancelOrderTag {
+		padding-left: 0%;
 	}
 }
 </style>
@@ -234,10 +249,10 @@ $(document).ready(function(){
 <body
 	class="hold-transition skin-blue sidebar-mini noSidebar merchant-link-page">
 	<script type="text/javascript" src="https://cdn.ywxi.net/js/1.js" async></script>
-	<div class="wrapper">
+	<div class="wrapper" style="padding-bottom: 0px">
 
 		<nav class="navbar navbar-default"
-			style="margin-bottom: 2% !important">
+			style="margin-bottom: 0% !important">
 		<div class="container-fluid">
 			<div class="nav-header">
 				<div class="row">
@@ -445,6 +460,14 @@ $(document).ready(function(){
 		</div>
 		
  --%>
+
+		<div style="float: right; margin-bottom: 5px; padding-right: 10px;">
+			<b>English</b> <label class="switch"
+				style="padding-top: -30px; margin-bottom: 0px;"> <input
+				type="checkbox" id="changeLang" name="changeLang" value="changeLang" />
+				<span class="slider round"></span>
+			</label> <b>বাংলা</b>
+		</div>
 		<div class="content-wrapper">
 			<section class="content" style="margin-top:0px">
 			<div class="row sandBoxTab">
@@ -453,41 +476,46 @@ $(document).ready(function(){
 						<div class="sandBox">
 							<div class="sandBox">
 								<div class="sandBoxWrapper checkoutPage"
-									style="padding-top: 0px !important">
+									style="padding-top: 0px !important; margin-top: -6px !important; padding-bottom: 0px">
 									<div class="row">
-										<div class="col-md-4 col-sm-4 col-xs-12"></div>
-										<div class="col-md-5 col-sm-5 col-xs-12">
-											<div class="orderSummery">
-												<h3>Order Summary</h3>
+										<div class="col-md-3 col-sm-3 col-xs-12"></div>
+										<div class="col-md-6 col-sm-6 col-xs-12" id="mainBox">
+											<div class="orderSummery" style="padding-top: 5px;">
+												<h3 id="english1">Order Summary</h3>
+												<h3 id="bangla1" style="display: none">অর্ডার বিবরণী</h3>
 												<div class="contSec">
 													<div class="row">
 														<div class="col-xs-8">
-															<b id="infoName">Merchant Name</b><br> <i
-																id="infoItem">${merchantName }</i>&nbsp;<i class="fa fa-question-circle" aria-hidden="true" ></i>
-																
+															<b id="infoName" class="english1">Merchant Name</b> <b
+																id="infoName" class="bangla1" style="display: none">বণিক
+																নাম</b><br> <i id="infoItem">${merchantName }</i>&nbsp;<i
+																class="fa fa-question-circle" aria-hidden="true"></i>
+
 														</div>
 														<div class="col-xs-4">
-															<b id="infoName">Amount</b><br> <strong
-																id="infoItem">&#2547; <fmt:formatNumber
+															<b id="infoName" class="english1">Amount</b> <b
+																id="infoName" class="bangla1" style="display: none">পরিমাণ</b><br>
+															<strong id="infoItem">&#2547; <fmt:formatNumber
 																	type="number" maxFractionDigits="2"
 																	value="${grossAmount}" />
 
 															</strong>
 														</div>
 													</div>
-													
+
 													<br>
 													<div class="contSec"
 														style="border-top: 1px solid #66ab6f; border-radius: 20px">
 														<div class="eachBox" style="text-align: center">
-															<%  
-														String city = request.getAttribute("CITY").toString();
-														String ebl = request.getAttribute("EBL").toString(); 
-														String sebl = request.getAttribute("SEBL").toString();
-													
-														%>
+															<%
+																String city = request.getAttribute("CITY").toString();
+																String ebl = request.getAttribute("EBL").toString();
+																String sebl = request.getAttribute("SEBL").toString();
+															%>
 
-															<% if(ebl.equals("Y")){ %>
+															<%
+																if (ebl.equals("Y")) {
+															%>
 															<div id="eblDiv">
 																<ul>
 
@@ -506,10 +534,14 @@ $(document).ready(function(){
 																	<li id="bkash_hov" class="card_logos"><a href="#"
 																		id="bkashClicked"><img
 																			src="<%=basePath%>resources/images/bkash4.png"
-																			style="width: 27px;height: 26px !important;" alt="bkash"><b style="font-size: 9px;color: #000;">bKash</b></a></li>
+																			style="width: 27px; height: 26px !important;"
+																			alt="bkash"><b
+																			style="font-size: 9px; color: #000;">bKash</b></a></li>
 																</ul>
 															</div>
-															<% }else if(city.equals("Y")){ %>
+															<%
+																} else if (city.equals("Y")) {
+															%>
 															<div id="cityDiv">
 																<ul>
 
@@ -528,11 +560,15 @@ $(document).ready(function(){
 																	<li id="bkash_hov" class="card_logos"><a href="#"
 																		id="bkashClicked"><img
 																			src="<%=basePath%>resources/images/bkash4.png"
-																			style="width: 27px;height: 26px !important;" alt="bkash"><b style="font-size: 9px;color: #000;">bKash</b></a></li>
+																			style="width: 27px; height: 26px !important;"
+																			alt="bkash"><b
+																			style="font-size: 9px; color: #000;">bKash</b></a></li>
 																</ul>
 															</div>
 
-															<% } else if(sebl.equals("Y")){ %>
+															<%
+																} else if (sebl.equals("Y")) {
+															%>
 															<div id="seblDiv">
 																<ul>
 
@@ -547,31 +583,31 @@ $(document).ready(function(){
 																	<li id="bkash_hov" class="card_logos"><a href="#"
 																		id="bkashClicked"><img
 																			src="<%=basePath%>resources/images/bkash4.png"
-																			style="width: 27px;height: 26px !important;" alt="bkash"><b style="font-size: 9px;color: #000;">bKash</b></a></li>
+																			style="width: 27px; height: 26px !important;"
+																			alt="bkash"><b
+																			style="font-size: 9px; color: #000;">bKash</b></a></li>
 																</ul>
 															</div>
-															<% }else{ %>
+															<%
+																} else {
+															%>
 															<div id="showBkashDiv">
 																<ul>
 																	<li id="bkash_hov" class="card_logos"><a href="#"
 																		id="bkashClicked"><img
 																			src="<%=basePath%>resources/images/bkash4.png"
-																			style="width: 27px;height: 26px !important;" alt="bkash"><b style="font-size: 9px;color: #000;">bKash</b></a></li>
+																			style="width: 27px; height: 26px !important;"
+																			alt="bkash"><b
+																			style="font-size: 9px; color: #000;">bKash</b></a></li>
 																</ul>
 															</div>
-															<%} %>
+															<%
+																}
+															%>
 														</div>
 														<div id="bkashDiv" style="display: none">
 
-															<br>
-															<div style="float: right">
-																English <label class="switch" style="padding-top: -30px">
-																	<input type="checkbox" id="changeLang"
-																	name="changeLang" value="changeLang" /> <span
-																	class="slider round"></span>
-																</label> বাংলা
-															</div>
-															<br> <br>
+
 															<div id="englishhead">
 																<p class="bkash-p" id="bkashPaymentFlowImg"
 																	style="font-size: 14px;">
@@ -621,73 +657,6 @@ $(document).ready(function(){
 							// Get the modal
 							var modal = document.getElementById('myModal');
 							
-<<<<<<< HEAD
-							<!--  Changed by Wasif Ahmed -->
-						
-							<li id="secB"><a href="#sectionB">bKash</a></li>
-                            
-   						 </ul>
-                         
-   						 <div class="tab-content"> 
-			      						<div id="sectionA" class="tab-pane fade in active">
-			                             	<div class="eachBox">
-				                                <ul>
-				                                	<li class="card_logos"><a href="ebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/visa.png" alt="visa card"></a></li>
-				                                    <li class="card_logos"><a href="ebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/mastercard.png" alt="master card"></a></li>
-				                                    <li class="card_logos diner"><a href="ebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/diners_club.png" alt="diners club"></a></li>
-				                                    <li id="bkash_hov" class="card_logos"><a href="bkash?transactionId=${transactionId1 }"><img src="resources/images/bkash.png" style= "width: 25px" alt="bkash"></a></li>
-				                                </ul>
-			                                </div>
-			                            </div>                   
-                            
-			      						<div id="sectionD" class="tab-pane  fade in active">
-			                             	<div class="eachBox">
-				                                <ul>
-				                                	<li class="card_logos"><a href="sebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/visa.png" alt="visa card"></a></li>
-				                                    <li class="card_logos"><a href="sebl?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/mastercard.png" alt="master card"></a></li>
-				                                    <li class="card_logos"><a href="bkash?transactionId=${transactionId1 }"><img src="resources/images/bkash.png" style= "width: 25px" alt="bkash"></a></li>
-				                                </ul>
-			                                </div>
-			                            </div>
-                           
-    						 <div id="sectionC"  class="tab-pane fade in active ">
-	                               <div class="eachBox">
-		                                <ul ><!-- onclick="return clickOnEMI()" --> 
-		                                	<li class="card_logos"><a href="paycitybank?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/visa.png" alt="visa card"></a></li>
-		                                    <li class="card_logos"><a href="paycitybank?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/mastercard.png" alt="master card"></a></li>
-		                                    <li class="card_logos diner"><a href="paycitybank?transactionId=${transactionId1 }"><img src="<%=basePath%>resources/images/amex.png" alt="diners club"></a></li>
-		                                    <li class="card_logos"><a href="bkash?transactionId=${transactionId1 }"><img src="resources/images/bkash.png" style= "width: 25px" alt="bkash"></a></li>
-		                                </ul>
-	                             	</div>
-	                          </div>
-	                          
-        					<div id="sectionB" class="tab-pane fade in active">
-                               <div class="eachBox bkashl">
-	                                <ul>
-	                                	<li class="card_logos"><a href="bkash?transactionId=${transactionId1 }"><img src="resources/images/bkash.png" style= "width: 25px"  alt="bkash"></a></li>
-	                                </ul>
-                                </div>
-                            </div>                        
-				 	</div>
-                </div>             
-            </div>
-         </div>
-     </div>
-            
-            
-            
-                  
-     <div class="payment_page_footer">
-		<div class="row">
-			<div class="col-md-12">
-				<p>Payments powered by:</p>
-				<ul>
-					<li><img src="<%=basePath%>resources/images/verified-by-visa.png" alt="verified by visa"></li>
-					<li><img src="<%=basePath%>resources/images/mastercard-secure-code.png" alt="mastercard secured code"></li>
-					<li><img src="<%=basePath%>resources/images/american-express-safekey.png" alt="american express safekey"></li>
-					<li><img src="<%=basePath%>resources/images/diner-club-protect.png" alt="diners-club-protect"></li>										
-				</ul>
-=======
 							// Get the image and insert it inside the modal - use its "alt" text as a caption
 						//	var img = document.getElementById('bkashPaymentFlowImg'); //20180106 Wasif 							
 							var img = document.getElementById('show_me_tag');
@@ -773,11 +742,19 @@ $(document).ready(function(){
         if ($(this).prop("checked")) {
           $("#english").css("display", "none");
           $("#bangla").css("display", "block");
+          $(".english1").css("display", "none");
+          $(".bangla1").css("display", "block");
+          $("#english1").css("display", "none");
+          $("#bangla1").css("display", "block");
           $("#englishhead").css("display", "none");
           $("#banglahead").css("display", "block");
         } else {
           $("#english").css("display", "block");
           $("#bangla").css("display", "none");
+          $(".english1").css("display", "block");
+          $(".bangla1").css("display", "none");
+          $("#english1").css("display", "block");
+          $("#bangla1").css("display", "none");
           $("#englishhead").css("display", "block");
           $("#banglahead").css("display", "none");
         }
@@ -791,21 +768,28 @@ $(document).ready(function(){
 														<%--  --%>
 
 													</div>
-													<p class="cancelOrder" style="text-align:center">
-														<a href="${returnUrl }">Cancel Order</a>and return to
-														LebuPay
+													<p class="cancelOrder"
+														style="text-align: center; display: ruby;">
+														<style>
+</style>
+														<a href="${returnUrl }" class="english1"
+															id="cancelOrderTag">Cancel Order</a> <b class="english1">and
+															return to LebuPay</b> <a href="${returnUrl }" class="bangla1"
+															id="cancelOrderTag" style="display: none;">অর্ডার
+															বাতিল করুন</a><b class="bangla1" style="display: none;">
+															এবং ফিরে যান</b>
 													</p>
 												</div>
 											</div>
 										</div>
-										<div class="col-md-3 col-sm-3 col-xs-12"></div>
+										<div class="col-md-1 col-sm-1 col-xs-12"></div>
 									</div>
-									
+
 									<div class="payment_page_footer" style="margin-top: 0px">
 										<div class="row">
 											<div class="col-md-12">
 												<p>Payments powered by:</p>
-												<ul>
+												<ul style="padding-bottom: 0px !important">
 													<li><img
 														src="<%=basePath%>resources/images/verified-by-visa.png"
 														alt="verified by visa"></li>
@@ -820,6 +804,29 @@ $(document).ready(function(){
 														alt="diners-club-protect"></li>
 
 												</ul>
+												<div class="row">
+													<div class="col-md-3"></div>
+													<div class="col-md-6">
+														<p>&copy; All rights reserved to Spider Digital
+															Commerce (Bangladesh) Ltd</p>
+													</div>
+													<div class="col-md-3">
+														<div class="mcafee_secured_logo">
+															<script src="https://cdn.ywxi.net/js/inline.js?w=90"></script>
+															<div
+																style="display: inline-block; width: 90px; height: 37px; background-size: cover; background-image: url(&amp;quot;https://cdn.ywxi.net/meter/localhost:8081/102.svg&amp;quot;); cursor: pointer; float: right;"
+																class="mfes-trustmark" data-url="/102.svg"
+																oncontextmenu="return false;"></div>
+
+														</div>
+													</div>
+												</div>
+
+
+												<!-- <div class="mcafee_secured_logo">
+													<script src="https://cdn.ywxi.net/js/inline.js?w=90"></script>
+
+												</div> -->
 											</div>
 										</div>
 									</div>
@@ -832,7 +839,7 @@ $(document).ready(function(){
 			</section>
 		</div>
 
-		<footer>
+		<!-- <footer>
 		<div class="copyright_sec payment_page_footer_btm">
 			<div class="row">
 				<div class="col-md-6">
@@ -843,26 +850,49 @@ $(document).ready(function(){
 					<script src="https://cdn.ywxi.net/js/inline.js?w=90"></script>
 
 				</div>
->>>>>>> branch 'ajmain_v1_2' of https://ShakerRahin@bitbucket.org/spiderdigitalcommerce/lebupay.git
 			</div>
 		</div>
-		</footer>
+		</footer> -->
 		<!-- Add the sidebar's background. This div must be placed
        immediately after the control sidebar -->
 		<div class="control-sidebar-bg"></div>
 	</div>
 	<script>
-	$("#bkashClicked").on("click", function(e){
-		e.preventDefault();
+var bkash ="<%=bkash%>";
+	if(bkash == "Y"){
 		var div = document.getElementById("bkashDiv");
 		if (div.style.display === "none") {
-			$(".card_logos").css("opacity", "0.2");
+
 			div.style.display = "block";
 			$("#bkash_hov").css("opacity", "1");
 		    $("#bkash_hov").css("border", "3px solid green");
 		  } else {
 			  div.style.display = "none";
-			  $(".card_logos").css("opacity", "1");
+
+		    $("#bkash_hov").css("border", "1px solid #ddd");
+		  }
+		}
+	$(".eachBox").click(function(e){
+		e.preventDefault();
+		console.log(5443);
+		var div = document.getElementById("bkashDiv");
+		if (div.style.display === "none") {
+		  } else {
+			  div.style.display = "none";
+		    $("#bkash_hov").css("border", "1px solid #ddd");
+		  }
+		
+		});
+	$("#bkashClicked").on("click", function(e){
+		e.preventDefault();
+		var div = document.getElementById("bkashDiv");
+		if (div.style.display === "none") {
+
+			div.style.display = "block";
+			$("#bkash_hov").css("opacity", "1");
+		    $("#bkash_hov").css("border", "3px solid green");
+		  } else {
+			  div.style.display = "none";
 		    $("#bkash_hov").css("border", "1px solid #ddd");
 		  }
 		
@@ -875,7 +905,9 @@ $(document).ready(function(){
 		if (message != null) {
 	%>
 	<script>
-		 		$(document).ready(function(){ jQuery.growl.error({ message : "<%=message%>"
+		 		$(document).ready(function(){ jQuery.growl.error({ 
+			 		message : "<%=message%>
+		"
 			});
 		});
 	</script>
@@ -966,11 +998,11 @@ $(document).ready(function(){
 			$("#sectionC").remove();
 
 		}
-		$(".fa").on("click", function(e){
+		$(".fa").on("click", function(e) {
 			$.notify({
-				  title: 'Transaction Details', 
-				  content: "<b>TrxID:</b> ${transactionId}", 
-				  timeout: 0
-				});
+				title : 'Transaction Details',
+				content : "<b>TrxID:</b> ${transactionId}",
+				timeout : 0
 			});
+		});
 	</script>

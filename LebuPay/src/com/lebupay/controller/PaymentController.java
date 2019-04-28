@@ -3462,7 +3462,7 @@ public class PaymentController extends BaseDao implements SaltTracker {
 	}
 
 	/**
-	 * This method is used for Hit from API. Initail Call
+	 * This method is used for Hit from API. Initial Call
 	 * 
 	 * @param paymentModel
 	 * @param request
@@ -3782,14 +3782,70 @@ public class PaymentController extends BaseDao implements SaltTracker {
 						redirectAttributes.addFlashAttribute("transactionidInvalid",
 								messageUtil.getBundle("transactionid.invalid"));
 					else {
+						String bkash = "N";
+						
 						paymentModel.setOrderID(Long.parseLong(transactionModel.getOrder_id()));
+						
+						// shaker TO-DO BANK REDIRECT on 20190428
+						if(transactionModel.getPaymentModel().getPaymentMethod().equals("1")) {	// bkash selected through API
+							bkash = "Y";
+						} else if(transactionModel.getPaymentModel().getPaymentMethod().equals("0") && transactionModel.getMerchantModel().getApiGatewaySelection().equals("1")) {	// bank selected through API
+							String city = "N";
+							String ebl = "N";
+							String sebl = "N";
+							
+							
+							//	fetching allowed banks
+							if (transactionModel.getMerchantModel().getCityMerchantId() != null
+									&& !transactionModel.getMerchantModel().getCityMerchantId().isEmpty()) {
+								city = "Y";
+							}
+							if (transactionModel.getMerchantModel().getEblUserName() != null
+									&& !transactionModel.getMerchantModel().getEblUserName().isEmpty()) {
+								ebl = "Y";
+							}
+							if (transactionModel.getMerchantModel().getSeblUserName() != null
+									&& !transactionModel.getMerchantModel().getSeblUserName().isEmpty()) {
+								sebl = "Y";
+							}
+							System.out.println("Bank flags : \nbkash : "+bkash +"\nebl : " + ebl +"\ncity : "+ city +"\nsebl : "+ sebl);
+							
+							//	redirecting to merchant desired banks skipping the linkpay page
+							if(transactionModel.getPaymentModel().getGateway().equalsIgnoreCase("EBL") && ebl.equals("Y")) {
+								System.out.println("redirecting to EBL");
+								return "redirect:/ebl?transactionId="+paymentModel.getSESSIONKEY();
+							}
+							if(transactionModel.getPaymentModel().getGateway().equalsIgnoreCase("CITY") && city.equals("Y")) {
+								System.out.println("redirecting to CITY");
+								return "redirect:/paycitybank?transactionId="+paymentModel.getSESSIONKEY();
+							}
+							if(transactionModel.getPaymentModel().getGateway().equalsIgnoreCase("SEBL") && sebl.equals("Y")) {
+								System.out.println("redirecting to SEBL");
+								return "redirect:/sebl?transactionId="+paymentModel.getSESSIONKEY();
+							}
+							
+							//	redirecting to default banks skipping the linkpay page
+							if(ebl.equals("Y")) {
+								System.out.println("by default, redirecting to EBL");
+								return "redirect:/ebl?transactionId="+paymentModel.getSESSIONKEY();
+							}
+							if(city.equals("Y")) {
+								System.out.println("by default, redirecting to CITY");
+								return "redirect:/paycitybank?transactionId="+paymentModel.getSESSIONKEY();
+							}
+							if(sebl.equals("Y")) {
+								System.out.println("by default, redirecting to SEBL");
+								return "redirect:/sebl?transactionId="+paymentModel.getSESSIONKEY();
+							}
+						}
+						
 						if (httpServletRequest.getAttribute("SESSIONKEY") != null) {
-							return "redirect:/link-pay?SESSIONKEY="
+							return "redirect:/link-pay?bkash="+bkash+"&SESSIONKEY="
 									+ URLEncoder.encode(paymentModel.getSESSIONKEY(), "UTF-8");
 						} else {
 							int result = transactionService.updateOrderCustomerDetails(paymentModel);
 							if (result > 0)
-								return "redirect:/link-pay?SESSIONKEY="
+								return "redirect:/link-pay?bkash="+bkash+"&SESSIONKEY="
 										+ URLEncoder.encode(paymentModel.getSESSIONKEY(), "UTF-8");
 						}
 					}
