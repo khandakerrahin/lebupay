@@ -54,6 +54,13 @@ public interface MerchantService {
 	 */
 	public MerchantModel login(MerchantModel merchantModel) throws Exception;
 
+	/**
+	 * This method is use to check if user is registered or not.
+	 * 
+	 * @param merchantModel
+	 * @return MerchantModel
+	 * @throws Exception
+	 */
 	public MerchantModel checkMerchant(MerchantModel merchantModel) throws Exception;
 
 	/**

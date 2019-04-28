@@ -145,6 +145,7 @@ html {
 		document.documentElement.style.display = 'block';
 	}
 </script>
+<!-- Added by ajmain 20190425 -->
 <style>
 .msg {
 	font-weight: initial;
@@ -175,7 +176,7 @@ html {
 		<div class="row">
 			<div class="col-lg-12">
 				<button data-toggle="modal" class="btn-lg merchant-login-btn"
-					data-target="#merchant_login_modal_form">MERCHANT LOGIN</button>
+					data-target="#merchant_login_modal_form" onclick="hideFunction()">MERCHANT LOGIN</button>
 			</div>
 		</div>
 		<div class="row">
@@ -343,11 +344,7 @@ html {
 		</div>
 	</div>
 	</footer>
-	<script type="text/javascript">
-		$(".refreshcaptcha").click(function(){
-			$(this).parent().find('#captcha_image').attr("src", "./ImageCreator?aa="+Math.random());
-		});
-	</script>
+
 	<%
 	String message = (String) request
 			.getAttribute("password.change.success");
@@ -516,7 +513,10 @@ html {
 							<div class="col-sm-7 col-xs-12 lp-modal-form-part">
 								<h4 class="lp-modal-title lp-light-font">Merchant
 									Registration</h4>
-								<form action="merchant/registration" class="lp-form">
+									
+									<div id="regErr"></div>
+									<!-- commented by Ajmain 20190425 -->
+								<%-- <form action="merchant/registration" class="lp-form">
 									<input type="hidden" name="csrfPreventionSalt"
 										value="<%=request.getAttribute("csrfPreventionSaltPage")%>" />
 									<label> <span class="lp-sprite lp-f-name"></span> <input
@@ -569,8 +569,105 @@ html {
 									</label> <input
 										class="lp-form-submit-button lp-button green lp-transition"
 										type="submit" value="sign up">
+									<div id="serverRes" style="display: none;"><img src="<%=basePath%>resources/images/spinner.gif" alt="loading..."></div><div></div>
+								</form> --%>
+								
+								<!-- Added by Ajmain 20190425 -->
+								<form action="#" class="lp-form" method="post" id="registerForm"
+									style="display: none">
+
+									<label> <span class="lp-sprite lp-f-name"></span> <input
+										type="text" placeholder="Full Name" field-name="First Name"
+										data-valied="blank" name="firstName" id="regName" required>
+									</label> <label> <span class="lp-sprite lp-email"></span> <input
+										type="email" placeholder="Email Id" field-name="Email Id"
+										data-valied="blank-email" name="emailId1" id="regEmail"
+										required>
+									</label> <label> <span class="lp-sprite lp-phone"></span><input
+										class="lp-moNo-padding" maxlength="20" type="tel"
+										field-name="Mobile Number" name="mobileNo1"
+										data-valied="blank-mobile" placeholder="Mobile Number"
+										id="regPhone" onkeyup="checkMobile(this)" required>
+									</label> <input
+										class="lp-form-submit-button lp-login-button lp-button green lp-transition"
+										type="submit" value="Next">
+								</form>
+
+
+
+
+								<!-- Added by Ajmain 20190425 -->
+								<form action="#" class="lp-form"
+									style="display: none" id="finalForm">
+									<input type="hidden" name="csrfPreventionSalt"
+										value="<%=request.getAttribute("csrfPreventionSaltPage")%>" id="finalCSRF"/>
+										
+										<input type="hidden" name="firstName"
+										value="" required id="fullNameFinal"/>
+										<input type="hidden" name="emailId"
+										value="" required id="emailFinal"/>
+										<input type="hidden" name="mobileNo"
+										value="" required id="mobileFinal"/>
+										
+									<small style="padding-left: 6px; font-size: 10px; display:none" id="regNote">
+Note: Must have an uppercase, lowercase, numeric and special character. Length is between 8 to 32</small>
+									<label> <span class="lp-sprite lp-pass"></span> <input
+										type="password" placeholder="Password" field-name="Password"
+										data-valied="blank-password" name="password" minlength=8 maxlength=32 required id="regPass" style="margin-bottom: 5px; width:92%;">
+									
+										<i class="fa fa-info-circle" aria-hidden="true" style="color: red" onclick="showData('regNote')"></i>
+									
+									</label> <label> <span class="lp-sprite lp-conf-pass"></span> <input
+										type="password" placeholder="Confirm Password"
+										field-name="Confirm Password" data-valied="blank-confirm"
+										data-confirm="password" id="confirmPass" name="confirmPassword" minlength=8 maxlength=32 onkeyup="checkPass(this.value, 'matchpassErr')" style="margin-bottom: 5px;">
+									</label>
+									<div id="matchpassErr"></div>
+									<div id="merchantRecaptcha">
+									<div class="row">
+										<div class="col-sm-5">
+										<a href="javascript:void(0);"> <img src="./ImageCreator"
+											alt="" title="" id="captcha_image"> <i
+											class="fa fa-refresh refreshcaptcha" aria-hidden="true"
+											style="color: #000; margin: 0 auto; font-size: 24px; padding: 14px 0px 15px 6px; display: inline-block; vertical-align: top;"></i>
+										</a>
+										</div>
+										<div class="col-sm-6">
+										<label> <span class="lp-sprite lp-f-name"></span> <input
+											type="text" placeholder="Enter Captcha" field-name="Captcha"
+											data-valied="blank" name="captcha" id="captchaVal" style="width: 273px;margin-bottom:0px !important">
+										</label>
+										</div>
+									
+									</div>
+										 
+									</div>
+									<label class="lp-terms-line" style="margin-top: 0px; padding-top:0px;"> <input type="checkbox"
+										data-valied="checked" onclick="acceptCheck(this)" checked>
+										<div>
+											I agree to <a href="#">Payment Terms of Use</a> &amp; <a
+												href="#">Privacy Policy</a>
+										</div>
+									</label> 
+									<div class="row">
+									
+									<div class="col-xs-6">
+									
+									<input
+										class="lp-form-submit-button lp-button green lp-transition"
+										type="submit" value="sign up" id="signUpButton">
+									</div>
+									
+									<div class="col-xs-6">
+									<button
+										class="lp-form-submit-button lp-button green lp-transition"
+										id="backButton" style="background-color: #f96b6b">Back</button>
+									</div>
+									
+									</div>
 									<%-- <div id="serverRes" style="display: none;"><img src="<%=basePath%>resources/images/spinner.gif" alt="loading..."></div><div></div> --%>
 								</form>
+								
 							</div>
 							<div class="col-sm-5 lp-no-display">
 								<img src="<%=basePath%>resources/images/form_image.png"
@@ -604,7 +701,7 @@ html {
 								<h4 class="lp-modal-title lp-light-font" id="modalTitle">Login/Register</h4>
 								<div id="logErr"></div>
 
-
+								<!-- Added by Ajmain 20190425 -->
 								<form action="#" class="lp-form" method="post" id="checkForm">
 									<input type="hidden" name="csrfPreventionSalt"
 										value="<%=request.getAttribute("csrfPreventionSaltPage")%>" />
@@ -614,7 +711,7 @@ html {
 										name="userName" field-name="Email or Mobile"
 										data-valied="blank-email_mobile"
 										placeholder="Email / Mobile number" id="checkUsername"
-										required>
+										required data-toggle="tooltip" data-placement="top" title="This field can not be empty">
 									</label> <input
 										class="lp-form-submit-button lp-login-button lp-button green lp-transition"
 										id="loginCheck" type="submit" value="Submit" name="submit">
@@ -626,19 +723,30 @@ html {
 
 
 
-
+								<!-- Added by Ajmain 20190425 -->
 								<form action="merchant/login" class="lp-form" method="post"
 									id="loginForm" style="display: none">
 									<input type="hidden" name="csrfPreventionSalt"
-										value="<%=request.getAttribute("csrfPreventionSaltPage")%>" />
+										value="<%=request.getAttribute("csrfPreventionSaltPage")%>" id="loginCSRF" />
 									<label> <span class="lp-sprite lp-f-name"></span> <input
 										type="text" name="userName" field-name="Email or Mobile"
 										data-valied="blank-email_mobile"
-										placeholder="Email / Mobile number" id="userName" required>
-									</label> <label id="passLabel"> <span class="lp-sprite lp-pass"></span>
-										<input type="password" name="password" field-name="Password"
-										data-valied="blank" placeholder="Password" id="loginPass">
-									</label> <input
+										placeholder="Email / Mobile number" id="userName" required style="width: 92%">
+									</label> 
+									<small style="padding-left: 6px; font-size: 10px; display:none" id="loginNote">
+Note: Must have an uppercase, lowercase, numeric and special character. Length is between 8 to 32</small>
+									<label id="passLabel"> <span class="lp-sprite lp-pass"></span>
+										<input type="password" name="password" field-name="Password" style="margin-bottom: 0px; padding-bottom: 0px; width: 92%"
+										data-valied="blank" placeholder="Password" id="loginPass" minlength=8 maxlength=32 data-toggle="tooltip" data-placement="top" title="Must have an uppercase, lowercase, numeric and special character. Length is between 8 to 32">
+										<style>
+										#loginSubmit{
+											width: 92%;
+										}
+								
+										</style>
+										<i class="fa fa-info-circle" aria-hidden="true" style="color: red" onclick="showData('loginNote')"></i>
+									</label> 
+									<input
 										class="lp-form-submit-button lp-login-button lp-button green lp-transition"
 										type="submit" value="log in" id="loginSubmit">
 									<%-- <div id="serverRes" style="display: none;"><img src="<%=basePath%>resources/images/spinner.gif" alt="loading..."></div><div></div> --%>
@@ -647,96 +755,7 @@ html {
 
 
 
-								<form action="#" class="lp-form" method="post" id="registerForm"
-									style="display: none">
-
-									<label> <span class="lp-sprite lp-f-name"></span> <input
-										type="text" placeholder="Full Name" field-name="First Name"
-										data-valied="blank" name="firstName" id="regName" required>
-									</label> <label> <span class="lp-sprite lp-email"></span> <input
-										type="email" placeholder="Email Id" field-name="Email Id"
-										data-valied="blank-email" name="emailId1" id="regEmail"
-										required>
-									</label> <label> <span class="lp-sprite lp-phone"></span><input
-										class="lp-moNo-padding" maxlength="20" type="tel"
-										field-name="Mobile Number" name="mobileNo1"
-										data-valied="blank-mobile" placeholder="Mobile Number"
-										id="regPhone" onkeyup="checkMobile(this)" required>
-									</label> <input
-										class="lp-form-submit-button lp-login-button lp-button green lp-transition"
-										type="submit" value="Next">
-								</form>
-
-
-
-
-
-								<form action="merchant/registration" class="lp-form"
-									style="display: none" id="finalForm">
-									<input type="hidden" name="csrfPreventionSalt"
-										value="<%=request.getAttribute("csrfPreventionSaltPage")%>" id="finalCSRF"/>
-										
-										<input type="hidden" name="firstName"
-										value="" required id="fullNameFinal"/>
-										<input type="hidden" name="emailId"
-										value="" required id="emailFinal"/>
-										<input type="hidden" name="mobileNo"
-										value="" required id="mobileFinal"/>
-										
-									
-									<label> <span class="lp-sprite lp-pass"></span> <input
-										type="password" placeholder="Password" field-name="Password"
-										data-valied="blank-password" name="password" minlength=8 maxlength=32 required id="regPass" style="margin-bottom: 5px;">
-									</label> <label> <span class="lp-sprite lp-conf-pass"></span> <input
-										type="password" placeholder="Confirm Password"
-										field-name="Confirm Password" data-valied="blank-confirm"
-										data-confirm="password" id="confirmPass" name="confirmPassword" minlength=8 maaxlength=32 onkeyup="checkPass(this.value, 'matchpassErr')" style="margin-bottom: 5px;">
-									</label>
-									<div id="matchpassErr"></div>
-									<div id="merchantRecaptcha">
-									<div class="row">
-										<div class="col-sm-5">
-										<a href="javascript:void(0);"> <img src="./ImageCreator"
-											alt="" title="" id="captcha_image"> <i
-											class="fa fa-refresh refreshcaptcha" aria-hidden="true"
-											style="color: #000; margin: 0 auto; font-size: 24px; padding: 14px 0px 15px 6px; display: inline-block; vertical-align: top;"></i>
-										</a>
-										</div>
-										<div class="col-sm-6">
-										<label> <span class="lp-sprite lp-f-name"></span> <input
-											type="text" placeholder="Enter Captcha" field-name="Captcha"
-											data-valied="blank" name="captcha" id="captchaVal" style="width: 273px;margin-bottom:0px !important">
-										</label>
-										</div>
-									
-									</div>
-										 
-									</div>
-									<label class="lp-terms-line" style="margin-top: 0px; padding-top:0px;"> <input type="checkbox"
-										data-valied="checked" onclick="acceptCheck(this)" checked>
-										<div>
-											I agree to <a href="">Payment Terms of Use</a> &amp; <a
-												href="">Privacy Policy</a>
-										</div>
-									</label> 
-									<div class="row">
-									
-									<div class="col-xs-6">
-									
-									<input
-										class="lp-form-submit-button lp-button green lp-transition"
-										type="submit" value="sign up" id="signUpButton">
-									</div>
-									
-									<div class="col-xs-6">
-									<button
-										class="lp-form-submit-button lp-button green lp-transition"
-										id="backButton" style="background-color: #f96b6b">Back</button>
-									</div>
-									
-									</div>
-									<%-- <div id="serverRes" style="display: none;"><img src="<%=basePath%>resources/images/spinner.gif" alt="loading..."></div><div></div> --%>
-								</form>
+								
 
 
 								<div class="lp-terms-line lp-forgot-password-link">
@@ -843,6 +862,8 @@ html {
 	</div>
 	<!--Contact Us Modal end-->
 	<script>
+	//Added by Ajmain 20190425
+	
 $("#checkForm").on("submit", function(e){
 	e.preventDefault();
 	var username = $("#checkUsername").val();
@@ -887,11 +908,11 @@ $("#checkForm").on("submit", function(e){
 		$("#userName").val(username);
 		$("#loginPass").focus();
 	}else if(response == 2){
+		$("#merchant_login_modal_form").modal("hide");
+		$("#merchant_signup_form_modal").modal("show");
 		$("#logErr").html("");
 		$("#loginCheck").prop("disabled", false);
-		$("#modalTitle").text("Merchant Register");
 		$("#registerForm").css("display", "block");
-		$("#checkForm").css("display", "none");
 		$("#regName").focus();
 if(value=="phone"){
 	$("#regPhone").val(username);
@@ -902,7 +923,7 @@ if(value=="phone"){
 		
 		$("#checkUsername").css("border", "1px solid red");
 		$("#loginCheck").prop("disabled", false);
-		$("#logErr").html("<div class='msg msg-error z-depth-3'> <b style='font-size: 20px;' onclick='removediv()'>&#9888;</b>Invalid email or phone number.</div> <br>");
+		$("#logErr").html("<div class='msg msg-error z-depth-3'> <b style='font-size: 20px;'>&#9888;</b>Invalid email or phone number.</div> <br>");
 		}
 	            },
 	            error: function(err){
@@ -923,8 +944,12 @@ $("#registerForm").on("submit",function(e){
 	var phone = $("#regPhone").val();
 	var name = $("#regName").val();
 
+	console.log(email);
+	console.log(phone);
 	if(checkEmail(email) && checkPhone(phone) && name.length > 0){
-		$("#logErr").html("");
+		$("#regPhone").css("border", "1px solid #d6d5d5");
+		$("#regEmail").css("border", "1px solid #d6d5d5");
+		$("#regErr").html("");
 		$("#finalForm").css("display", "block");
 		$("#registerForm").css("display", "none");
 		$("#fullNameFinal").val(name);
@@ -933,13 +958,23 @@ $("#registerForm").on("submit",function(e){
 		$("#regPass").focus();
 		$("#confirmPass").val("");
 		$("#captchaVal").val("");
+		
 		}else{
-			if(username.match(/^[0-9]+$/) == null && checkEmail(email)){
-				$("#logErr").html("<div class='msg msg-error z-depth-3'> <b style='font-size: 20px;' onclick='removediv()'>&#9888;</b>Invalid email format.</div> <br>");
-				}
-			if(checkPhone(phone)){
-				$("#logErr").html("<div class='msg msg-error z-depth-3'> <b style='font-size: 20px;' onclick='removediv()'>&#9888;</b>Invalid phone number.</div> <br>");
-				}
+			if(!checkEmail(email) && !checkPhone(phone)){
+				$("#regErr").html("<div class='msg msg-error z-depth-3'> <b style='font-size: 20px;' onclick='removediv()'>&#9888;</b>Invalid email and phone number format.</div> <br>");
+				$("#regEmail").css("border", "1px solid red");
+				$("#regPhone").css("border", "1px solid red");
+				}else{
+					if(!checkEmail(email)){
+						$("#regErr").html("<div class='msg msg-error z-depth-3'> <b style='font-size: 20px;' onclick='removediv()'>&#9888;</b>Invalid email format.</div> <br>");
+						$("#regEmail").css("border", "1px solid red");
+						}
+					if(!checkPhone(phone)){
+						$("#regErr").html("<div class='msg msg-error z-depth-3'> <b style='font-size: 20px;' onclick='removediv()'>&#9888;</b>Invalid phone number.</div> <br>");
+						$("#regPhone").css("border", "1px solid red");
+						}
+					}
+			
 			
 			}
 });
@@ -948,6 +983,134 @@ $("#backButton").on("click", function(e){
 	$("#finalForm").css("display", "none");
 	$("#registerForm").css("display", "block");
 });
+
+
+
+$("#finalForm").on("submit", function(e){
+	e.preventDefault();
+	$("#signUpButton").prop("disabled", true);
+	var csrf= $("#finalCSRF").val();
+	var name = $("#fullNameFinal").val();
+	var email = $("#emailFinal").val();
+	var phone = $("#mobileFinal").val();
+	var password = $("#regPass").val();
+	var matchPass = $("#confirmPass").val();
+	var capcha = $("#captchaVal").val();
+	console.log(phone);
+	if(checkPhone(phone) && checkEmail(email) && csrf.length > 0 && name.length > 0 && checkPass(matchPass, "") && capcha.length > 0){
+		$("#regErr").html("");
+		$("#regPhone").css("border", "1px solid #d6d5d5");
+		$("#regEmail").css("border", "1px solid #d6d5d5");
+		$("#confirmPass").css("border", "1px solid #d6d5d5");
+		$("#regName").css("border", "1px solid #d6d5d5");
+		$("#captchaVal").css("border", "1px solid #d6d5d5");
+		var data = {
+				"csrf": csrf,
+"fullName" : name,
+"email" : email,
+"phone" : phone,
+"password" : password,
+"confirmPass" : matchPass,
+"capcha" : capcha
+				};
+		console.log(data);
+		$.ajax({
+	        type: "post",
+	        url: "merchant/registration",
+	        data: data,
+	        success: function(resp) {
+	        	$('#captcha_image').attr("src", "./ImageCreator?aa="+Math.random());
+	            console.log(resp);
+	            $("#signUpButton").prop("disabled", false);
+	            var s = resp.split("|");
+	            var response = s[0];
+	            var salt = s[1];
+	            $("#finalCSRF").val(salt);
+	            $("#loginCSRF").val(salt);
+	            $("#regErr").html(response+ "<br>");
+
+	            if(response.includes('success')){
+	            	$("#finalForm").css("display", "none");
+					$("#registerForm").css("display", "none");
+					$("#checkForm").css("display", "block");
+					$("#merchant_login_modal_form").modal("hide");
+					$("#merchant_signup_form_modal").modal("hide");
+					$("#merchant_mobile_verification_modal").modal("show");
+		            }
+	            if(response.includes('name')){
+	            	$("#finalForm").css("display", "none");
+					$("#registerForm").css("display", "block");
+					$("#regName").css("border", "1px solid red");
+		            }
+	            if(response.includes('email')){
+	            	$("#finalForm").css("display", "none");
+					$("#registerForm").css("display", "block");
+					$("#regEmail").css("border", "1px solid red");
+		            }
+	            if(response.includes('phone')){
+	            	$("#finalForm").css("display", "none");
+					$("#registerForm").css("display", "block");
+					$("#regPhone").css("border", "1px solid red");
+		            }
+	            if(response.includes('password')){
+	            	$("#finalForm").css("display", "block");
+					$("#registerForm").css("display", "none");
+					$("#confirmPass").css("border", "1px solid red");
+		            }
+	            if(response.includes('captcha')){
+	            	$("#finalForm").css("display", "block");
+					$("#registerForm").css("display", "none");
+					$("#captchaVal").css("border", "1px solid red");
+		            }
+	            
+	            
+	        }, error: function(resp){
+	            console.log(resp);
+	            }
+		}); 
+		}else{
+			$("#signUpButton").prop("disabled", false);
+			if(!checkPhone(phone)){
+				$("#finalForm").css("display", "none");
+				$("#registerForm").css("display", "block");
+				$("#regPhone").css("border", "1px solid red");
+				$("#regErr").html(
+			            "<div class='msg msg-error z-depth-3'> <b style='font-size: 17px;'>&#9888;</b>Invalid phone number format</div><br>"
+			        );
+				}
+			if(!checkEmail(email)){
+				$("#finalForm").css("display", "none");
+				$("#registerForm").css("display", "block");
+				$("#regEmail").css("border", "1px solid red");
+				$("#regErr").html(
+			            "<div class='msg msg-error z-depth-3'> <b style='font-size: 17px;'>&#9888;</b>Invalid email format</div><br>"
+			        );
+				}
+			if(!checkPass(matchPass, "")){
+				$("#confirmPass").css("border", "1px solid red");
+				$("#regErr").html(
+			            "<div class='msg msg-error z-depth-3'> <b style='font-size: 17px;'>&#9888;</b>Password does not match</div><br>"
+			        );
+				}
+			if(name.length < 1){
+				$("#finalForm").css("display", "none");
+				$("#registerForm").css("display", "block");
+				$("#regName").css("border", "1px solid red");
+				$("#regErr").html(
+			            "<div class='msg msg-error z-depth-3'> <b style='font-size: 17px;'>&#9888;</b>Merchant name is required</div><br>"
+			        );
+				}
+			if(capcha.length < 1){
+				$("#captchaVal").css("border", "1px solid red");
+				$("#regErr").html(
+			            "<div class='msg msg-error z-depth-3'> <b style='font-size: 17px;'>&#9888;</b>Capcha is required</div><br>"
+			        );
+				}
+			}
+	
+});
+
+
 
 
 function acceptCheck(email) {
@@ -972,24 +1135,33 @@ function checkPass(match, tag){
 			}
 
 		}else{
-			
-	if(password != match && match.length > 5){
-		if(tag.length < 1){
-			return false;
-			}else{
-				$("#matchpassErr").html(
-			            "<div class='msg msg-error z-depth-3'> <b style='font-size: 17px;'>&#9888;</b>Password does not match </div><br>"
-			        );
-				}
-		
-		}else if(password == match && match.length > 5){
 			if(tag.length < 1){
-				return true;
+				if(password != match){
+					return false;
+					}else{
+return true;
+						}
 				}else{
-					$("#matchpassErr").html("");
-					}
+					if(password != match && match.length > 5){
+						if(tag.length < 1){
+							return false;
+							}else{
+								$("#matchpassErr").html(
+							            "<div class='msg msg-error z-depth-3'> <b style='font-size: 17px;'>&#9888;</b>Password does not match </div><br>"
+							        );
+								}
+						
+						}else if(password == match && match.length > 5){
+							if(tag.length < 1){
+								return true;
+								}else{
+									$("#matchpassErr").html("");
+									}
+
+									}
 
 					}
+	
 			
 			}
 		}
@@ -999,9 +1171,10 @@ function checkPass(match, tag){
 function checkEmail(email) {
 
     var emailVal = email;
-    var reg =
-        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (reg.test(emailVal.toLowerCase())) {
+    var reg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    console.log(email);
+    console.log(reg.test(String(email).toLowerCase()));
+    if (reg.test(String(email).toLowerCase())) {
         return true;
     } else {
         return false;
@@ -1023,7 +1196,7 @@ function checkPhone(mobile) {
     }
     
         if (phoneVal.length >= 11) {
-        if (phoneVal.length > 11) {
+        if (phoneVal.length != 11 ) {
 return false;
         } else if ((phoneVal.startsWith("017") || phoneVal.startsWith("013") || phoneVal.startsWith("019") ||
                 phoneVal.startsWith("014") || phoneVal.startsWith("015") || phoneVal.startsWith("018") || phoneVal
@@ -1034,7 +1207,9 @@ return false;
             return false;
 
         }
-    }
+    }else{
+return false;
+        }
 }
 
 
@@ -1076,8 +1251,17 @@ function checkMobile(mobile) {
     }
 }
 
+function showData(data){
+	$("#"+data).toggle();
+	
+}
 
-
+	</script>
+	
+		<script type="text/javascript">
+		$(".refreshcaptcha").click(function(){
+			$(this).parent().find('#captcha_image').attr("src", "./ImageCreator?aa="+Math.random());
+		});
 	</script>
 
 </body>

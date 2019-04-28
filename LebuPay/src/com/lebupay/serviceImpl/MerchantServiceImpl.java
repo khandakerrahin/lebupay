@@ -281,6 +281,13 @@ public class MerchantServiceImpl extends BaseDao implements MerchantService {
 		return merchant;
 	}
 
+	/**
+	 * This method is use to check if user is registered or not.
+	 * 
+	 * @param merchantModel
+	 * @return MerchantModel
+	 * @throws Exception
+	 */
 	public MerchantModel checkMerchant(MerchantModel merchantModel) throws Exception {
 
 		if (logger.isInfoEnabled()) {

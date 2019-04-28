@@ -121,14 +121,14 @@ public class MerchantController implements SaltTracker {
 	@Autowired
 	private AdminService adminService;
 
-	// Added by Ajmain
+	// Added by Ajmain 20190425
 
 	/**
-	 * This method is use for merchant existing purpose.
+	 * This method is use for to check whether merchant is registered or not.
 	 * 
 	 * @param httpServletRequest
 	 * @param merchantModel
-	 * @return int
+	 * @return String
 	 */
 	@RequestMapping(value = "/login1", method = RequestMethod.POST)
 	public @ResponseBody String checkMerchant(HttpServletRequest httpServletRequest, HttpServletResponse response,
@@ -192,6 +192,15 @@ public class MerchantController implements SaltTracker {
 		return retVal + "," + newSalt;
 	}
 
+	// Added by Ajmain 20190425
+
+	/**
+	 * This method is use for to check whether mobile number is valid or not.
+	 * 
+	 * @param String
+	 * @return boolean
+	 */
+
 	private boolean phoneNumberFormated(String phoneNumber) {
 
 		boolean valid = false;
@@ -215,14 +224,126 @@ public class MerchantController implements SaltTracker {
 	 * @param httpServletRequest
 	 * @return CommonModel
 	 */
+	// commented by Ajmain 20190425
+
+	/*
+	 * @RequestMapping(value = "/registration", method = RequestMethod.POST)
+	 */
+	/*
+	 * public @ResponseBody CommonModel merchantRegistration(@RequestBody
+	 * MerchantModel merchantModel, HttpServletRequest httpServletRequest) {
+	 * 
+	 * if (logger.isInfoEnabled()) { logger.info("merchantRegistration -- START"); }
+	 * System.out.println("registration started");
+	 * System.out.println(merchantModel.getFirstName());
+	 * 
+	 * String name = merchantModel.getFirstName(); String firstName = ""; String
+	 * lastName = ""; if (name.contains(" ")) { String[] nameList = name.split(" ");
+	 * lastName = nameList[nameList.length - 1]; for (int i = 0; i < nameList.length
+	 * - 1; ++i) { firstName += nameList[i]; }
+	 * merchantModel.setFirstName(firstName); } merchantModel.setLastName(lastName);
+	 * CommonModel commonModel = new CommonModel();
+	 * 
+	 * String sessionId = httpServletRequest.getSession().getId(); List<String>
+	 * activeSalts = SALT_TRACKER.get(sessionId); String salt = "";
+	 * 
+	 * try {
+	 * 
+	 * salt = merchantModel.getCsrfPreventionSalt();
+	 * 
+	 * if (!org.springframework.util.CollectionUtils.isEmpty(activeSalts) &
+	 * activeSalts.contains(salt)) {
+	 * 
+	 * long result = merchantService.create(merchantModel, httpServletRequest);
+	 * 
+	 * if (result > 0) { merchantModel.setMerchantId(result);
+	 * 
+	 *//**
+		 * added merchant session value from merchant model
+		 */
+
+	/*
+	 * MerchantSessionModel merchantSessionModel = new MerchantSessionModel();
+	 * 
+	 * merchantSessionModel.setMerchantId(result);
+	 * merchantSessionModel.setEmailId(merchantModel.getEmailId());
+	 * merchantSessionModel.setMobileNo(merchantModel.getMobileNo());
+	 * 
+	 * httpServletRequest.getSession().invalidate(); HttpSession httpSession =
+	 * httpServletRequest.getSession(true);
+	 * httpSession.setAttribute("merchantModel", merchantSessionModel);
+	 * 
+	 * commonModel.setStatus(Status.ACTIVE);
+	 * commonModel.setMessage(messageUtil.getBundle(
+	 * "common.registration.successfully"));
+	 * 
+	 * } else { throw new Exception(); } } else { throw new
+	 * ServletException(messageUtil.getBundle("CSRF")); }
+	 * 
+	 * } catch (FormExceptions e1) {
+	 * 
+	 * commonModel.setStatus(Status.INACTIVE); List<String> exe = new
+	 * ArrayList<String>(); for (String e : e1.getExe()) { exe.add(e); }
+	 * commonModel.setMultipleMessage(exe);
+	 * commonModel.setMessage(messageUtil.getBundle(
+	 * "common.registration.not.successfully"));
+	 * 
+	 * logger.debug(e1.getMessage(), e1);
+	 * 
+	 * } catch (Exception e) { e.printStackTrace();
+	 * 
+	 * commonModel.setStatus(Status.INACTIVE);
+	 * commonModel.setMessage(messageUtil.getBundle(
+	 * "common.registration.not.successfully")); } finally {
+	 * activeSalts.remove(salt); String newSalt = (String)
+	 * httpServletRequest.getAttribute("csrfPreventionSaltPage");
+	 * commonModel.setCsrfPreventionSalt(newSalt); activeSalts.add(newSalt); }
+	 * 
+	 * if (logger.isInfoEnabled()) { logger.info("merchantRegistration -- END"); }
+	 * 
+	 * return commonModel; }
+	 */
+
+	// Added by Ajmain 20190425
+	/**
+	 * This method is use to registration merchant details
+	 * 
+	 * @param merchantModel
+	 * @param httpServletRequest
+	 * @return CommonModel
+	 */
 	@RequestMapping(value = "/registration", method = RequestMethod.POST)
-	public @ResponseBody CommonModel merchantRegistration(@RequestBody MerchantModel merchantModel,
-			HttpServletRequest httpServletRequest) {
+	public @ResponseBody String merchantRegistration(HttpServletRequest httpServletRequest,
+			HttpServletResponse response, MerchantModel merchantModel) {
 
 		if (logger.isInfoEnabled()) {
 			logger.info("merchantRegistration -- START");
 		}
-		String name = merchantModel.getFirstName();
+
+		String retVal = "<div class='msg msg-error z-depth-3'> <b style='font-size: 20px;'>&#9888;</b>Please fill out form properly</div>";
+
+		String name = (String) httpServletRequest.getParameter("fullName");
+		String csrf = (String) httpServletRequest.getParameter("csrf");
+		String email = (String) httpServletRequest.getParameter("email");
+		String phone = (String) httpServletRequest.getParameter("phone");
+		String password = (String) httpServletRequest.getParameter("password");
+		String confirmPassword = (String) httpServletRequest.getParameter("confirmPass");
+		String captcha = (String) httpServletRequest.getParameter("capcha");
+		if (!phoneNumberFormated(phone)) {
+			retVal = "<div class='msg msg-error z-depth-3'> <b style='font-size: 20px;'>&#9888;</b>Invalid phone number</div>";
+			return retVal;
+		}
+		System.out.println("captcha: " + captcha);
+		if (phone.startsWith("0")) {
+			phone = "+88" + phone;
+		} else if (phone.startsWith("880")) {
+			phone = "+" + phone;
+		} else if (phone.startsWith("+880")) {
+
+		} else {
+			phone = "+880" + phone;
+		}
+
 		String firstName = "";
 		String lastName = "";
 		if (name.contains(" ")) {
@@ -232,10 +353,18 @@ public class MerchantController implements SaltTracker {
 				firstName += nameList[i];
 			}
 			merchantModel.setFirstName(firstName);
+		} else {
+			merchantModel.setFirstName(name);
 		}
 		merchantModel.setLastName(lastName);
-
+		merchantModel.setEmailId(email);
+		merchantModel.setMobileNo(phone);
+		merchantModel.setPassword(password);
+		merchantModel.setConfirmPassword(confirmPassword);
+		merchantModel.setCaptcha(captcha);
+		String newSalt = "";
 		CommonModel commonModel = new CommonModel();
+		merchantModel.setCsrfPreventionSalt(csrf);
 		System.out.println(merchantModel.getCsrfPreventionSalt());
 		String sessionId = httpServletRequest.getSession().getId();
 		List<String> activeSalts = SALT_TRACKER.get(sessionId);
@@ -248,13 +377,13 @@ public class MerchantController implements SaltTracker {
 			if (!org.springframework.util.CollectionUtils.isEmpty(activeSalts) & activeSalts.contains(salt)) {
 
 				long result = merchantService.create(merchantModel, httpServletRequest);
-
 				if (result > 0) {
 					merchantModel.setMerchantId(result);
 
 					/**
 					 * added merchant session value from merchant model
 					 */
+					// MerchantSessionModel merchantSessionModel = new MerchantSessionModel();
 					MerchantSessionModel merchantSessionModel = new MerchantSessionModel();
 
 					merchantSessionModel.setMerchantId(result);
@@ -263,25 +392,30 @@ public class MerchantController implements SaltTracker {
 
 					httpServletRequest.getSession().invalidate();
 					HttpSession httpSession = httpServletRequest.getSession(true);
-					httpSession.setAttribute("merchantModel", merchantSessionModel);
+					httpSession.setAttribute("merchantModelOtp", merchantSessionModel);
 
-					commonModel.setStatus(Status.ACTIVE);
+					// commonModel.setStatus(Status.ACTIVE);
 					commonModel.setMessage(messageUtil.getBundle("common.registration.successfully"));
+					retVal = "<div class='msg msg-success z-depth-3'>Registration successful</div>";
 
 				} else {
+					retVal = "<div class='msg msg-error z-depth-3'> <b style='font-size: 20px;'>&#9888;</b>Please fill out form properly</div>";
 					throw new Exception();
 				}
 			} else {
+				retVal = "<div class='msg msg-error z-depth-3'> <b style='font-size: 20px;'>&#9888;</b>Please fill out form properly</div>";
 				throw new ServletException(messageUtil.getBundle("CSRF"));
 			}
 
 		} catch (FormExceptions e1) {
-
+			retVal = "<div class='msg msg-error z-depth-3'><ul>";
 			commonModel.setStatus(Status.INACTIVE);
 			List<String> exe = new ArrayList<String>();
 			for (String e : e1.getExe()) {
+				retVal += "<li> <b style='font-size: 20px;'>&#9888;</b>" + e + "</li>";
 				exe.add(e);
 			}
+			retVal += "</ul></div>";
 			commonModel.setMultipleMessage(exe);
 			commonModel.setMessage(messageUtil.getBundle("common.registration.not.successfully"));
 
@@ -289,12 +423,13 @@ public class MerchantController implements SaltTracker {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-
+			retVal = "<div class='msg msg-error z-depth-3'> <b style='font-size: 20px;'>&#9888;</b>" + e.getMessage()
+					+ "</div>";
 			commonModel.setStatus(Status.INACTIVE);
 			commonModel.setMessage(messageUtil.getBundle("common.registration.not.successfully"));
 		} finally {
 			activeSalts.remove(salt);
-			String newSalt = (String) httpServletRequest.getAttribute("csrfPreventionSaltPage");
+			newSalt = (String) httpServletRequest.getAttribute("csrfPreventionSaltPage");
 			commonModel.setCsrfPreventionSalt(newSalt);
 			activeSalts.add(newSalt);
 		}
@@ -303,8 +438,84 @@ public class MerchantController implements SaltTracker {
 			logger.info("merchantRegistration -- END");
 		}
 
-		return commonModel;
+		return retVal + "|" + newSalt;
 	}
+
+	// creates a copy of registration method in case necessary and commented by
+	// Ajmain 20190425
+	/*
+	 * public @ResponseBody CommonModel merchantRegistration1(MerchantModel
+	 * merchantModel, HttpServletRequest httpServletRequest) {
+	 * 
+	 * if (logger.isInfoEnabled()) { logger.info("merchantRegistration -- START"); }
+	 * System.out.println("registration started");
+	 * System.out.println(merchantModel.getFirstName());
+	 * 
+	 * String name = merchantModel.getFirstName(); String firstName = ""; String
+	 * lastName = ""; if (name.contains(" ")) { String[] nameList = name.split(" ");
+	 * lastName = nameList[nameList.length - 1]; for (int i = 0; i < nameList.length
+	 * - 1; ++i) { firstName += nameList[i]; }
+	 * merchantModel.setFirstName(firstName); } merchantModel.setLastName(lastName);
+	 * 
+	 * CommonModel commonModel = new CommonModel();
+	 * System.out.println(merchantModel.getCsrfPreventionSalt()); String sessionId =
+	 * httpServletRequest.getSession().getId(); List<String> activeSalts =
+	 * SALT_TRACKER.get(sessionId); String salt = "";
+	 * 
+	 * try {
+	 * 
+	 * salt = merchantModel.getCsrfPreventionSalt();
+	 * 
+	 * if (!org.springframework.util.CollectionUtils.isEmpty(activeSalts) &
+	 * activeSalts.contains(salt)) {
+	 * 
+	 * long result = merchantService.create(merchantModel, httpServletRequest);
+	 * 
+	 * if (result > 0) { merchantModel.setMerchantId(result);
+	 * 
+	 *//**
+		 * added merchant session value from merchant model
+		 *//*
+			 * MerchantSessionModel merchantSessionModel = new MerchantSessionModel();
+			 * 
+			 * merchantSessionModel.setMerchantId(result);
+			 * merchantSessionModel.setEmailId(merchantModel.getEmailId());
+			 * merchantSessionModel.setMobileNo(merchantModel.getMobileNo());
+			 * 
+			 * httpServletRequest.getSession().invalidate(); HttpSession httpSession =
+			 * httpServletRequest.getSession(true);
+			 * httpSession.setAttribute("merchantModel", merchantSessionModel);
+			 * 
+			 * commonModel.setStatus(Status.ACTIVE);
+			 * commonModel.setMessage(messageUtil.getBundle(
+			 * "common.registration.successfully"));
+			 * 
+			 * } else { throw new Exception(); } } else { throw new
+			 * ServletException(messageUtil.getBundle("CSRF")); }
+			 * 
+			 * } catch (FormExceptions e1) {
+			 * 
+			 * commonModel.setStatus(Status.INACTIVE); List<String> exe = new
+			 * ArrayList<String>(); for (String e : e1.getExe()) { exe.add(e); }
+			 * commonModel.setMultipleMessage(exe);
+			 * commonModel.setMessage(messageUtil.getBundle(
+			 * "common.registration.not.successfully"));
+			 * 
+			 * logger.debug(e1.getMessage(), e1);
+			 * 
+			 * } catch (Exception e) { e.printStackTrace();
+			 * 
+			 * commonModel.setStatus(Status.INACTIVE);
+			 * commonModel.setMessage(messageUtil.getBundle(
+			 * "common.registration.not.successfully")); } finally {
+			 * activeSalts.remove(salt); String newSalt = (String)
+			 * httpServletRequest.getAttribute("csrfPreventionSaltPage");
+			 * commonModel.setCsrfPreventionSalt(newSalt); activeSalts.add(newSalt); }
+			 * 
+			 * if (logger.isInfoEnabled()) { logger.info("merchantRegistration -- END"); }
+			 * 
+			 * return commonModel; }
+			 */
 
 	/**
 	 * This method is use to verified merchant phone.
@@ -325,7 +536,7 @@ public class MerchantController implements SaltTracker {
 		String sessionId = httpServletRequest.getSession().getId();
 		List<String> activeSalts = SALT_TRACKER.get(sessionId);
 		String salt = "";
-
+		HttpSession httpSession = null;
 		try {
 
 			salt = merchantModel.getCsrfPreventionSalt();
@@ -334,8 +545,7 @@ public class MerchantController implements SaltTracker {
 			// activeSalts.contains(salt)) {
 
 			MerchantSessionModel merchantSessionModel = (MerchantSessionModel) httpServletRequest.getSession()
-					.getAttribute("merchantModel");
-
+					.getAttribute("merchantModelOtp");
 			merchantModel.setMerchantId(merchantSessionModel.getMerchantId());
 			merchantModel.setMobileNo(merchantSessionModel.getMobileNo());
 			merchantModel.setEmailId(merchantSessionModel.getEmailId());
@@ -343,7 +553,8 @@ public class MerchantController implements SaltTracker {
 			long result = merchantService.phoneVerification(merchantModel);
 
 			if (result == 1) {
-
+				httpSession = httpServletRequest.getSession(true);
+				httpSession.setAttribute("merchantModel", merchantModel);
 				commonModel.setStatus(Status.ACTIVE);
 
 			} else if (result == 2) {

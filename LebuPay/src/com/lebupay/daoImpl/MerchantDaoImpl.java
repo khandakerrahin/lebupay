@@ -1062,7 +1062,7 @@ public class MerchantDaoImpl extends BaseDao implements MerchantDao {
 		if (logger.isInfoEnabled()) {
 			logger.info("Merchant login -- START");
 		}
-
+		System.out.println("in dao : " + password);
 		Connection connection = oracleConnection.Connect();
 		OraclePreparedStatement pst = null;
 		MerchantModel merchantModel = null;
@@ -1196,6 +1196,7 @@ public class MerchantDaoImpl extends BaseDao implements MerchantDao {
 			// phone_verified
 			ResultSet rs = pst.executeQuery();
 			if (rs.next()) {
+				System.out.println("rs found");
 
 				merchantModel = new MerchantModel();
 				TypeModel typeModel = new TypeModel();
@@ -1298,6 +1299,16 @@ public class MerchantDaoImpl extends BaseDao implements MerchantDao {
 		return merchantModel;
 	}
 
+	/**
+	 * This method is use to check if user is registered or not. Status active means
+	 * only login and company profile can be add by Merchant. Status activate means
+	 * Admin has given the permission to the Merchant for Performing Transaction.
+	 * 
+	 * @param userName
+	 * @param password
+	 * @return MerchantModel
+	 * @throws Exception
+	 */
 	public MerchantModel userCheck(String userName) throws Exception {
 
 		if (logger.isInfoEnabled()) {
@@ -1342,11 +1353,7 @@ public class MerchantDaoImpl extends BaseDao implements MerchantDao {
 			// phone_verified
 			ResultSet rs = pst.executeQuery();
 			if (rs.next()) {
-
 				merchantModel = new MerchantModel();
-				TypeModel typeModel = new TypeModel();
-				CompanyModel companyModel = new CompanyModel();
-
 				merchantModel.setMerchantId(rs.getLong(1));
 			}
 		} finally {

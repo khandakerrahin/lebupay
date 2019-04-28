@@ -95,20 +95,29 @@ public class MerchantValidation {
 			}
 		}
 
-		if (Util.isEmpty(merchantModel.getLastName())) {
-
-			exe.add(messageUtil.getBundle("merchant.last.name.required"));
-
-		} else {
-
+		// Added new if by Ajmain 20190425
+		if (!Util.isEmpty(merchantModel.getLastName())) {
 			merchantModel.setLastName(Util.strip_html_tags(merchantModel.getLastName(), "url"));
-
 			if (Util.isEmpty(merchantModel.getLastName())) {
-
 				exe.add(messageUtil.getBundle("merchant.last.name.required"));
-
 			}
 		}
+
+		// commented by ajmain 20190425
+//		if (Util.isEmpty(merchantModel.getLastName())) {
+//
+//			exe.add(messageUtil.getBundle("merchant.last.name.required"));
+//
+//		} else {
+//
+//			merchantModel.setLastName(Util.strip_html_tags(merchantModel.getLastName(), "url"));
+//
+//			if (Util.isEmpty(merchantModel.getLastName())) {
+//
+//				exe.add(messageUtil.getBundle("merchant.last.name.required"));
+//
+//			}
+//		}
 
 		if (Util.isEmpty(merchantModel.getEmailId())) {
 
@@ -243,7 +252,6 @@ public class MerchantValidation {
 
 			String captcha = (String) httpSession.getAttribute("captcha");
 			String code = merchantModel.getCaptcha();
-
 			if (captcha.equals(code)) {
 
 				httpSession.removeAttribute("captcha");
@@ -274,7 +282,8 @@ public class MerchantValidation {
 		if (logger.isInfoEnabled()) {
 			logger.info("Merchant loginValidation -- START");
 		}
-
+		System.out.println("usernmame validation: " + merchantModel.getUserName());
+		System.out.println("pass in validation: " + merchantModel.getPassword());
 		if (Util.isEmpty(merchantModel.getUserName())) {
 
 			throw new Exception(messageUtil.getBundle("merchant.user.name.required"));
@@ -339,9 +348,16 @@ public class MerchantValidation {
 			if (logger.isInfoEnabled()) {
 				logger.info("Merchant loginValidation -- END");
 			}
+			System.out.println("validation end");
 		}
 	}
 
+	/**
+	 * This method is use to validated email or phone of Merchant.
+	 * 
+	 * @param merchantModel
+	 * @throws Exception
+	 */
 	public void validityCheck(MerchantModel merchantModel) throws Exception {
 
 		if (logger.isInfoEnabled()) {

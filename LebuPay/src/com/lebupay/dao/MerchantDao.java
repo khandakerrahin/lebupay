@@ -95,6 +95,16 @@ public interface MerchantDao {
 	 */
 	public MerchantModel login(String userName, String password) throws Exception;
 
+	/**
+	 * This method is use to check if user is registered or not. Status active means
+	 * only login and company profile can be add by Merchant. Status activate means
+	 * Admin has given the permission to the Merchant for Performing Transaction.
+	 * 
+	 * @param userName
+	 * @param password
+	 * @return MerchantModel
+	 * @throws Exception
+	 */
 	public MerchantModel userCheck(String userName) throws Exception;
 
 	/**
